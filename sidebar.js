@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </a>
 
-      <nav style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 0;">
+      <nav style="display: flex; flex-direction: column; gap: 18px;">
         <a href="#accueil" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_accueil">Accueil</a>
         
         <a href="#atelier" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_atelier">L'atelier</a>
@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <!-- CONTACTO -->
         <a href="#contact" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_contact">Contact</a>
 
-        <!-- Teléfono y Email integrados al ras del menú -->
-        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px; margin-top: 12px; margin-bottom: 0;">
+        <!-- Teléfono y Email integrados al final del menú -->
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; margin-bottom: 0;">
           <a href="tel:+41799137055" style="color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 600;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             +41 79 913 70 55
@@ -71,22 +71,24 @@ document.addEventListener("DOMContentLoaded", () => {
       </nav>
     </div>
 
-    <!-- MODO OSCURO, BANDERAS DE IDIOMA Y CRÉDITO PROFESIONAL -->
-    <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; gap: 6px;">
-          <button onclick="setLanguage('fr')" class="lang-btn active" data-lang="fr" style="display: flex; align-items: center; gap: 4px;">🇫🇷 FR</button>
-          <button onclick="setLanguage('en')" class="lang-btn" data-lang="en" style="display: flex; align-items: center; gap: 4px;">🇬🇧 EN</button>
-          <button onclick="setLanguage('it')" class="lang-btn" data-lang="it" style="display: flex; align-items: center; gap: 4px;">🇮🇹 IT</button>
-          <button onclick="setLanguage('es')" class="lang-btn" data-lang="es" style="display: flex; align-items: center; gap: 4px;">🇪🇸 ES</button>
-        </div>
-
-        <div onclick="toggleTheme()" style="cursor: pointer; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; user-select: none;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-          <span id="themeLabel" style="font-weight: 500;">Mode Sombre</span>
-        </div>
+    <!-- PIE DE PAGINA / CONTROLES INFERIORES -->
+    <div style="border-top: 1px solid var(--border); padding-top: 15px; margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
+      
+      <!-- Fila 1: Idiomas -->
+      <div style="display: flex; gap: 6px;">
+        <button onclick="setLanguage('fr')" class="lang-btn active" data-lang="fr" style="display: flex; align-items: center; gap: 4px;">🇫🇷 FR</button>
+        <button onclick="setLanguage('en')" class="lang-btn" data-lang="en" style="display: flex; align-items: center; gap: 4px;">🇬🇧 EN</button>
+        <button onclick="setLanguage('it')" class="lang-btn" data-lang="it" style="display: flex; align-items: center; gap: 4px;">🇮🇹 IT</button>
+        <button onclick="setLanguage('es')" class="lang-btn" data-lang="es" style="display: flex; align-items: center; gap: 4px;">🇪🇸 ES</button>
       </div>
 
+      <!-- Fila 2: Modo oscuro separado -->
+      <div onclick="toggleTheme()" style="cursor: pointer; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; user-select: none; width: fit-content;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <span id="themeLabel" style="font-weight: 500;">Mode Sombre</span>
+      </div>
+
+      <!-- Fila 3: Copyright y Autoría -->
       <div style="font-size: 11px; color: var(--muted); line-height: 1.4; border-top: 1px dashed var(--border); padding-top: 10px;">
         <span>Atelier Arte Vich © 2026</span><br>
         <span>Design & Architecture by <a href="mailto:antonio.linares@swissquote.ch" style="color: var(--accent); text-decoration: none; font-weight: 600;">Antonio Linares</a></span>
