@@ -3,8 +3,7 @@
 # ==========================================
 
 # Ignorar la carpeta completa de configuración de la IDE
-../atelier-web/.idea/
-
+.idea/
 # Si trabajas en equipo y prefieres compartir configuraciones comunes de código
 # (formato, diccionarios), descomenta las excepciones de abajo y comenta ".idea/":
 # .idea/*
