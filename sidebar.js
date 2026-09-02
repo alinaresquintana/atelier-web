@@ -19,19 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
         
         <a href="#atelier" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_atelier">L'atelier</a>
 
-        <!-- ENFANTS & ADOS -->
+        <!-- CURSOS DE PINTURA (ENFANTS, ADOS & ADULTES) -->
         <div>
-          <div data-i18n="nav_enfants" style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px;">
-            Enfants & Ados
+          <div data-i18n="nav_cours_peinture" style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px;">
+            Cours de peinture
           </div>
           <div style="display: flex; flex-direction: column; gap: 6px; padding-left: 14px; border-left: 2px solid var(--border);">
             <a href="#enfants" class="nav-link" style="text-decoration: none; color: var(--muted); font-size: 13.5px; font-weight: 400; transition: color 0.2s;" data-i18n="nav_enfants_sub1">Cours Enfants (5-10 ans)</a>
             <a href="#ados" class="nav-link" style="text-decoration: none; color: var(--muted); font-size: 13.5px; font-weight: 400; transition: color 0.2s;" data-i18n="nav_enfants_sub2">Ateliers Ados</a>
+            <a href="#adultes" class="nav-link" style="text-decoration: none; color: var(--muted); font-size: 13.5px; font-weight: 400; transition: color 0.2s;" data-i18n="nav_adultes">Adultes</a>
           </div>
         </div>
-
-        <!-- ADULTES -->
-        <a href="#adultes" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_adultes">Adultes</a>
 
         <!-- WORKSHOPS -->
         <div>
@@ -74,12 +72,24 @@ document.addEventListener("DOMContentLoaded", () => {
     <!-- PIE DE PAGINA / CONTROLES INFERIORES -->
     <div style="border-top: 1px solid var(--border); padding-top: 15px; margin-top: auto; display: flex; flex-direction: column; gap: 12px;">
       
-      <!-- Fila 1: Idiomas -->
-      <div style="display: flex; gap: 6px;">
-        <button onclick="setLanguage('fr')" class="lang-btn active" data-lang="fr" style="display: flex; align-items: center; gap: 4px;">🇫🇷 FR</button>
-        <button onclick="setLanguage('en')" class="lang-btn" data-lang="en" style="display: flex; align-items: center; gap: 4px;">🇬🇧 EN</button>
-        <button onclick="setLanguage('it')" class="lang-btn" data-lang="it" style="display: flex; align-items: center; gap: 4px;">🇮🇹 IT</button>
-        <button onclick="setLanguage('es')" class="lang-btn" data-lang="es" style="display: flex; align-items: center; gap: 4px;">🇪🇸 ES</button>
+      <!-- Fila 1: Idiomas e Iconos de Redes Sociales -->
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <div style="display: flex; gap: 6px;">
+          <button onclick="setLanguage('fr')" class="lang-btn active" data-lang="fr" style="display: flex; align-items: center; gap: 4px;">🇫🇷 FR</button>
+          <button onclick="setLanguage('en')" class="lang-btn" data-lang="en" style="display: flex; align-items: center; gap: 4px;">🇬🇧 EN</button>
+          <button onclick="setLanguage('it')" class="lang-btn" data-lang="it" style="display: flex; align-items: center; gap: 4px;">🇮🇹 IT</button>
+          <button onclick="setLanguage('es')" class="lang-btn" data-lang="es" style="display: flex; align-items: center; gap: 4px;">🇪🇸 ES</button>
+        </div>
+
+        <!-- Redes Sociales Minimalistas -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <a href="https://www.instagram.com/eloisarg_art/" target="_blank" rel="noopener" title="Instagram" style="color: var(--muted); display: flex; align-items: center; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+          </a>
+          <a href="https://m.facebook.com/100081551711285" target="_blank" rel="noopener" title="Facebook" style="color: var(--muted); display: flex; align-items: center; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+          </a>
+        </div>
       </div>
 
       <!-- Fila 2: Modo oscuro separado -->
