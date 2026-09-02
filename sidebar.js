@@ -54,6 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
         
         <!-- CONTACTO -->
         <a href="#contact" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_contact">Contact</a>
+        
+        <a href="atelier-admin.html" style="text-decoration: none !important; color: inherit !important; font-family: inherit !important;" class="flex items-center space-x-2 py-1 hover:text-indigo-600 transition">
+            <span>🔒</span>
+            <span>Admin</span>
+        </a>
 
         <!-- Teléfono y Email integrados al final del menú -->
         <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 12px; display: flex; flex-direction: column; gap: 6px; margin-top: 10px; margin-bottom: 0;">
