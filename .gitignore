@@ -1,0 +1,63 @@
+# ==========================================
+# JetBrains / IntelliJ IDEA (.idea)
+# ==========================================
+
+# Ignorar la carpeta completa de configuración de la IDE
+../atelier-web/.idea/
+
+# Si trabajas en equipo y prefieres compartir configuraciones comunes de código
+# (formato, diccionarios), descomenta las excepciones de abajo y comenta ".idea/":
+# .idea/*
+# !.idea/codeStyles/
+# !.idea/scopes/
+# !.idea/inspectionProfiles/
+# !.idea/encodings.xml
+# !.idea/dictionaries/
+# !.idea/vcs.xml
+# !.idea/misc.xml
+# !.idea/modules.xml
+
+# Archivos de proyecto basados en archivos (.ipr, .iws, .iml)
+*.iml
+*.ipr
+*.iws
+
+# Archivos de caché y estado del usuario
+.idea_modules/
+cmake-build-*/
+out/
+
+# Archivos temporales de Crashlytics / plugins de JetBrains
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/gradle.xml
+.idea/libraries/
+.idea/artifacts/
+.idea/shelf/
+.idea/httpRequests/
+
+# ==========================================
+# Sistema Operativo y Basura Local
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ==========================================
+# Entornos y Secretos
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
