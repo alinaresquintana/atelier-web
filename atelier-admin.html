@@ -35,7 +35,8 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center">
         <div class="flex space-x-8">
-            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm">Alumnos</button>
+            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm">📅 Calendario del Curso</button>
+            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Alumnos</button>
             <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Clases y Precios</button>
             <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Facturación General</button>
             <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Renovación de Bonos</button>
@@ -47,8 +48,72 @@
 
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
 
+        <!-- TAB 0: CALENDARIO DEL CURSO (PRIMERA PESTAÑA) -->
+        <div id="tab-calendar" class="space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">📅 Calendario y Horarios del Curso</h2>
+                    <p class="text-xs text-gray-500">Visualiza el calendario mensual, los períodos de vacaciones y busca sesiones específicas.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="changeCalendarMonth(-1)" class="px-3 py-1.5 bg-white border rounded-lg text-xs font-medium hover:bg-gray-100">← Mes Anterior</button>
+                    <span id="calendar-month-title" class="text-sm font-bold px-3 py-1 bg-white border rounded-lg min-w-[150px] text-center">Mes Año</span>
+                    <button onclick="changeCalendarMonth(1)" class="px-3 py-1.5 bg-white border rounded-lg text-xs font-medium hover:bg-gray-100">Mes Siguiente →</button>
+                </div>
+            </div>
+
+            <!-- Contenedor Principal Calendario y Panel Lateral -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <!-- Cuadrícula del Calendario Mensual (2 columnas) -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+                    <div class="grid grid-cols-7 gap-2 text-center font-semibold text-xs text-gray-500 pb-2 border-b">
+                        <div class="text-red-600">Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div class="text-red-600">Dom</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
+                </div>
+
+                <!-- Panel Lateral: Gestión de Vacaciones y Buscador de Sesiones Condensado -->
+                <div class="space-y-6">
+                    <!-- Control de Vacaciones / Períodos con formato dd/mm/yyyy -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                        <h3 class="font-bold text-gray-900 text-sm">🏖️ Gestionar Vacaciones / Festivos</h3>
+                        <p class="text-xs text-gray-500">Introduce las fechas en formato dd/mm/aaaa.</p>
+                        <form onsubmit="addHoliday(event)" class="space-y-3 pt-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Desde</label>
+                                    <input type="text" id="holiday-start" placeholder="dd/mm/aaaa" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
+                                    <input type="text" id="holiday-end" placeholder="dd/mm/aaaa" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Motivo (Ej. Navidad)</label>
+                                <input type="text" id="holiday-reason" placeholder="Ej. Vacaciones de Navidad" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                            </div>
+                            <button type="submit" class="w-full bg-gray-800 text-white py-2 rounded-lg text-xs font-medium hover:bg-gray-900 transition">+ Añadir Vacaciones</button>
+                        </form>
+                        <div id="holidays-list" class="space-y-1.5 pt-2 max-h-40 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Buscador y Listado Condensado de Sesiones -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                        <h3 class="font-bold text-gray-900 text-sm">🔍 Buscar Sesiones del Curso</h3>
+                        <p class="text-xs text-gray-500">Escribe para encontrar una clase concreta por fecha o nombre.</p>
+                        <input type="text" id="annual-search" oninput="renderAnnualList()" placeholder="Ej. Adultos o 15/10/2026..." class="w-full px-3 py-2 border rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+
+                        <div id="annual-classes-container" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs">
+                            <p class="text-gray-400 italic text-center py-2">Escribe en el buscador para ver sesiones...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- TAB 1: CLIENTES -->
-        <div id="tab-clients" class="space-y-6">
+        <div id="tab-clients" class="hidden space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <h2 class="text-lg font-bold">Listado de Alumnos</h2>
                 <button onclick="openClientModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Nuevo Alumno</button>
@@ -258,12 +323,40 @@
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Horario</label>
-                    <input type="text" id="class-schedule" placeholder="Ej. Martes 10:00" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Día de la Semana</label>
+                    <select id="class-dayofweek" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <option value="1">Lunes</option>
+                        <option value="2">Martes</option>
+                        <option value="3">Miércoles</option>
+                        <option value="4">Jueves</option>
+                        <option value="5">Viernes</option>
+                        <option value="6">Sábado</option>
+                        <option value="0">Domingo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
+                    <input type="text" id="class-schedule" placeholder="Ej. 10:00" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración (Ej. 2h o 1h 30m)</label>
+                    <input type="text" id="class-duration" placeholder="Ej. 2 horas" required class="w-full px-3 py-2 border rounded-lg text-sm" value="2 horas">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Aforo Máximo</label>
                     <input type="number" id="class-capacity" min="1" value="8" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo (dd/mm/aaaa)</label>
+                    <input type="text" id="class-startdate" placeholder="01/09/2026" required class="w-full px-3 py-2 border rounded-lg text-sm" value="01/09/2026">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin (dd/mm/aaaa)</label>
+                    <input type="text" id="class-enddate" placeholder="30/06/2027" required class="w-full px-3 py-2 border rounded-lg text-sm" value="30/06/2027">
                 </div>
             </div>
             <div class="border-t pt-3">
@@ -374,6 +467,8 @@
   const pageSize = 5;
   let openRenewalClients = new Set();
 
+  let currentCalendarDate = new Date(2026, 8, 1);
+
   let db = JSON.parse(localStorage.getItem('atelier_db')) || {
     clients: [
       { id: '1', name: 'Ana García', email: 'ana@example.com', phone: '+41 79 123 45 67', address: 'Route de Lausanne 10', postal: '1196', city: 'Gland', imageConsent: true, status: 'present', departureDate: '' },
@@ -381,7 +476,7 @@
     ],
     classes: [
       {
-        id: '1', name: 'Adultos - Mañana', schedule: 'Martes 10:00', capacity: 8,
+        id: '1', name: 'Adultos - Mañana', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
         enrolled: [
           { clientId: '1', rateName: 'Trimestral', sessionsLeft: null, attendanceLog: [] },
           { clientId: '2', rateName: 'Bono 10', sessionsLeft: 8, attendanceLog: [] }
@@ -393,6 +488,9 @@
           { name: 'Bono 10', type: 'bonus10', price: 300 }
         ]
       }
+    ],
+    holidays: [
+      { startDate: '2026-12-23', endDate: '2027-01-06', reason: 'Vacaciones de Navidad' }
     ],
     invoices: [
       { id: 'FAC-2026-001', clientId: '1', concept: 'Adultos - Mañana - Trimestre 1 (Sep-Nov)', amount: 350, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: true, fileName: 'factura_ana.pdf' }
@@ -427,6 +525,7 @@
     if (document.getElementById('password-input').value === ADMIN_PASS) {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app-screen').classList.remove('hidden');
+      switchTab('calendar');
       renderAll();
     } else {
       alert('Contraseña incorrecta (Prueba con: atelier123)');
@@ -440,19 +539,228 @@
   }
 
   function switchTab(tab) {
-    ['clients', 'classes', 'invoices', 'bonus-renewals'].forEach(t => {
+    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm";
     });
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     document.getElementById(`nav-${tab}`).className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm";
+
+    if (tab === 'calendar') {
+      renderCalendar();
+      renderHolidaysList();
+      renderAnnualList();
+    }
   }
 
   function renderAll() {
+    renderCalendar();
+    renderHolidaysList();
+    renderAnnualList();
     renderClients();
     renderClasses();
     renderInvoices();
     renderBonusRenewals();
+  }
+
+  function changeCalendarMonth(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    renderCalendar();
+  }
+
+  function addHoliday(e) {
+    e.preventDefault();
+    const rawStart = document.getElementById('holiday-start').value;
+    const rawEnd = document.getElementById('holiday-end').value || rawStart;
+    const reason = document.getElementById('holiday-reason').value;
+
+    const startDate = parseDateToISO(rawStart);
+    const endDate = parseDateToISO(rawEnd);
+
+    if (startDate > endDate) {
+      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      return;
+    }
+
+    // Calcular el número de sesiones de clase afectadas por este rango de vacaciones
+    let affectedSessions = 0;
+    let curr = new Date(startDate);
+    const endD = new Date(endDate);
+    while (curr <= endD) {
+      const y = curr.getFullYear();
+      const m = String(curr.getMonth() + 1).padStart(2, '0');
+      const d = String(curr.getDate()).padStart(2, '0');
+      const dStr = `${y}-${m}-${d}`;
+      const dayOfWeek = curr.getDay();
+
+      (db.classes || []).forEach(cl => {
+        const cStart = cl.startDate || '2026-09-01';
+        const cEnd = cl.endDate || '2027-07-31';
+        if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dStr >= cStart && dStr <= cEnd) {
+          affectedSessions++;
+        }
+      });
+      curr.setDate(curr.getDate() + 1);
+    }
+
+    if (!db.holidays) db.holidays = [];
+    db.holidays.push({ startDate, endDate, reason });
+    saveDB();
+
+    document.getElementById('holiday-start').value = '';
+    document.getElementById('holiday-end').value = '';
+    document.getElementById('holiday-reason').value = '';
+    renderAll();
+
+    alert(`Vacaciones añadidas correctamente. Se han sobrescrito y suspendido ${affectedSessions} sesión(es) de clase durante este período.`);
+  }
+
+  function deleteHoliday(index) {
+    db.holidays.splice(index, 1);
+    saveDB();
+    renderAll();
+  }
+
+  function isDateInHolidayRange(dateStr, holidays) {
+    for (const h of holidays) {
+      if (dateStr >= h.startDate && dateStr <= h.endDate) {
+        return h;
+      }
+    }
+    return null;
+  }
+
+  function renderHolidaysList() {
+    const container = document.getElementById('holidays-list');
+    const holidays = db.holidays || [];
+    if (holidays.length === 0) {
+      container.innerHTML = `<p class="text-gray-400 italic text-[11px]">No hay períodos de vacaciones registrados.</p>`;
+      return;
+    }
+    container.innerHTML = holidays.map((h, index) => `
+      <div class="flex justify-between items-center bg-gray-50 p-2 rounded border text-xs">
+          <div><strong>${formatDate(h.startDate)} al ${formatDate(h.endDate)}</strong>: ${h.reason}</div>
+          <button onclick="deleteHoliday(${index})" class="text-red-500 hover:text-red-700 text-xs">🗑️</button>
+      </div>
+    `).join('');
+  }
+
+  function renderCalendar() {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    document.getElementById('calendar-month-title').innerText = `${monthNames[month]} ${year}`;
+
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const adjustedFirstDay = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < adjustedFirstDay; i++) {
+      grid.innerHTML += `<div class="bg-gray-50/50 rounded-lg min-h-[90px] border border-gray-100 opacity-30"></div>`;
+    }
+
+    const holidays = db.holidays || [];
+
+    for (let day = 1; day <= totalDays; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const currentDateObj = new Date(year, month, day);
+      const dayOfWeek = currentDateObj.getDay();
+
+      const activeHoliday = isDateInHolidayRange(dateStr, holidays);
+      let cellBg = 'bg-white';
+      let headerExtra = '';
+
+      if (activeHoliday) {
+        cellBg = 'bg-rose-50/70 border-rose-200';
+        headerExtra = `<span class="text-[9px] bg-rose-200 text-rose-800 px-1 rounded font-bold block truncate" title="${activeHoliday.reason}">🏖️ ${activeHoliday.reason}</span>`;
+      }
+
+      const classesOnThisDay = (db.classes || []).filter(cl => {
+        if (cl.dayOfWeek === undefined || parseInt(cl.dayOfWeek) !== dayOfWeek) return false;
+        const start = cl.startDate || '2026-09-01';
+        const end = cl.endDate || '2027-07-31';
+        return dateStr >= start && dateStr <= end;
+      });
+
+      let classesHtml = '';
+      if (activeHoliday) {
+        classesHtml = `<div class="text-[10px] text-rose-600 italic mt-1 font-medium">Sin clases (Vacaciones)</div>`;
+      } else {
+        classesOnThisDay.forEach(cl => {
+          classesHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${cl.schedule} - ${cl.duration})">📚 ${cl.name} (${cl.schedule})</div>`;
+        });
+      }
+
+      grid.innerHTML += `
+        <div class="${cellBg} rounded-lg p-2 min-h-[95px] border border-gray-200 flex flex-col justify-between overflow-hidden shadow-sm">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-xs text-gray-800">${day}</span>
+                ${headerExtra}
+            </div>
+            <div class="flex-1 mt-1 overflow-y-auto max-h-[70px]">${classesHtml}</div>
+        </div>
+      `;
+    }
+  }
+
+  function renderAnnualList() {
+    const container = document.getElementById('annual-classes-container');
+    const searchTerm = (document.getElementById('annual-search')?.value || '').toLowerCase().trim();
+
+    if (!searchTerm) {
+      container.innerHTML = `<p class="text-gray-400 italic text-center py-2 text-xs">Escribe algo en el buscador superior para ver las sesiones coincidentes...</p>`;
+      return;
+    }
+
+    const sessions = [];
+    const startDate = new Date(2026, 8, 1); // 1 Sep 2026 (Mes 8 es Septiembre)
+    const endDate = new Date(2027, 6, 31);   // 31 Jul 2027
+    const holidays = db.holidays || [];
+
+    let curr = new Date(startDate);
+    while (curr <= endDate) {
+      // Formatear la fecha localmente evitando el desfase de UTC de toISOString()
+      const year = curr.getFullYear();
+      const month = String(curr.getMonth() + 1).padStart(2, '0');
+      const day = String(curr.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+
+      const dayOfWeek = curr.getDay();
+      const isHoliday = isDateInHolidayRange(dateStr, holidays);
+
+      if (!isHoliday) {
+        (db.classes || []).forEach(cl => {
+          const classStart = cl.startDate || '2026-09-01';
+          const classEnd = cl.endDate || '2027-07-31';
+          if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dateStr >= classStart && dateStr <= classEnd) {
+            sessions.push({
+              date: dateStr,
+              className: cl.name,
+              schedule: cl.schedule,
+              duration: cl.duration
+            });
+          }
+        });
+      }
+      curr.setDate(curr.getDate() + 1);
+    }
+
+    const filtered = sessions.filter(s => s.className.toLowerCase().includes(searchTerm) || formatDate(s.date).includes(searchTerm));
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<p class="text-gray-400 italic text-center py-2 text-xs">No se encontraron sesiones con ese criterio.</p>`;
+      return;
+    }
+
+    container.innerHTML = filtered.slice(0, 30).map(s => `
+      <div class="bg-gray-50 border border-gray-200 rounded p-1.5 flex justify-between items-center text-xs">
+          <div><strong>${formatDate(s.date)}</strong> — ${s.className}</div>
+          <span class="text-gray-500 bg-white px-2 py-0.5 rounded border">${s.schedule}</span>
+      </div>
+    `).join('') + (filtered.length > 30 ? `<div class="text-center text-gray-400 text-[10px] pt-1">Mostrando las primeras 30 coincidencias...</div>` : '');
   }
 
   function getBonusBadgeColor(sessions) {
@@ -497,7 +805,7 @@
     return total;
   }
 
-  // --- CLIENTES CON FILTRO Y PAGINACIÓN ---
+  // --- CLIENTES ---
   function renderClients() {
     const tbody = document.getElementById('clients-table-body');
     const searchTerm = (document.getElementById('client-search')?.value || '').toLowerCase();
@@ -545,7 +853,6 @@
         const classesBadges = clientEnrollments.length > 0 ? clientEnrollments.join('') : '<span class="text-xs text-gray-400 italic">Sin clase asignada</span>';
         const addressStr = c.address || c.postal || c.city ? `${c.address || ''} ${c.postal || ''} ${c.city || ''}`.trim() : '<span class="text-gray-400 italic">Sin dirección</span>';
 
-        // Indicador mejorado para el consentimiento de imágenes con iconos y badges modernos
         const consentBadge = c.imageConsent
           ? '<span class="inline-flex items-center space-x-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-medium"><span>📷</span><span>Autorizado</span></span>'
           : '<span class="inline-flex items-center space-x-1 bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-full text-xs font-medium"><span>🚫</span><span>No autorizado</span></span>';
@@ -769,9 +1076,13 @@
   // --- CLASES Y PRECIOS ---
   function renderClasses() {
     const container = document.getElementById('classes-container');
+    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
     container.innerHTML = db.classes.map(cl => {
       const count = cl.enrolled.length;
       const isFull = count >= cl.capacity;
+      const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1];
+
       const enrolledList = cl.enrolled.map(e => {
         const client = db.clients.find(c => c.id === e.clientId);
         if (!client) return '';
@@ -810,7 +1121,8 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="font-bold text-base text-gray-900">${cl.name}</h3>
-                            <p class="text-xs text-gray-500">${cl.schedule}</p>
+                            <p class="text-xs text-gray-600 font-medium">🗓️ Todos los ${dayName}s a las ${cl.schedule} (${cl.duration})</p>
+                            <p class="text-[11px] text-gray-400">Del ${formatDate(cl.startDate)} al ${formatDate(cl.endDate)}</p>
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="px-2.5 py-1 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">Aforo: ${count}/${cl.capacity}</span>
@@ -851,14 +1163,22 @@
       const cl = db.classes.find(c => c.id === id);
       document.getElementById('class-modal-title').innerText = 'Editar Clase';
       document.getElementById('class-name').value = cl.name;
+      document.getElementById('class-dayofweek').value = cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1;
       document.getElementById('class-schedule').value = cl.schedule;
+      document.getElementById('class-duration').value = cl.duration || '2 horas';
       document.getElementById('class-capacity').value = cl.capacity;
+      document.getElementById('class-startdate').value = formatDate(cl.startDate || '2026-09-01');
+      document.getElementById('class-enddate').value = formatDate(cl.endDate || '2027-06-30');
       (cl.rates || []).forEach(r => addClassRateRow(r.name, r.type, r.price));
     } else {
       document.getElementById('class-modal-title').innerText = 'Nueva Clase';
       document.getElementById('class-name').value = '';
-      document.getElementById('class-schedule').value = '';
+      document.getElementById('class-dayofweek').value = '2';
+      document.getElementById('class-schedule').value = '10:00';
+      document.getElementById('class-duration').value = '2 horas';
       document.getElementById('class-capacity').value = 8;
+      document.getElementById('class-startdate').value = '01/09/2026';
+      document.getElementById('class-enddate').value = '30/06/2027';
       addClassRateRow('Mensual', 'monthly', 120);
       addClassRateRow('Trimestral', 'quarterly', 350);
       addClassRateRow('Anual', 'annual', 1000);
@@ -898,8 +1218,12 @@
     });
     const data = {
       name: document.getElementById('class-name').value,
+      dayOfWeek: parseInt(document.getElementById('class-dayofweek').value),
       schedule: document.getElementById('class-schedule').value,
+      duration: document.getElementById('class-duration').value,
       capacity: parseInt(document.getElementById('class-capacity').value),
+      startDate: parseDateToISO(document.getElementById('class-startdate').value),
+      endDate: parseDateToISO(document.getElementById('class-enddate').value),
       rates: rates
     };
     if (id) Object.assign(db.classes.find(c => c.id === id), data);
@@ -1381,7 +1705,7 @@
       document.getElementById('invoice-amount').value = '';
       onInvoiceClientChange();
     }
-    document.getElementById('invoice-modal').classList.remove('hidden');
+    document.getElementById('invoice-modal').classList.add('hidden');
   }
 
   function onInvoiceClientChange() {
