@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier - Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #pdf-report-container, #pdf-report-container * { visibility: visible; }
+            #pdf-report-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; background: white; }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans text-sm">
 
@@ -33,22 +41,23 @@
     </header>
 
     <!-- Navigation Tabs -->
-    <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center">
+    <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center overflow-x-auto">
         <div class="flex space-x-8">
-            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm">📅 Calendario del Curso</button>
-            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Alumnos</button>
-            <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Clases y Precios</button>
-            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Facturación General</button>
-            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm">Renovación de Bonos</button>
+            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📅 Calendario del Curso</button>
+            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Alumnos</button>
+            <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Clases y Precios</button>
+            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Facturación General</button>
+            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Renovación de Bonos</button>
+            <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos y Gastos</button>
         </div>
-        <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+        <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 whitespace-nowrap">
             <span>🔒 Admin Privada</span>
         </div>
     </nav>
 
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
 
-        <!-- TAB 0: CALENDARIO DEL CURSO (PRIMERA PESTAÑA) -->
+        <!-- TAB 0: CALENDARIO DEL CURSO -->
         <div id="tab-calendar" class="space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
@@ -62,9 +71,7 @@
                 </div>
             </div>
 
-            <!-- Contenedor Principal Calendario y Panel Lateral -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                <!-- Cuadrícula del Calendario Mensual (2 columnas) -->
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
                     <div class="grid grid-cols-7 gap-2 text-center font-semibold text-xs text-gray-500 pb-2 border-b">
                         <div class="text-red-600">Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div class="text-red-600">Dom</div>
@@ -72,9 +79,7 @@
                     <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
                 </div>
 
-                <!-- Panel Lateral: Gestión de Vacaciones y Buscador de Sesiones Condensado -->
                 <div class="space-y-6">
-                    <!-- Control de Vacaciones / Períodos con formato dd/mm/yyyy -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
                         <h3 class="font-bold text-gray-900 text-sm">🏖️ Gestionar Vacaciones / Festivos</h3>
                         <p class="text-xs text-gray-500">Introduce las fechas en formato dd/mm/aaaa.</p>
@@ -98,7 +103,6 @@
                         <div id="holidays-list" class="space-y-1.5 pt-2 max-h-40 overflow-y-auto"></div>
                     </div>
 
-                    <!-- Buscador y Listado Condensado de Sesiones -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
                         <h3 class="font-bold text-gray-900 text-sm">🔍 Buscar Sesiones del Curso</h3>
                         <p class="text-xs text-gray-500">Escribe para encontrar una clase concreta por fecha o nombre.</p>
@@ -119,7 +123,6 @@
                 <button onclick="openClientModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Nuevo Alumno</button>
             </div>
 
-            <!-- Filtros y Búsqueda -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="w-full sm:w-72">
                     <input type="text" id="client-search" oninput="filterClients()" placeholder="🔍 Buscar por nombre, email o localidad..." class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -129,7 +132,6 @@
                 </div>
             </div>
 
-            <!-- Tabla de Alumnos Activos con Paginación -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -143,7 +145,6 @@
                     </thead>
                     <tbody id="clients-table-body" class="divide-y divide-gray-200 text-sm"></tbody>
                 </table>
-                <!-- Controles de Paginación -->
                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-between items-center text-xs text-gray-600">
                     <span id="pagination-info">Mostrando 0-0 de 0</span>
                     <div class="space-x-2">
@@ -153,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- Archivo Histórico de Alumnos Pasados (Desplegable) -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gray-100 px-6 py-4 flex justify-between items-center cursor-pointer select-none hover:bg-gray-200/70 transition" onclick="togglePastArchivePanel()">
                     <div class="flex items-center space-x-3">
@@ -227,7 +227,118 @@
             <div id="bonus-list-container" class="space-y-4"></div>
         </div>
 
+        <!-- TAB 5: INGRESOS Y GASTOS -->
+        <div id="tab-ledger" class="hidden space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">💰 Control Financiero: Ingresos y Gastos</h2>
+                    <p class="text-xs text-gray-500">Declaración de la renta y control anual en Francos Suizos (CHF).</p>
+                </div>
+                <div class="flex items-center space-x-2 flex-wrap gap-2">
+                    <select id="ledger-year-filter" onchange="renderLedger()" class="px-3 py-1.5 border rounded-lg text-xs bg-white font-medium">
+                        <!-- Se poblará dinámicamente ordenado -->
+                    </select>
+                    <button onclick="openLedgerReportModal()" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-900">📥 Extraer Informe Anual PDF</button>
+                    <button onclick="openLedgerModal()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700">+ Nuevo Movimiento</button>
+                </div>
+            </div>
+
+            <!-- Resumen de Balance Anual -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Ingresos Totales (Año)</span>
+                    <div id="ledger-total-income" class="text-xl font-bold text-emerald-600">0.00 CHF</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Gastos Totales (Año)</span>
+                    <div id="ledger-total-expense" class="text-xl font-bold text-rose-600">0.00 CHF</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-1">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Balance Neto Anual</span>
+                    <div id="ledger-balance-net" class="text-xl font-bold text-indigo-600">0.00 CHF</div>
+                </div>
+            </div>
+
+            <!-- Listado de Movimientos Paginado -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                        <th class="p-4">Fecha</th>
+                        <th class="p-4">Tipo</th>
+                        <th class="p-4">Categoría / Concepto</th>
+                        <th class="p-4">Fichero / Prueba</th>
+                        <th class="p-4 text-right">Importe</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ledger-table-body" class="divide-y divide-gray-200 text-sm"></tbody>
+                </table>
+                <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-between items-center text-xs text-gray-600">
+                    <span id="ledger-pagination-info">Mostrando 0-0 de 0</span>
+                    <div class="space-x-2">
+                        <button onclick="changeLedgerPage(-1)" id="ledger-prev-btn" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 disabled:opacity-50">Anterior</button>
+                        <button onclick="changeLedgerPage(1)" id="ledger-next-btn" class="px-3 py-1 bg-white border rounded hover:bg-gray-100 disabled:opacity-50">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
+</div>
+
+<!-- MODAL PREVISIÓN / VISTA PREVIA INFORME PDF -->
+<div id="ledger-report-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center no-print border-b pb-3">
+            <h3 class="text-lg font-bold text-gray-900">📄 Vista Previa del Informe Anual (Declaración)</h3>
+            <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+        </div>
+
+        <!-- CONTENEDOR ESTILIZADO DEL INFORME PDF -->
+        <div id="pdf-report-container" class="bg-white p-8 border border-gray-200 rounded-xl space-y-6 shadow-sm">
+            <div class="flex justify-between items-start border-b-2 border-indigo-600 pb-4">
+                <div>
+                    <h1 class="text-xl font-extrabold text-indigo-900">ATELIER DE ELOÍSA</h1>
+                    <p class="text-xs text-gray-500">Declaración de Ingresos y Gastos (Suiza)</p>
+                </div>
+                <div class="text-right">
+                    <div id="report-modal-year" class="text-base font-bold text-gray-800">Año: 2026</div>
+                    <div class="text-[10px] text-gray-400">Moneda: Francos Suizos (CHF)</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div class="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
+                    <span class="text-[10px] font-bold text-emerald-700 uppercase">Total Ingresos</span>
+                    <div id="report-modal-income" class="text-base font-extrabold text-emerald-800">0.00 CHF</div>
+                </div>
+                <div class="bg-rose-50 border border-rose-100 p-3 rounded-lg">
+                    <span class="text-[10px] font-bold text-rose-700 uppercase">Total Gastos</span>
+                    <div id="report-modal-expense" class="text-base font-extrabold text-rose-800">0.00 CHF</div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-lg">
+                    <span class="text-[10px] font-bold text-indigo-700 uppercase">Balance Neto</span>
+                    <div id="report-modal-net" class="text-base font-extrabold text-indigo-900">0.00 CHF</div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-bold text-gray-700 uppercase border-b pb-1">Desglose por Categorías Principales</h4>
+                <div id="report-modal-categories" class="space-y-2 text-xs"></div>
+            </div>
+
+            <div class="pt-6 border-t text-[10px] text-gray-400 flex justify-between">
+                <span>Atelier de Eloísa — Documento fiscal válido para la declaración de la renta.</span>
+                <span id="report-modal-date">Fecha emisión: 03/09/2026</span>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-2 no-print border-t">
+            <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-xs">Cerrar</button>
+            <button type="button" onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700">🖨️ Imprimir / Guardar PDF</button>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL CLIENTE -->
@@ -321,6 +432,17 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Grupo</label>
                 <input type="text" id="class-name" placeholder="Ej. Adultos Mañana" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de la Clase</label>
+                <select id="class-type" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <option value="Clase niños 5-10">Clase niños 5-10</option>
+                    <option value="Clase Adolescentes">Clase Adolescentes</option>
+                    <option value="Clase Adultos">Clase Adultos</option>
+                    <option value="Workshop Pouring">Workshop Pouring</option>
+                    <option value="Workshop Texturas">Workshop Texturas</option>
+                    <option value="Workshop Retratos">Workshop Retratos</option>
+                </select>
+            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Día de la Semana</label>
@@ -361,7 +483,7 @@
             </div>
             <div class="border-t pt-3">
                 <div class="flex justify-between items-center mb-2">
-                    <label class="block text-sm font-medium text-gray-700">Modalidades y Precios</label>
+                    <label class="block text-sm font-medium text-gray-700">Modalidades y Precios (CHF)</label>
                     <button type="button" onclick="addClassRateRow()" class="text-xs bg-gray-100 px-2.5 py-1 rounded hover:bg-gray-200">+ Añadir</button>
                 </div>
                 <div id="class-rates-container" class="space-y-2"></div>
@@ -417,7 +539,7 @@
                 <input type="text" id="invoice-concept" placeholder="Ej. Septiembre 2026" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF / €)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
                 <input type="number" step="0.01" id="invoice-amount" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
@@ -447,12 +569,55 @@
                 <input type="text" id="bonus-concept" value="Bono 10 Clases" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF / €)</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
                 <input type="number" step="0.01" id="bonus-amount" value="300" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
                 <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Generar Bono</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL NUEVO MOVIMIENTO DE INGRESOS Y GASTOS -->
+<div id="ledger-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+        <h3 class="text-lg font-bold" id="ledger-modal-title">Añadir Movimiento Financiero</h3>
+        <form onsubmit="saveLedgerItem(event)" class="space-y-4">
+            <input type="hidden" id="ledger-id">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Movimiento</label>
+                <select id="ledger-type" onchange="onLedgerTypeChange()" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <option value="income">Ingreso</option>
+                    <option value="expense">Gasto</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                <select id="ledger-category" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <!-- Dinámico según tipo -->
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Descripción adicional</label>
+                <input type="text" id="ledger-concept" placeholder="Ej. Alquiler local mes de Septiembre" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
+                <input type="number" step="0.01" id="ledger-amount" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fichero / Prueba de pago (Opcional)</label>
+                <input type="file" id="ledger-file-input" class="w-full px-3 py-1 border rounded-lg text-xs bg-gray-50">
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Guardar Movimiento</button>
             </div>
         </form>
     </div>
@@ -465,6 +630,8 @@
   let pastArchivePanelOpen = false;
   let currentPage = 1;
   const pageSize = 5;
+  let ledgerCurrentPage = 1;
+  const ledgerPageSize = 5;
   let openRenewalClients = new Set();
 
   let currentCalendarDate = new Date(2026, 8, 1);
@@ -476,7 +643,7 @@
     ],
     classes: [
       {
-        id: '1', name: 'Adultos - Mañana', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
+        id: '1', name: 'Adultos - Mañana', classType: 'Clase Adultos', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
         enrolled: [
           { clientId: '1', rateName: 'Trimestral', sessionsLeft: null, attendanceLog: [] },
           { clientId: '2', rateName: 'Bono 10', sessionsLeft: 8, attendanceLog: [] }
@@ -497,6 +664,9 @@
     ],
     bonuses: [
       { id: 'BON-2026-001', clientId: '2', concept: 'Bono 10 Clases', amount: 300, status: 'Pagado', date: '2026-09-01', emailSent: false, addedToClient: true, sessionsLeft: 8, attendanceLog: ['2026-09-01', '2026-09-03'], fileName: null }
+    ],
+    ledger: [
+      { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' }
     ],
     ignoredRenewals: []
   };
@@ -539,17 +709,21 @@
   }
 
   function switchTab(tab) {
-    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals'].forEach(t => {
+    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals', 'ledger'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
-      document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm";
+      document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
     });
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`nav-${tab}`).className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm";
+    document.getElementById(`nav-${tab}`).className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap";
 
     if (tab === 'calendar') {
       renderCalendar();
       renderHolidaysList();
       renderAnnualList();
+    }
+    if (tab === 'ledger') {
+      populateLedgerYears();
+      renderLedger();
     }
   }
 
@@ -561,6 +735,8 @@
     renderClasses();
     renderInvoices();
     renderBonusRenewals();
+    populateLedgerYears();
+    renderLedger();
   }
 
   function changeCalendarMonth(direction) {
@@ -582,7 +758,6 @@
       return;
     }
 
-    // Calcular el número de sesiones de clase afectadas por este rango de vacaciones
     let affectedSessions = 0;
     let curr = new Date(startDate);
     const endD = new Date(endDate);
@@ -716,13 +891,12 @@
     }
 
     const sessions = [];
-    const startDate = new Date(2026, 8, 1); // 1 Sep 2026 (Mes 8 es Septiembre)
-    const endDate = new Date(2027, 6, 31);   // 31 Jul 2027
+    const startDate = new Date(2026, 8, 1);
+    const endDate = new Date(2027, 6, 31);
     const holidays = db.holidays || [];
 
     let curr = new Date(startDate);
     while (curr <= endDate) {
-      // Formatear la fecha localmente evitando el desfase de UTC de toISOString()
       const year = curr.getFullYear();
       const month = String(curr.getMonth() + 1).padStart(2, '0');
       const day = String(curr.getDate()).padStart(2, '0');
@@ -1074,14 +1248,42 @@
   }
 
   // --- CLASES Y PRECIOS ---
+  function getClassTypeBadge(classType) {
+    const type = (classType || '').toLowerCase();
+    if (type.includes('niños')) {
+      return '<span class="inline-block bg-sky-100 text-sky-800 border border-sky-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">🎨 Clase Niños (5-10)</span>';
+    } else if (type.includes('adolescentes')) {
+      return '<span class="inline-block bg-purple-100 text-purple-800 border border-purple-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">🖌️ Clase Adolescentes</span>';
+    } else if (type.includes('adultos')) {
+      return '<span class="inline-block bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">🧑‍🎨 Clase Adultos</span>';
+    } else if (type.includes('pouring')) {
+      return '<span class="inline-block bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">🧪 Workshop Pouring</span>';
+    } else if (type.includes('texturas')) {
+      return '<span class="inline-block bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">🧱 Workshop Texturas</span>';
+    } else if (type.includes('retratos')) {
+      return '<span class="inline-block bg-indigo-100 text-indigo-800 border border-indigo-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">👤 Workshop Retratos</span>';
+    }
+    return `<span class="inline-block bg-gray-100 text-gray-800 border border-gray-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">📌 ${classType || 'General'}</span>`;
+  }
+
   function renderClasses() {
     const container = document.getElementById('classes-container');
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    container.innerHTML = db.classes.map(cl => {
+    // Ordenar las clases por su tipo alfabéticamente/alfanuméricamente
+    const sortedClasses = [...(db.classes || [])].sort((a, b) => {
+      const typeA = (a.classType || '').toLowerCase();
+      const typeB = (b.classType || '').toLowerCase();
+      if (typeA < typeB) return -1;
+      if (typeA > typeB) return 1;
+      return a.name.localeCompare(b.name);
+    });
+
+    container.innerHTML = sortedClasses.map(cl => {
       const count = cl.enrolled.length;
       const isFull = count >= cl.capacity;
       const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1];
+      const classTypeBadge = getClassTypeBadge(cl.classType);
 
       const enrolledList = cl.enrolled.map(e => {
         const client = db.clients.find(c => c.id === e.clientId);
@@ -1120,7 +1322,8 @@
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-bold text-base text-gray-900">${cl.name}</h3>
+                            ${classTypeBadge}
+                            <h3 class="font-bold text-base text-gray-900 mt-1">${cl.name}</h3>
                             <p class="text-xs text-gray-600 font-medium">🗓️ Todos los ${dayName}s a las ${cl.schedule} (${cl.duration})</p>
                             <p class="text-[11px] text-gray-400">Del ${formatDate(cl.startDate)} al ${formatDate(cl.endDate)}</p>
                         </div>
@@ -1130,7 +1333,7 @@
                             <button onclick="deleteClass('${cl.id}')" title="Eliminar" class="text-red-600 text-sm">🗑️</button>
                         </div>
                     </div>
-                    <div class="border-t pt-3 space-y-1"><h4 class="text-xs font-semibold text-gray-400 uppercase">Precios y Modalidades</h4>${ratesList}</div>
+                    <div class="border-t pt-3 space-y-1"><h4 class="text-xs font-semibold text-gray-400 uppercase">Precios y Modalidades (CHF)</h4>${ratesList}</div>
                     <div class="border-t pt-3 space-y-2">
                         <h4 class="text-xs font-semibold text-gray-400 uppercase">Alumnos Inscritos</h4>
                         <div class="space-y-2 max-h-[420px] overflow-y-auto pr-1">${enrolledList || '<p class="text-xs text-gray-400 italic">Sin alumnos</p>'}</div>
@@ -1163,6 +1366,7 @@
       const cl = db.classes.find(c => c.id === id);
       document.getElementById('class-modal-title').innerText = 'Editar Clase';
       document.getElementById('class-name').value = cl.name;
+      document.getElementById('class-type').value = cl.classType || 'Clase Adultos';
       document.getElementById('class-dayofweek').value = cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1;
       document.getElementById('class-schedule').value = cl.schedule;
       document.getElementById('class-duration').value = cl.duration || '2 horas';
@@ -1173,6 +1377,7 @@
     } else {
       document.getElementById('class-modal-title').innerText = 'Nueva Clase';
       document.getElementById('class-name').value = '';
+      document.getElementById('class-type').value = 'Clase Adultos';
       document.getElementById('class-dayofweek').value = '2';
       document.getElementById('class-schedule').value = '10:00';
       document.getElementById('class-duration').value = '2 horas';
@@ -1218,6 +1423,7 @@
     });
     const data = {
       name: document.getElementById('class-name').value,
+      classType: document.getElementById('class-type').value,
       dayOfWeek: parseInt(document.getElementById('class-dayofweek').value),
       schedule: document.getElementById('class-schedule').value,
       duration: document.getElementById('class-duration').value,
@@ -1266,6 +1472,223 @@
     const cl = db.classes.find(c => c.id === classId);
     cl.enrolled = cl.enrolled.filter(e => e.clientId !== clientId);
     saveDB(); renderAll();
+  }
+
+  // --- SECCIÓN: INGRESOS Y GASTOS (LEDGER) ---
+  function openLedgerModal() {
+    document.getElementById('ledger-id').value = '';
+    document.getElementById('ledger-type').value = 'income';
+    onLedgerTypeChange();
+    document.getElementById('ledger-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('ledger-concept').value = '';
+    document.getElementById('ledger-amount').value = '';
+    document.getElementById('ledger-file-input').value = '';
+    document.getElementById('ledger-modal').classList.remove('hidden');
+  }
+
+  function onLedgerTypeChange() {
+    const type = document.getElementById('ledger-type').value;
+    const catSelect = document.getElementById('ledger-category');
+    if (type === 'income') {
+      catSelect.innerHTML = `
+        <option value="Pago de clases">Pago de clases</option>
+        <option value="Pago de abonos">Pago de abonos</option>
+        <option value="Otros">Otros</option>
+      `;
+    } else {
+      catSelect.innerHTML = `
+        <option value="Pago de alquiler">Pago de alquiler</option>
+        <option value="Compra de material">Compra de material</option>
+        <option value="Otros">Otros</option>
+      `;
+    }
+  }
+
+  function saveLedgerItem(e) {
+    e.preventDefault();
+    if (!db.ledger) db.ledger = [];
+    const id = document.getElementById('ledger-id').value;
+    const fileInput = document.getElementById('ledger-file-input');
+    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : (id ? db.ledger.find(l => l.id === id)?.fileName : null);
+
+    const data = {
+      type: document.getElementById('ledger-type').value,
+      category: document.getElementById('ledger-category').value,
+      date: document.getElementById('ledger-date').value,
+      concept: document.getElementById('ledger-concept').value,
+      amount: parseFloat(document.getElementById('ledger-amount').value),
+      fileName: fileName
+    };
+
+    if (id) {
+      Object.assign(db.ledger.find(l => l.id === id), data);
+    } else {
+      data.id = 'LED-' + Date.now();
+      db.ledger.push(data);
+    }
+    saveDB(); closeModals(); renderAll();
+  }
+
+  function deleteLedgerItem(id) {
+    if (confirm('¿Eliminar este movimiento financiero?')) {
+      db.ledger = db.ledger.filter(l => l.id !== id);
+      saveDB(); renderAll();
+    }
+  }
+
+  function uploadLedgerFile(id, event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const item = db.ledger.find(l => l.id === id);
+    if (item) {
+      item.fileName = file.name;
+      saveDB(); renderAll();
+      alert(`Fichero "${file.name}" adjuntado correctamente al movimiento.`);
+    }
+  }
+
+  function changeLedgerPage(direction) {
+    ledgerCurrentPage += direction;
+    renderLedger();
+  }
+
+  function populateLedgerYears() {
+    const select = document.getElementById('ledger-year-filter');
+    if (!select) return;
+
+    const yearsSet = new Set();
+    const currentYearStr = new Date().getFullYear().toString();
+    yearsSet.add(currentYearStr);
+
+    if (db.ledger) {
+      db.ledger.forEach(item => {
+        if (item.date && item.date.length >= 4) {
+          yearsSet.add(item.date.substring(0, 4));
+        }
+      });
+    }
+
+    const sortedYears = Array.from(yearsSet).sort((a, b) => b.localeCompare(a));
+    const previousSelection = select.value || currentYearStr;
+
+    select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
+  }
+
+  function renderLedger() {
+    if (!db.ledger) db.ledger = [];
+    const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
+
+    const filteredItems = db.ledger.filter(item => {
+      const itemYear = item.date ? item.date.substring(0, 4) : '';
+      return itemYear === selectedYear;
+    });
+
+    const tbody = document.getElementById('ledger-table-body');
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    filteredItems.forEach(item => {
+      if (item.type === 'income') totalIncome += item.amount;
+      else totalExpense += item.amount;
+    });
+
+    const totalPages = Math.ceil(filteredItems.length / ledgerPageSize) || 1;
+    if (ledgerCurrentPage > totalPages) ledgerCurrentPage = totalPages;
+    if (ledgerCurrentPage < 1) ledgerCurrentPage = 1;
+
+    const startIdx = (ledgerCurrentPage - 1) * ledgerPageSize;
+    const paginatedItems = filteredItems.slice(startIdx, startIdx + ledgerPageSize);
+
+    document.getElementById('ledger-pagination-info').innerText = filteredItems.length > 0
+      ? `Mostrando ${startIdx + 1}-${Math.min(startIdx + ledgerPageSize, filteredItems.length)} de ${filteredItems.length}`
+      : 'Sin resultados';
+
+    document.getElementById('ledger-prev-btn').disabled = ledgerCurrentPage === 1;
+    document.getElementById('ledger-next-btn').disabled = ledgerCurrentPage >= totalPages;
+
+    if (paginatedItems.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 italic">No hay movimientos financieros registrados para el año ${selectedYear}.</td></tr>`;
+    } else {
+      const sorted = [...paginatedItems].sort((a, b) => b.date.localeCompare(a.date));
+      tbody.innerHTML = sorted.map(item => {
+        const isIncome = item.type === 'income';
+        const badge = isIncome
+          ? '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">Ingreso</span>'
+          : '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-xs font-bold">Gasto</span>';
+
+        const fileBadge = item.fileName
+          ? `<span class="text-indigo-600 font-medium text-xs">📎 ${item.fileName}</span>`
+          : `<span class="text-gray-400 italic text-xs">Sin fichero</span>`;
+
+        return `
+          <tr class="hover:bg-gray-50">
+              <td class="p-4 text-gray-600 text-xs">${formatDate(item.date)}</td>
+              <td class="p-4">${badge}</td>
+              <td class="p-4">
+                  <div class="font-bold text-gray-900">${item.category}</div>
+                  <div class="text-xs text-gray-500">${item.concept}</div>
+              </td>
+              <td class="p-4 flex items-center space-x-2">
+                  ${fileBadge}
+                  <label class="text-[11px] text-indigo-600 hover:underline cursor-pointer" title="Subir o cambiar comprobante">
+                      🔄 <input type="file" class="hidden" onchange="uploadLedgerFile('${item.id}', event)">
+                  </label>
+              </td>
+              <td class="p-4 text-right font-bold ${isIncome ? 'text-emerald-600' : 'text-rose-600'}">${isIncome ? '+' : '-'}${item.amount.toFixed(2)} CHF</td>
+              <td class="p-4 text-right space-x-2">
+                  <button onclick="deleteLedgerItem('${item.id}')" title="Eliminar" class="text-red-600 hover:underline text-sm">🗑️</button>
+              </td>
+          </tr>`;
+      }).join('');
+    }
+
+    const netBalance = totalIncome - totalExpense;
+    document.getElementById('ledger-total-income').innerText = `${totalIncome.toFixed(2)} CHF`;
+    document.getElementById('ledger-total-expense').innerText = `${totalExpense.toFixed(2)} CHF`;
+    const netEl = document.getElementById('ledger-balance-net');
+    netEl.innerText = `${netBalance.toFixed(2)} CHF`;
+    netEl.className = `text-xl font-bold ${netBalance >= 0 ? 'text-indigo-600' : 'text-rose-600'}`;
+  }
+
+  function openLedgerReportModal() {
+    const selectedYear = document.getElementById('ledger-year-filter')?.value || '2026';
+    if (!db.ledger) db.ledger = [];
+    const filtered = db.ledger.filter(item => (item.date || '').substring(0, 4) === selectedYear);
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+    const categories = {};
+
+    filtered.forEach(i => {
+      if (i.type === 'income') totalIncome += i.amount;
+      else totalExpense += i.amount;
+      if (!categories[i.category]) categories[i.category] = 0;
+      categories[i.category] += i.amount;
+    });
+
+    document.getElementById('report-modal-year').innerText = `Año fiscal: ${selectedYear}`;
+    document.getElementById('report-modal-income').innerText = `${totalIncome.toFixed(2)} CHF`;
+    document.getElementById('report-modal-expense').innerText = `${totalExpense.toFixed(2)} CHF`;
+    const net = totalIncome - totalExpense;
+    const netEl = document.getElementById('report-modal-net');
+    netEl.innerText = `${net.toFixed(2)} CHF`;
+    netEl.className = `text-base font-extrabold ${net >= 0 ? 'text-indigo-900' : 'text-rose-700'}`;
+
+    const catContainer = document.getElementById('report-modal-categories');
+    if (Object.keys(categories).length === 0) {
+      catContainer.innerHTML = `<p class="text-gray-400 italic">No hay movimientos registrados en este periodo.</p>`;
+    } else {
+      catContainer.innerHTML = Object.entries(categories).map(([cat, amt]) => `
+        <div class="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-100">
+            <span class="font-bold text-gray-800">${cat}</span>
+            <span class="font-semibold text-gray-900">${amt.toFixed(2)} CHF</span>
+        </div>
+      `).join('');
+    }
+
+    const todayStr = new Date().toLocaleDateString('es-ES');
+    document.getElementById('report-modal-date').innerText = `Fecha de emisión: ${todayStr}`;
+    document.getElementById('ledger-report-modal').classList.remove('hidden');
   }
 
   // --- SECCIÓN: RENOVACIÓN Y GESTIÓN DE BONOS ---
@@ -1362,9 +1785,26 @@
     if (bonus.status === 'Pendiente') {
       bonus.status = 'Pagado';
       bonus.addedToClient = true;
+
+      if (!db.ledger) db.ledger = [];
+      const client = db.clients.find(c => c.id === bonus.clientId);
+      db.ledger.push({
+        id: 'LED-BON-' + bonus.id,
+        type: 'income',
+        category: 'Pago de abonos',
+        concept: `${client ? client.name : 'Cliente'} - ${bonus.concept} (${bonus.id})`,
+        amount: bonus.amount,
+        date: new Date().toISOString().split('T')[0],
+        fileName: bonus.fileName,
+        originId: bonus.id
+      });
     } else {
       bonus.status = 'Pendiente';
       bonus.addedToClient = false;
+
+      if (db.ledger) {
+        db.ledger = db.ledger.filter(l => l.originId !== bonus.id);
+      }
     }
     saveDB(); renderAll();
   }
@@ -1375,6 +1815,10 @@
     const bonus = db.bonuses.find(b => b.id === id);
     if (bonus) {
       bonus.fileName = file.name;
+      if (db.ledger) {
+        const ledgerItem = db.ledger.find(l => l.originId === bonus.id);
+        if (ledgerItem) ledgerItem.fileName = file.name;
+      }
       saveDB(); renderAll();
       alert(`Fichero "${file.name}" asociado al bono ${id} correctamente.`);
     }
@@ -1398,6 +1842,7 @@
   function deleteBonus(id) {
     if (confirm('¿Eliminar este bono?')) {
       db.bonuses = db.bonuses.filter(b => b.id !== id);
+      if (db.ledger) db.ledger = db.ledger.filter(l => l.originId !== id);
       saveDB(); renderAll();
     }
   }
@@ -1626,6 +2071,10 @@
     const inv = db.invoices.find(i => i.id === id);
     if (inv) {
       inv.fileName = file.name;
+      if (db.ledger) {
+        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
+        if (ledgerItem) ledgerItem.fileName = file.name;
+      }
       saveDB(); renderAll();
       alert(`Fichero "${file.name}" asociado a la factura ${id} correctamente.`);
     }
@@ -1753,11 +2202,33 @@
 
   function toggleInvoiceStatus(id) {
     const inv = db.invoices.find(i => i.id === id);
-    if (inv) { inv.status = inv.status === 'Pagado' ? 'Pendiente' : 'Pagado'; saveDB(); renderAll(); }
+    if (!inv) return;
+
+    if (inv.status === 'Pendiente') {
+      inv.status = 'Pagado';
+      if (!db.ledger) db.ledger = [];
+      const client = db.clients.find(c => c.id === inv.clientId);
+      db.ledger.push({
+        id: 'LED-' + inv.id,
+        type: 'income',
+        category: 'Pago de clases',
+        concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.id})`,
+        amount: inv.amount,
+        date: inv.date || new Date().toISOString().split('T')[0],
+        fileName: inv.fileName,
+        originId: inv.id
+      });
+    } else {
+      inv.status = 'Pendiente';
+      if (db.ledger) {
+        db.ledger = db.ledger.filter(l => l.originId !== inv.id);
+      }
+    }
+    saveDB(); renderAll();
   }
 
   function closeModals() {
-    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal'].forEach(m => {
+    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal'].forEach(m => {
       document.getElementById(m).classList.add('hidden');
     });
   }
