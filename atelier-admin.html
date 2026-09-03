@@ -174,10 +174,26 @@
         <!-- TAB 2: CLASES Y PRECIOS -->
         <div id="tab-classes" class="hidden space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-lg font-bold">Gestión de Clases y Precios</h2>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">Gestión de Clases y Precios</h2>
+                    <p class="text-xs text-gray-500">Visualiza y administra los grupos, tarifas y alumnos inscritos.</p>
+                </div>
                 <button onclick="openClassModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Nueva Clase</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="classes-container"></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                        <th class="p-4">Grupo y Tipo</th>
+                        <th class="p-4">Horario / Programación</th>
+                        <th class="p-4">Precios y Modalidades</th>
+                        <th class="p-4">Alumnos Inscritos / Aforo</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="classes-table-body" class="divide-y divide-gray-200 text-sm align-top"></tbody>
+                </table>
+            </div>
         </div>
 
         <!-- TAB 3: FACTURACIÓN GENERAL -->
@@ -185,7 +201,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 flex justify-between items-center cursor-pointer select-none hover:bg-indigo-100/50 transition" onclick="toggleRenewalsPanel()">
                     <div class="flex items-center space-x-3">
-                        <span class="text-base font-bold text-indigo-900">📅 Cuotas Próximas del Ciclo Lectivo (Pendientes de emitir)</span>
+                        <span class="text-base font-bold text-indigo-900">📅 Cuotas Próximas del Ciclo Lectivo y Workshops (Pendientes de emitir)</span>
                         <span id="renewals-badge" class="text-xs bg-indigo-200 text-indigo-900 px-2.5 py-0.5 rounded-full font-bold">0 pendientes</span>
                     </div>
                     <div class="flex items-center space-x-2 text-xs font-semibold text-indigo-700">
@@ -434,7 +450,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de la Clase</label>
-                <select id="class-type" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <select id="class-type" onchange="onClassTypeChange()" required class="w-full px-3 py-2 border rounded-lg text-sm">
                     <option value="Clase niños 5-10">Clase niños 5-10</option>
                     <option value="Clase Adolescentes">Clase Adolescentes</option>
                     <option value="Clase Adultos">Clase Adultos</option>
@@ -443,27 +459,65 @@
                     <option value="Workshop Retratos">Workshop Retratos</option>
                 </select>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Día de la Semana</label>
-                    <select id="class-dayofweek" required class="w-full px-3 py-2 border rounded-lg text-sm">
-                        <option value="1">Lunes</option>
-                        <option value="2">Martes</option>
-                        <option value="3">Miércoles</option>
-                        <option value="4">Jueves</option>
-                        <option value="5">Viernes</option>
-                        <option value="6">Sábado</option>
-                        <option value="0">Domingo</option>
-                    </select>
+
+            <!-- MODO DE PROGRAMACIÓN -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modo de Programación</label>
+                <select id="class-schedule-mode" onchange="onScheduleModeChange()" class="w-full px-3 py-2 border rounded-lg text-sm bg-indigo-50 font-medium text-indigo-900">
+                    <option value="recurring">Recurrente (Curso semanal)</option>
+                    <option value="single">Puntual (Workshop / Día único)</option>
+                </select>
+            </div>
+
+            <!-- CAMPOS PARA CLASES RECURRENTES -->
+            <div id="fields-recurring" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Día de la Semana</label>
+                        <select id="class-dayofweek" class="w-full px-3 py-2 border rounded-lg text-sm">
+                            <option value="1">Lunes</option>
+                            <option value="2">Martes</option>
+                            <option value="3">Miércoles</option>
+                            <option value="4">Jueves</option>
+                            <option value="5">Viernes</option>
+                            <option value="6">Sábado</option>
+                            <option value="0">Domingo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
+                        <input type="text" id="class-schedule" placeholder="Ej. 10:00" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
-                    <input type="text" id="class-schedule" placeholder="Ej. 10:00" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo (dd/mm/aaaa)</label>
+                        <input type="text" id="class-startdate" placeholder="01/09/2026" class="w-full px-3 py-2 border rounded-lg text-sm" value="01/09/2026">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin (dd/mm/aaaa)</label>
+                        <input type="text" id="class-enddate" placeholder="30/06/2027" class="w-full px-3 py-2 border rounded-lg text-sm" value="30/06/2027">
+                    </div>
                 </div>
             </div>
+
+            <!-- CAMPOS PARA CLASES PUNTUALES (WORKSHOPS DE UN DÍA) -->
+            <div id="fields-single" class="hidden space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Workshop (dd/mm/aaaa)</label>
+                        <input type="text" id="class-singledate" placeholder="15/03/2027" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
+                        <input type="text" id="class-singleschedule" placeholder="Ej. 10:00" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración (Ej. 2h o 1h 30m)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Duración (Ej. 2h)</label>
                     <input type="text" id="class-duration" placeholder="Ej. 2 horas" required class="w-full px-3 py-2 border rounded-lg text-sm" value="2 horas">
                 </div>
                 <div>
@@ -471,16 +525,7 @@
                     <input type="number" id="class-capacity" min="1" value="8" required class="w-full px-3 py-2 border rounded-lg text-sm">
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo (dd/mm/aaaa)</label>
-                    <input type="text" id="class-startdate" placeholder="01/09/2026" required class="w-full px-3 py-2 border rounded-lg text-sm" value="01/09/2026">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin (dd/mm/aaaa)</label>
-                    <input type="text" id="class-enddate" placeholder="30/06/2027" required class="w-full px-3 py-2 border rounded-lg text-sm" value="30/06/2027">
-                </div>
-            </div>
+
             <div class="border-t pt-3">
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-sm font-medium text-gray-700">Modalidades y Precios (CHF)</label>
@@ -643,7 +688,7 @@
     ],
     classes: [
       {
-        id: '1', name: 'Adultos - Mañana', classType: 'Clase Adultos', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
+        id: '1', name: 'Adultos - Mañana', classType: 'Clase Adultos', scheduleMode: 'recurring', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
         enrolled: [
           { clientId: '1', rateName: 'Trimestral', sessionsLeft: null, attendanceLog: [] },
           { clientId: '2', rateName: 'Bono 10', sessionsLeft: 8, attendanceLog: [] }
@@ -769,10 +814,14 @@
       const dayOfWeek = curr.getDay();
 
       (db.classes || []).forEach(cl => {
-        const cStart = cl.startDate || '2026-09-01';
-        const cEnd = cl.endDate || '2027-07-31';
-        if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dStr >= cStart && dStr <= cEnd) {
-          affectedSessions++;
+        if (cl.scheduleMode === 'single') {
+          if (cl.singleDate === dStr) affectedSessions++;
+        } else {
+          const cStart = cl.startDate || '2026-09-01';
+          const cEnd = cl.endDate || '2027-07-31';
+          if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dStr >= cStart && dStr <= cEnd) {
+            affectedSessions++;
+          }
         }
       });
       curr.setDate(curr.getDate() + 1);
@@ -854,10 +903,14 @@
       }
 
       const classesOnThisDay = (db.classes || []).filter(cl => {
-        if (cl.dayOfWeek === undefined || parseInt(cl.dayOfWeek) !== dayOfWeek) return false;
-        const start = cl.startDate || '2026-09-01';
-        const end = cl.endDate || '2027-07-31';
-        return dateStr >= start && dateStr <= end;
+        if (cl.scheduleMode === 'single') {
+          return cl.singleDate === dateStr;
+        } else {
+          if (cl.dayOfWeek === undefined || parseInt(cl.dayOfWeek) !== dayOfWeek) return false;
+          const start = cl.startDate || '2026-09-01';
+          const end = cl.endDate || '2027-07-31';
+          return dateStr >= start && dateStr <= end;
+        }
       });
 
       let classesHtml = '';
@@ -865,7 +918,8 @@
         classesHtml = `<div class="text-[10px] text-rose-600 italic mt-1 font-medium">Sin clases (Vacaciones)</div>`;
       } else {
         classesOnThisDay.forEach(cl => {
-          classesHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${cl.schedule} - ${cl.duration})">📚 ${cl.name} (${cl.schedule})</div>`;
+          const sch = cl.scheduleMode === 'single' ? cl.singleSchedule : cl.schedule;
+          classesHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${sch} - ${cl.duration})">📚 ${cl.name} (${sch})</div>`;
         });
       }
 
@@ -895,6 +949,18 @@
     const endDate = new Date(2027, 6, 31);
     const holidays = db.holidays || [];
 
+    // Añadir clases puntuales directamente
+    (db.classes || []).forEach(cl => {
+      if (cl.scheduleMode === 'single' && cl.singleDate) {
+        sessions.push({
+          date: cl.singleDate,
+          className: cl.name,
+          schedule: cl.singleSchedule || '10:00',
+          duration: cl.duration
+        });
+      }
+    });
+
     let curr = new Date(startDate);
     while (curr <= endDate) {
       const year = curr.getFullYear();
@@ -907,15 +973,17 @@
 
       if (!isHoliday) {
         (db.classes || []).forEach(cl => {
-          const classStart = cl.startDate || '2026-09-01';
-          const classEnd = cl.endDate || '2027-07-31';
-          if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dateStr >= classStart && dateStr <= classEnd) {
-            sessions.push({
-              date: dateStr,
-              className: cl.name,
-              schedule: cl.schedule,
-              duration: cl.duration
-            });
+          if (cl.scheduleMode !== 'single') {
+            const classStart = cl.startDate || '2026-09-01';
+            const classEnd = cl.endDate || '2027-07-31';
+            if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dateStr >= classStart && dateStr <= classEnd) {
+              sessions.push({
+                date: dateStr,
+                className: cl.name,
+                schedule: cl.schedule,
+                duration: cl.duration
+              });
+            }
           }
         });
       }
@@ -1267,23 +1335,45 @@
   }
 
   function renderClasses() {
-    const container = document.getElementById('classes-container');
+    const tbody = document.getElementById('classes-table-body');
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    // Ordenar las clases por su tipo alfabéticamente/alfanuméricamente
     const sortedClasses = [...(db.classes || [])].sort((a, b) => {
       const typeA = (a.classType || '').toLowerCase();
       const typeB = (b.classType || '').toLowerCase();
-      if (typeA < typeB) return -1;
-      if (typeA > typeB) return 1;
+
+      function getPriority(t) {
+        if (t.includes('niños')) return 1;
+        if (t.includes('adolescentes')) return 2;
+        if (t.includes('adultos')) return 3;
+        if (t.includes('workshop')) return 4;
+        return 5;
+      }
+
+      const pA = getPriority(typeA);
+      const pB = getPriority(typeB);
+
+      if (pA !== pB) return pA - pB;
       return a.name.localeCompare(b.name);
     });
 
-    container.innerHTML = sortedClasses.map(cl => {
+    if (sortedClasses.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400 italic">No hay clases o grupos registrados.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = sortedClasses.map(cl => {
       const count = cl.enrolled.length;
       const isFull = count >= cl.capacity;
-      const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1];
       const classTypeBadge = getClassTypeBadge(cl.classType);
+
+      let scheduleDescription = '';
+      if (cl.scheduleMode === 'single') {
+        scheduleDescription = `📅 Sesión Única el ${formatDate(cl.singleDate)} a las ${cl.singleSchedule} (${cl.duration})`;
+      } else {
+        const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1];
+        scheduleDescription = `🗓️ Todos los ${dayName}s a las ${cl.schedule} (${cl.duration})<br><span class="text-[11px] text-gray-400">Del ${formatDate(cl.startDate)} al ${formatDate(cl.endDate)}</span>`;
+      }
 
       const enrolledList = cl.enrolled.map(e => {
         const client = db.clients.find(c => c.id === e.clientId);
@@ -1293,53 +1383,59 @@
           const totalSessions = getClientTotalBonusSessions(client.id);
           const badgeColor = getBonusBadgeColor(totalSessions);
           bonusControls = `
-            <div class="mt-2 pt-2 border-t border-gray-200 flex items-center justify-between">
-                <span class="px-2 py-0.5 rounded border font-bold ${badgeColor}">${totalSessions} clases restantes</span>
-                <button onclick="decrementBonus('${cl.id}', '${e.clientId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1 rounded text-xs font-semibold transition" title="Descontar 1 clase">-1 clase (Asistió)</button>
+            <div class="mt-1 flex items-center justify-between gap-2">
+                <span class="px-1.5 py-0.2 rounded border font-bold ${badgeColor}">${totalSessions} clases restantes</span>
+                <button onclick="decrementBonus('${cl.id}', '${e.clientId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-0.5 rounded text-[10px] font-semibold transition" title="Descontar 1 clase">-1 clase</button>
             </div>`;
         }
         return `
-          <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
+          <div class="bg-gray-50 border border-gray-200 rounded p-2 mb-1.5 space-y-1 text-xs">
               <div class="flex justify-between items-start">
                   <div>
                       <span class="font-bold text-gray-900">${client.name}</span>
-                      <span class="text-xs text-indigo-600 block">Modalidad: <strong>${e.rateName}</strong></span>
+                      <span class="text-indigo-600 block">Modalidad: <strong>${e.rateName}</strong></span>
                   </div>
-                  <button onclick="unenrollClient('${cl.id}', '${e.clientId}')" class="text-red-500 text-xs hover:underline">Quitar</button>
+                  <button onclick="unenrollClient('${cl.id}', '${e.clientId}')" class="text-red-500 hover:underline text-[11px]">Quitar</button>
               </div>
               ${bonusControls}
           </div>`;
       }).join('');
 
       const ratesList = (cl.rates || []).map(r => `
-                <div class="flex justify-between text-xs bg-gray-50 px-2.5 py-1.5 rounded">
-                    <span><strong>${r.name}</strong> <span class="text-gray-400">(${r.type})</span></span>
-                    <span class="font-semibold text-indigo-700">${r.price} CHF</span>
-                </div>
-            `).join('') || '<p class="text-xs text-gray-400 italic">Sin precios definidos</p>';
+          <div class="flex justify-between text-xs bg-gray-50 px-2 py-1 rounded mb-1">
+              <span><strong>${r.name}</strong> <span class="text-gray-400 text-[10px]">(${r.type})</span></span>
+              <span class="font-semibold text-indigo-700">${r.price} CHF</span>
+          </div>
+      `).join('') || '<span class="text-xs text-gray-400 italic">Sin precios definidos</span>';
+
+      const enrollButton = !isFull
+        ? `<button onclick="openEnrollModal('${cl.id}')" class="mt-2 w-full bg-gray-800 text-white text-xs py-1.5 rounded hover:bg-gray-900 transition">+ Inscribir Alumno</button>`
+        : '';
 
       return `
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            ${classTypeBadge}
-                            <h3 class="font-bold text-base text-gray-900 mt-1">${cl.name}</h3>
-                            <p class="text-xs text-gray-600 font-medium">🗓️ Todos los ${dayName}s a las ${cl.schedule} (${cl.duration})</p>
-                            <p class="text-[11px] text-gray-400">Del ${formatDate(cl.startDate)} al ${formatDate(cl.endDate)}</p>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">Aforo: ${count}/${cl.capacity}</span>
-                            <button onclick="openClassModal('${cl.id}')" title="Editar" class="text-indigo-600 text-sm">✏️</button>
-                            <button onclick="deleteClass('${cl.id}')" title="Eliminar" class="text-red-600 text-sm">🗑️</button>
-                        </div>
-                    </div>
-                    <div class="border-t pt-3 space-y-1"><h4 class="text-xs font-semibold text-gray-400 uppercase">Precios y Modalidades (CHF)</h4>${ratesList}</div>
-                    <div class="border-t pt-3 space-y-2">
-                        <h4 class="text-xs font-semibold text-gray-400 uppercase">Alumnos Inscritos</h4>
-                        <div class="space-y-2 max-h-[420px] overflow-y-auto pr-1">${enrolledList || '<p class="text-xs text-gray-400 italic">Sin alumnos</p>'}</div>
-                    </div>
-                    ${!isFull ? `<button onclick="openEnrollModal('${cl.id}')" class="w-full bg-gray-800 text-white text-xs py-2 rounded">+ Inscribir Alumno</button>` : ''}
-                </div>`;
+        <tr class="hover:bg-gray-50 border-b border-gray-200">
+            <td class="p-4">
+                ${classTypeBadge}
+                <div class="font-bold text-base text-gray-900 mt-1">${cl.name}</div>
+            </td>
+            <td class="p-4 text-gray-600 text-xs">
+                ${scheduleDescription}
+            </td>
+            <td class="p-4 max-w-xs">
+                <div class="space-y-1">${ratesList}</div>
+            </td>
+            <td class="p-4">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">Aforo: ${count}/${cl.capacity}</span>
+                </div>
+                <div class="space-y-1 max-h-48 overflow-y-auto pr-1">${enrolledList || '<span class="text-xs text-gray-400 italic">Sin alumnos inscritos</span>'}</div>
+                ${enrollButton}
+            </td>
+            <td class="p-4 text-right space-x-2 whitespace-nowrap">
+                <button onclick="openClassModal('${cl.id}')" title="Editar" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">✏️</button>
+                <button onclick="deleteClass('${cl.id}')" title="Eliminar" class="text-red-600 hover:underline text-sm">🗑️</button>
+            </td>
+        </tr>`;
     }).join('');
   }
 
@@ -1358,45 +1454,98 @@
     saveDB(); renderAll();
   }
 
+  function onClassTypeChange() {
+    const typeSelect = document.getElementById('class-type');
+    if (!typeSelect) return;
+    const container = document.getElementById('class-rates-container');
+    const isWorkshop = typeSelect.value.toLowerCase().includes('workshop');
+
+    container.innerHTML = '';
+    if (isWorkshop) {
+      addClassRateRow('Precio Total', 'monthly', 95);
+    } else {
+      addClassRateRow('Mensual', 'monthly', 120);
+      addClassRateRow('Trimestral', 'quarterly', 350);
+      addClassRateRow('Anual', 'annual', 1000);
+      addClassRateRow('Bono 10', 'bonus10', 300);
+    }
+  }
+
+  function onScheduleModeChange() {
+    const mode = document.getElementById('class-schedule-mode').value;
+    const recurringFields = document.getElementById('fields-recurring');
+    const singleFields = document.getElementById('fields-single');
+
+    if (mode === 'single') {
+      recurringFields.classList.add('hidden');
+      singleFields.classList.remove('hidden');
+    } else {
+      recurringFields.classList.remove('hidden');
+      singleFields.classList.add('hidden');
+    }
+  }
+
   function openClassModal(id = null) {
     document.getElementById('class-id').value = id || '';
     const container = document.getElementById('class-rates-container');
     container.innerHTML = '';
+
     if (id) {
       const cl = db.classes.find(c => c.id === id);
       document.getElementById('class-modal-title').innerText = 'Editar Clase';
       document.getElementById('class-name').value = cl.name;
       document.getElementById('class-type').value = cl.classType || 'Clase Adultos';
-      document.getElementById('class-dayofweek').value = cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1;
-      document.getElementById('class-schedule').value = cl.schedule;
+      document.getElementById('class-schedule-mode').value = cl.scheduleMode || 'recurring';
+      onScheduleModeChange();
+
+      if (cl.scheduleMode === 'single') {
+        document.getElementById('class-singledate').value = formatDate(cl.singleDate || '');
+        document.getElementById('class-singleschedule').value = cl.singleSchedule || '10:00';
+      } else {
+        document.getElementById('class-dayofweek').value = cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1;
+        document.getElementById('class-schedule').value = cl.schedule || '10:00';
+        document.getElementById('class-startdate').value = formatDate(cl.startDate || '2026-09-01');
+        document.getElementById('class-enddate').value = formatDate(cl.endDate || '2027-06-30');
+      }
+
       document.getElementById('class-duration').value = cl.duration || '2 horas';
       document.getElementById('class-capacity').value = cl.capacity;
-      document.getElementById('class-startdate').value = formatDate(cl.startDate || '2026-09-01');
-      document.getElementById('class-enddate').value = formatDate(cl.endDate || '2027-06-30');
       (cl.rates || []).forEach(r => addClassRateRow(r.name, r.type, r.price));
     } else {
       document.getElementById('class-modal-title').innerText = 'Nueva Clase';
       document.getElementById('class-name').value = '';
       document.getElementById('class-type').value = 'Clase Adultos';
+      document.getElementById('class-schedule-mode').value = 'recurring';
+      onScheduleModeChange();
       document.getElementById('class-dayofweek').value = '2';
       document.getElementById('class-schedule').value = '10:00';
+      document.getElementById('class-singledate').value = '';
+      document.getElementById('class-singleschedule').value = '10:00';
       document.getElementById('class-duration').value = '2 horas';
       document.getElementById('class-capacity').value = 8;
       document.getElementById('class-startdate').value = '01/09/2026';
       document.getElementById('class-enddate').value = '30/06/2027';
-      addClassRateRow('Mensual', 'monthly', 120);
-      addClassRateRow('Trimestral', 'quarterly', 350);
-      addClassRateRow('Anual', 'annual', 1000);
-      addClassRateRow('Bono 10', 'bonus10', 300);
+      onClassTypeChange();
     }
     document.getElementById('class-modal').classList.remove('hidden');
   }
 
   function addClassRateRow(name = '', type = 'monthly', price = '') {
     const container = document.getElementById('class-rates-container');
+    const typeSelect = document.getElementById('class-type');
+    const isWorkshop = typeSelect && typeSelect.value.toLowerCase().includes('workshop');
+
     const row = document.createElement('div');
     row.className = "flex space-x-2 items-center rate-row";
-    row.innerHTML = `
+
+    if (isWorkshop) {
+      row.innerHTML = `
+            <input type="text" value="Precio Total" class="rate-name flex-2 px-3 py-1.5 text-sm border rounded bg-gray-100" readonly>
+            <input type="hidden" class="rate-type" value="monthly">
+            <input type="number" step="0.01" placeholder="CHF" value="${price}" class="rate-price flex-1 px-3 py-1.5 text-sm border rounded" required>
+        `;
+    } else {
+      row.innerHTML = `
             <input type="text" placeholder="Nombre" value="${name}" class="rate-name flex-2 px-3 py-1.5 text-sm border rounded" required>
             <select class="rate-type flex-1 px-3 py-1.5 text-sm border rounded">
                 <option value="annual" ${type==='annual'?'selected':''}>Anual</option>
@@ -1407,6 +1556,7 @@
             <input type="number" step="0.01" placeholder="CHF" value="${price}" class="rate-price w-20 px-3 py-1.5 text-sm border rounded" required>
             <button type="button" onclick="this.parentElement.remove()" class="text-red-500 text-sm px-2">✕</button>
         `;
+    }
     container.appendChild(row);
   }
 
@@ -1421,20 +1571,59 @@
         price: parseFloat(row.querySelector('.rate-price').value)
       });
     });
+
+    const scheduleMode = document.getElementById('class-schedule-mode').value;
     const data = {
       name: document.getElementById('class-name').value,
       classType: document.getElementById('class-type').value,
-      dayOfWeek: parseInt(document.getElementById('class-dayofweek').value),
-      schedule: document.getElementById('class-schedule').value,
+      scheduleMode: scheduleMode,
       duration: document.getElementById('class-duration').value,
       capacity: parseInt(document.getElementById('class-capacity').value),
-      startDate: parseDateToISO(document.getElementById('class-startdate').value),
-      endDate: parseDateToISO(document.getElementById('class-enddate').value),
       rates: rates
     };
-    if (id) Object.assign(db.classes.find(c => c.id === id), data);
-    else { data.id = Date.now().toString(); data.enrolled = []; db.classes.push(data); }
-    saveDB(); closeModals(); renderAll();
+
+    if (scheduleMode === 'single') {
+      const rawSingleDate = document.getElementById('class-singledate').value;
+      data.singleDate = parseDateToISO(rawSingleDate);
+      data.singleSchedule = document.getElementById('class-singleschedule').value;
+      data.dayOfWeek = undefined;
+      data.startDate = undefined;
+      data.endDate = undefined;
+
+      if (data.singleDate) {
+        const [y, m] = data.singleDate.split('-');
+        currentCalendarDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+      }
+    } else {
+      const rawStartDate = document.getElementById('class-startdate').value;
+      const startDateISO = parseDateToISO(rawStartDate);
+      const rawEndDate = document.getElementById('class-enddate').value;
+      const endDateISO = parseDateToISO(rawEndDate);
+
+      data.dayOfWeek = parseInt(document.getElementById('class-dayofweek').value);
+      data.schedule = document.getElementById('class-schedule').value;
+      data.startDate = startDateISO;
+      data.endDate = endDateISO;
+      data.singleDate = undefined;
+      data.singleSchedule = undefined;
+
+      if (startDateISO) {
+        const [y, m] = startDateISO.split('-');
+        currentCalendarDate = new Date(parseInt(y), parseInt(m) - 1, 1);
+      }
+    }
+
+    if (id) {
+      Object.assign(db.classes.find(c => c.id === id), data);
+    } else {
+      data.id = Date.now().toString();
+      data.enrolled = [];
+      db.classes.push(data);
+    }
+
+    saveDB();
+    closeModals();
+    renderAll();
   }
 
   function deleteClass(id) {
@@ -1877,7 +2066,7 @@
   function renderRenewals() {
     const container = document.getElementById('renewals-content');
     const badge = document.getElementById('renewals-badge');
-    let groupedRenewals = { annual: [], quarterly: [], monthly: [] };
+    let groupedRenewals = { annual: [], quarterly: [], monthly: [], single: [] };
 
     db.classes.forEach(cl => {
       (cl.enrolled || []).forEach(e => {
@@ -1885,27 +2074,42 @@
         const rate = (cl.rates || []).find(r => r.name === e.rateName);
         if (!client || client.status === 'past' || !rate || isBonusRate(e.rateName)) return;
 
-        getSchoolMilestones(rate.type).forEach(m => {
+        if (cl.scheduleMode === 'single') {
+          const milestoneLabel = `Workshop (${formatDate(cl.singleDate)})`;
           const alreadyInvoiced = db.invoices.some(inv =>
             inv.clientId === client.id &&
-            inv.date.substring(0, 7) === m.date.substring(0, 7) &&
-            (inv.concept.includes(m.label) || inv.concept.includes(rate.name))
+            inv.date === cl.singleDate &&
+            (inv.concept.includes(cl.name) || inv.concept.includes(milestoneLabel))
           );
           if (!alreadyInvoiced) {
-            groupedRenewals[rate.type].push({
+            groupedRenewals.single.push({
               clientId: client.id, clientName: client.name, className: cl.name,
-              rateName: rate.name, price: rate.price, milestoneLabel: m.label, milestoneDate: m.date
+              rateName: rate.name, price: rate.price, milestoneLabel: milestoneLabel, milestoneDate: cl.singleDate
             });
           }
-        });
+        } else {
+          getSchoolMilestones(rate.type).forEach(m => {
+            const alreadyInvoiced = db.invoices.some(inv =>
+              inv.clientId === client.id &&
+              inv.date.substring(0, 7) === m.date.substring(0, 7) &&
+              (inv.concept.includes(m.label) || inv.concept.includes(rate.name))
+            );
+            if (!alreadyInvoiced) {
+              groupedRenewals[rate.type].push({
+                clientId: client.id, clientName: client.name, className: cl.name,
+                rateName: rate.name, price: rate.price, milestoneLabel: m.label, milestoneDate: m.date
+              });
+            }
+          });
+        }
       });
     });
 
-    const totalPending = groupedRenewals.annual.length + groupedRenewals.quarterly.length + groupedRenewals.monthly.length;
+    const totalPending = groupedRenewals.annual.length + groupedRenewals.quarterly.length + groupedRenewals.monthly.length + groupedRenewals.single.length;
     badge.innerText = `${totalPending} pendientes`;
 
     if (totalPending === 0) {
-      container.innerHTML = `<p class="text-xs text-gray-400 italic">¡Todo al día! No hay cuotas pendientes de emitir.</p>`;
+      container.innerHTML = `<p class="text-xs text-gray-400 italic">¡Todo al día! No hay cuotas ni workshops pendientes de emitir.</p>`;
       return;
     }
 
@@ -1913,6 +2117,7 @@
     if (groupedRenewals.annual.length > 0) html += renderModalidadGroup('🌟 Modalidad Anual', groupedRenewals.annual);
     if (groupedRenewals.quarterly.length > 0) html += renderModalidadGroup('📆 Modalidad Trimestral', groupedRenewals.quarterly);
     if (groupedRenewals.monthly.length > 0) html += renderModalidadGroup('🗓️ Modalidad Mensual', groupedRenewals.monthly);
+    if (groupedRenewals.single.length > 0) html += renderModalidadGroup('🎨 Workshops y Clases Puntuales', groupedRenewals.single);
     container.innerHTML = html;
   }
 
@@ -2154,7 +2359,7 @@
       document.getElementById('invoice-amount').value = '';
       onInvoiceClientChange();
     }
-    document.getElementById('invoice-modal').classList.add('hidden');
+    document.getElementById('invoice-modal').classList.remove('hidden');
   }
 
   function onInvoiceClientChange() {

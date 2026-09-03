@@ -19,7 +19,6 @@
         #paintCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply; }
         :root[data-theme="dark"] #paintCanvas { opacity: 0.7; mix-blend-mode: screen; }
 
-        /* ASIDE FIX & ENLACES */
         aside {
             position: fixed; top: 0; left: 0; width: 420px; height: 100vh;
             background: var(--sidebar-bg); backdrop-filter: blur(20px);
@@ -29,27 +28,13 @@
         }
         main { margin-left: 420px; flex: 1; height: 100vh; overflow-y: auto; position: relative; z-index: 10; padding: 60px 80px 40px 80px; display: flex; flex-direction: column; justify-content: space-between; width: calc(100% - 420px); }
 
-        /* BOTÓN DE MENÚ HAMBURGUESA (MÓVIL) */
         .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 2000;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            align-items: center;
-            gap: 8px;
+            display: none; position: fixed; top: 20px; right: 20px; z-index: 2000;
+            background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
+            padding: 10px 16px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); align-items: center; gap: 8px;
         }
 
-        /* BOTONES DE IDIOMA EN SIDEBAR */
         .lang-btn {
             background: transparent; border: 1px solid var(--border); color: var(--muted);
             padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600;
@@ -58,19 +43,16 @@
         .lang-btn:hover { border-color: var(--accent); color: var(--text); }
         .lang-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
-        /* SPA PAGE MANAGING */
         .spa-page { display: none; width: 100%; max-width: 100%; }
         .spa-page.active { display: block; animation: fadeIn 0.35s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ENCABEZADOS Y HERO PRINCIPAL */
         #heroTitleAccueil { white-space: nowrap;}
         .hero-section { display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 60px; }
         .hero-content h1 { font-family: 'Instrument Serif', serif; font-size: 60px; line-height: 1.15; font-weight: 400; margin-bottom: 25px; letter-spacing: -1px; max-width: 900px; word-break: break-word; }
         .hero-content h1 span { font-style: italic; color: var(--accent); }
         .hero-content p { font-size: 17px; color: var(--muted); font-weight: 300; margin-bottom: 35px; line-height: 1.6; max-width: 700px; }
 
-        /* WORKSHOPS HERO FIX */
         .hero-section-workshop { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: center; margin-bottom: 60px; }
         .hero-image-container { width: 100%; height: 340px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 12px 30px rgba(0,0,0,0.15); position: relative; }
         .hero-image-container img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(10%) contrast(105%); transition: transform 0.6s ease; }
@@ -79,13 +61,11 @@
         .cta-btn { display: inline-block; background: var(--text); color: var(--bg); padding: 15px 34px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s, background 0.3s, color 0.3s; }
         .cta-btn:hover { background: var(--accent); color: #fff; transform: scale(1.05); }
 
-        /* GRID DE INICIO Y TARJETAS */
         .atelier-showcase { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 80px; }
         .showcase-3 { grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
         .showcase-2 { grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 40px; }
 
-        .showcase-card { height: 260px; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border); background:
-                var(--card-bg); box-shadow: 0 12px 30px rgba(0,0,0,0.15); text-decoration: none; display: block; color: inherit; }
+        .showcase-card { height: 260px; border-radius: 16px; overflow: hidden; position: relative; border: 1px solid var(--border); background: var(--card-bg); box-shadow: 0 12px 30px rgba(0,0,0,0.15); text-decoration: none; display: block; color: inherit; }
         .showcase-card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(10%) contrast(105%); transition: transform 0.6s ease, filter 0.6s ease; }
         .showcase-card:hover img { filter: grayscale(0%) contrast(100%); transform: scale(1.04); }
         .art-badge { position: absolute; top: 20px; right: 20px; background: var(--badge-bg); backdrop-filter: blur(8px); border: 1px solid rgba(255, 59, 0, 0.4); padding: 6px 14px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text); z-index: 5; display: flex; align-items: center; gap: 6px; }
@@ -94,33 +74,22 @@
         .showcase-overlay span { font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 6px; }
         .showcase-overlay h3 { font-family: 'Instrument Serif', serif; font-size: 32px; font-weight: 400; color: var(--text); line-height: 1.1; }
 
-        /* ENCABEZADOS DE PÁGINAS SECUNDARIAS */
         .page-header { margin-bottom: 35px; border-bottom: 1px solid var(--border); padding-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; }
         .page-header .tag { font-size: 11px; text-transform: uppercase; letter-spacing: 4px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 10px; }
         .page-header h1 { font-family: 'Instrument Serif', serif; font-size: 52px; line-height: 1.15; font-weight: 400; letter-spacing: -0.5px; max-width: 900px; word-break: break-word; }
         .page-header h1 span { font-style: italic; color: var(--accent); }
 
-        /* CORRECCIÓN TÍTULO L'ATELIER */
-        #atelier .page-header h1 {
-            font-size: 45px;
-            white-space: nowrap;
-        }
+        #atelier .page-header h1 { font-size: 45px; white-space: nowrap; }
 
-        /* CARDS Y NAVEGACIÓN WORKSHOPS */
         .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 50px; }
         .info-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
         .info-card span { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 8px; }
         .info-card h3 { font-size: 18px; font-weight: 600; }
 
-        .notice-banner { background: rgba(255, 59, 0, 0.08); border: 1px dashed var(--accent); border-radius: 14px; padding: 20px 25px; margin-bottom: 50px; display: flex; align-items: center; gap: 15px; }
-        .notice-banner svg { width: 24px; height: 24px; fill: var(--accent); flex-shrink: 0; }
-        .notice-banner p { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.4; }
-
         .content-block { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 40px; margin-bottom: 50px; box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
         .content-block h2 { font-family: 'Instrument Serif', serif; font-size: 38px; font-weight: 400; margin-bottom: 20px; }
         .content-block p { font-size: 16px; color: var(--muted); font-weight: 300; line-height: 1.7; margin-bottom: 20px; }
 
-        /* ESTRUCTURA GENERAL DE CURSOS */
         .content-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; margin-bottom: 40px; width: 100%; }
         .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px; width: 100%; }
 
@@ -133,10 +102,6 @@
         .details-list li strong { color: var(--text); font-weight: 600; }
         .details-list svg { width: 16px; height: 16px; fill: var(--accent); flex-shrink: 0; }
 
-        .status-badges { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
-        .badge-status { background: rgba(255, 59, 0, 0.1); border: 1px solid var(--accent); padding: 6px 14px; border-radius: 30px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); }
-        .badge-status.complet { background: rgba(154, 154, 159, 0.1); border-color: var(--muted); color: var(--muted); }
-
         .tarifs-section { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 35px; margin-bottom: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
         .tarifs-section h3 { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; color: var(--text); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
         .tarifs-table { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -146,7 +111,6 @@
         .price { font-family: 'Instrument Serif', serif; font-size: 28px; color: var(--accent); font-weight: 400; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
         .price-sub { font-size: 13px; color: var(--muted); font-family: 'Space Grotesk', sans-serif; font-weight: 300; }
 
-        /* L'ATELIER, À PROPOS & MAPS */
         .two-col-container { display: grid; grid-template-columns: 340px 1fr; gap: 40px; align-items: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 40px; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
         .image-wrapper { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         .image-wrapper img { width: 100%; height: auto; display: block; object-fit: cover; }
@@ -181,59 +145,33 @@
         .conditions-list li { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; padding-left: 20px; position: relative; }
         .conditions-list li::before { content: '•'; color: var(--accent); font-weight: bold; position: absolute; left: 0; font-size: 18px; }
 
-        /* FOOTER MODULAR RESPONSIVE FIX */
         .footer-grid-modular {
-            display: grid;
-            grid-template-columns: auto 1fr 1.2fr 1.2fr 1fr;
-            gap: 30px;
-            align-items: start;
-            padding-bottom: 40px;
-            border-bottom: 1px solid var(--border);
+            display: grid; grid-template-columns: auto 1fr 1.2fr 1.2fr 1fr;
+            gap: 30px; align-items: start; padding-bottom: 40px; border-bottom: 1px solid var(--border);
         }
 
-        /* MEDIA QUERIES AHORA FUERZAN !IMPORTANT PARA SOBREESCRIBIR */
         @media(max-width: 1400px) {
-            #heroTitleAccueil {
-                white-space: normal;
-            }
-        }
-        @media(max-width: 1400px) {
+            #heroTitleAccueil { white-space: normal; }
             #atelier .page-header h1 { white-space: normal; font-size: 40px; }
         }
         @media(max-width: 1300px) {
             .content-grid, .contact-grid, .tarifs-table, .tarifs-grid, .two-col-container { grid-template-columns: 1fr !important; }
             .tarifs-table.cols-3 { grid-template-columns: 1fr !important; }
-            .status-badges { align-items: flex-start; }
             .image-wrapper { max-width: 320px; margin: 0 auto; }
         }
         @media(max-width: 1200px) {
             .mobile-menu-btn { display: flex; }
             aside {
-                display: none;
-                position: fixed !important;
-                top: 0; left: 0;
-                width: 100vw; height: 100vh;
-                z-index: 1500;
-                background: var(--sidebar-bg);
-                padding: 40px 30px;
+                display: none; position: fixed !important; top: 0; left: 0;
+                width: 100vw; height: 100vh; z-index: 1500; background: var(--sidebar-bg); padding: 40px 30px;
             }
-            aside.mobile-open {
-                display: flex !important;
-            }
+            aside.mobile-open { display: flex !important; }
             body { flex-direction: column; height: auto; overflow-y: auto; }
             main { margin-left: 0 !important; width: 100% !important; padding: 80px 20px 40px 20px !important; height: auto; }
-
-            /* Todas las variaciones de grid se reducen a 1 columna en móvil */
             .hero-section-workshop, .atelier-showcase, .showcase-3, .showcase-2, .info-grid, .features-grid, .content-grid, .contact-grid { grid-template-columns: 1fr !important; }
-
             .hero-content h1 { font-size: 38px; }
             #atelier .page-header h1 { white-space: normal; }
-
-            /* Footer adaptado a móvil */
-            .footer-grid-modular {
-                grid-template-columns: 1fr !important;
-                gap: 25px;
-            }
+            .footer-grid-modular { grid-template-columns: 1fr !important; gap: 25px; }
         }
     </style>
 </head>
@@ -241,7 +179,6 @@
 
 <canvas id="paintCanvas"></canvas>
 
-<!-- BOTÓN HAMBURGUESA PARA MÓVIL -->
 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     <span id="menuBtnText">Menu</span>
@@ -266,7 +203,6 @@
                 </div>
             </div>
 
-            <!-- PRIMERA FILA: 3 CURSOS -->
             <div class="atelier-showcase showcase-3">
                 <a href="#enfants" class="showcase-card">
                     <div class="art-badge" data-i18n="card_badge_1">Cours de Peinture</div>
@@ -296,7 +232,6 @@
                 </a>
             </div>
 
-            <!-- SEGUNDA FILA: 2 WORKSHOPS / ATELIER SPÉCIAL -->
             <div class="atelier-showcase showcase-2">
                 <a href="#pouring" class="showcase-card">
                     <div class="art-badge" data-i18n="card_badge_3">Atelier Intensif</div>
@@ -327,9 +262,7 @@
                 </div>
             </div>
             <div class="two-col-container">
-                <div class="image-wrapper">
-                    <img src="images/atelier.webp" alt="L'Atelier Vich" loading="lazy">
-                </div>
+                <div class="image-wrapper"><img src="images/atelier.webp" alt="L'Atelier Vich" loading="lazy"></div>
                 <div class="text-content">
                     <p data-i18n="atelier_p1">Atelier dédié aux arts créatifs ouvert à toutes les personnes intéressées par le domaine artistique, pour enfants et adultes de tous les niveaux dans une ambiance de découverte et d´échange pour débuter ou perfectionner leur capacité artistique.</p>
                     <p data-i18n="atelier_p2">L´atelier propose des cours de dessin et de peinture au centre du village de Vich. Les cours sont accessibles à tout le monde. L´enseignement proposé est personnalisé et adapté aux intérêts des élèves, offrant un cadre intime et stimulant pour développer votre technique.</p>
@@ -367,10 +300,6 @@
                     <span class="tag" data-i18n="p510_subtitle">Académie Junior • Vich</span>
                     <h1 id="enfantsTitle">Atelier Artistique <span>5 - 10 ans</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status complet" data-i18n="badge_vendredi">Vendredi – COMPLET</div>
-                    <div class="badge-status" data-i18n="badge_samedi">Samedi – 3 places disponibles</div>
-                </div>
             </div>
             <div class="content-grid">
                 <div class="info-card-lg">
@@ -379,10 +308,11 @@
                     <p data-i18n="desc_p2_enf">Les cours se déroulent en petit groupe intime de 8 places maximum pour garantir un accompagnement personnalisé et une attention sur mesure pour chaque enfant.</p>
                 </div>
                 <div class="info-card-lg">
-                    <h3 data-i18n="horaires_title">Horaires & Organisation</h3>
-                    <ul class="details-list">
-                        <li><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg><span data-i18n="horaire_1_enf"><strong>Vendredis :</strong> 15:45 à 17:00 (1h15)</span></li>
-                        <li><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg><span data-i18n="horaire_2_enf"><strong>Samedis :</strong> 09:30 à 10:45 (1h15)</span></li>
+                    <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
+                    <div id="dynamic-classes-enfants" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                    </div>
+                    <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
                         <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_bus"><strong>Option Bus + Goûter :</strong> Prise en charge à 15:20 à l'arrêt de bus après l'école, suivie d'un goûter avant la classe.</span></li>
                         <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_freq"><strong>Fréquence :</strong> Inscription annuelle (selon calendrier scolaire vaudois).</span></li>
                     </ul>
@@ -416,9 +346,6 @@
                     <span class="tag" data-i18n="ados_subtitle">Studio Ados • Vich</span>
                     <h1 id="adosTitle">Cours de Peinture & Dessin <span>Adolescents</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status" data-i18n="badge_ados">Vendredis • Ouvert aux inscriptions</div>
-                </div>
             </div>
             <div class="content-grid">
                 <div class="info-card-lg">
@@ -427,10 +354,11 @@
                     <p data-i18n="desc_p2_ados">Adapté aussi bien aux débutants qu'à ceux qui souhaitent perfectionner leur coup de crayon et se préparer à des orientations artistiques.</p>
                 </div>
                 <div class="info-card-lg">
-                    <h3 data-i18n="horaires_title">Horaires & Organisation</h3>
-                    <ul class="details-list">
-                        <li><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg><span data-i18n="horaire_1_ados"><strong>Jour :</strong> Tous les vendredis (17:00 – 18:30)</span></li>
-                        <li><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg><span data-i18n="horaire_2_ados"><strong>Durée :</strong> Séances hebdomadaires de 1h30</span></li>
+                    <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
+                    <div id="dynamic-classes-ados" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                    </div>
+                    <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
                         <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_freq"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
                     </ul>
                 </div>
@@ -461,9 +389,6 @@
                     <span class="tag" data-i18n="adultes_subtitle">Studio Professionnel • Vich</span>
                     <h1 id="adultesTitle">Cours de Peinture & Dessin <span>Adultes</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status" data-i18n="badge_adultes">Samedis • Ouvert aux inscriptions</div>
-                </div>
             </div>
             <div class="content-grid">
                 <div class="info-card-lg">
@@ -472,10 +397,11 @@
                     <p data-i18n="desc_p2_adu">L'atelier offre un espace chaleureux d'échange et de liberté créative au cœur de Vich, guidé par une approche professionnelle et sur mesure.</p>
                 </div>
                 <div class="info-card-lg">
-                    <h3 data-i18n="horaires_title">Horaires & Organisation</h3>
-                    <ul class="details-list">
-                        <li><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg><span data-i18n="horaire_1_adu"><strong>Jours :</strong> Tous les samedis du mois (sauf jours fériés)</span></li>
-                        <li><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg><span data-i18n="horaire_2_adu"><strong>Durée :</strong> Séances de 2 heures par cours</span></li>
+                    <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
+                    <div id="dynamic-classes-adultes" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                    </div>
+                    <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
                         <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_freq"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
                     </ul>
                 </div>
@@ -515,17 +441,16 @@
                     <span class="tag" data-i18n="card_workshops_tag">Atelier Spécial • Vich</span>
                     <h1 id="pouringTitle">Atelier de <span>Pouring</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status" data-i18n="val_schedule">Nouvelles dates à venir</div>
-                </div>
             </div>
             <div class="hero-section-workshop">
                 <div class="hero-content">
-                    <p data-i18n="p_desc" style="margin-bottom: 20px;">Apprenez à maîtriser la peinture fluide et l'acrylique coulée à travers un workshop intensif de 2 jours à l'atelier de Vich.</p>
+                    <p data-i18n="p_desc" style="margin-bottom: 20px;">Apprenez à maîtriser la peinture fluide et l'acrylique coulée à travers un workshop intensif à l'atelier de Vich.</p>
 
-                    <div style="background: var(--card-bg); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 14px;">
-                        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--accent); flex-shrink: 0; margin-top: 2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <p data-i18n="notice_text" style="font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.5; margin: 0;">Nouvelles dates à venir. Contactez-nous pour être prévenu des prochains ateliers disponibles.</p>
+                    <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <div id="dynamic-classes-pouring" style="display: flex; flex-direction: column; gap: 8px;">
+                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                        </div>
                     </div>
 
                     <div class="info-grid" style="gap: 10px; margin-bottom: 0;">
@@ -540,10 +465,7 @@
             </div>
             <div class="content-block" style="margin-top: 30px;">
                 <h2 data-i18n="p_details_title">Découvrez l'art de la peinture fluide</h2>
-                <p data-i18n="p_details_p1">Atelier spécifique pour se familiariser avec le pouring. Au cours de ces deux séances, nous apprendrons à connaître tous les matériaux nécessaires à la réalisation de cette technique, ainsi que les façons de la réaliser et de l'utiliser pour obtenir différents effets et finitions.</p>
-                <p data-i18n="p_details_p2">Au cours de ce workshop, nous apprendrons à travailler avec de la peinture fluide et nous nous amuserons à essayer différentes techniques. Nous ferons notre propre médium maison ainsi que les mélanges et les proportions nécessaires à la fabrication des acryliques fluides.</p>
-                <p data-i18n="p_details_p3">Aucune connaissance préalable de la peinture n'est requise pour ce cours. Tout le matériel nécessaire est inclus dans le prix du cours.*</p>
-                <p style="font-size: 13px; font-style: italic; color: var(--muted);" data-i18n="p_details_note">*Les étudiants déjà inscrits à l'Atelier peuvent venir au cours de pouring en utilisant leur abonnement, mais ils doivent apporter leur propre toile.</p>
+                <p data-i18n="p_details_p1">Atelier spécifique pour se familiariser avec le pouring. Au cours de ces séances, nous apprendrons à connaître tous les matériaux nécessaires.</p>
             </div>
         </section>
 
@@ -554,17 +476,16 @@
                     <span class="tag" data-i18n="card_workshops_tag">Atelier Spécial • Vich</span>
                     <h1 id="texturesTitle">Cours de <span>Textures Picturales</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status" data-i18n="val_schedule">Nouvelles dates à venir</div>
-                </div>
             </div>
             <div class="hero-section-workshop">
                 <div class="hero-content">
-                    <p data-i18n="t_desc" style="margin-bottom: 20px;">Apprenez à créer et à travailler avec différentes textures pour donner du relief et de la profondeur à vos œuvres lors de notre workshop spécialisé à Vich.</p>
+                    <p data-i18n="t_desc" style="margin-bottom: 20px;">Apprenez à créer et à travailler avec différentes textures pour donner du relief et de la profondeur à vos œuvres.</p>
 
-                    <div style="background: var(--card-bg); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 14px;">
-                        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--accent); flex-shrink: 0; margin-top: 2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <p data-i18n="notice_text" style="font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.5; margin: 0;">Nouvelles dates à venir. Contactez-nous pour être prévenu des prochains ateliers disponibles.</p>
+                    <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <div id="dynamic-classes-textures" style="display: flex; flex-direction: column; gap: 8px;">
+                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                        </div>
                     </div>
 
                     <div class="info-grid" style="gap: 10px; margin-bottom: 0;">
@@ -579,9 +500,7 @@
             </div>
             <div class="content-block" style="margin-top: 30px;">
                 <h2 data-i18n="t_details_title">Donnez du relief à votre peinture</h2>
-                <p data-i18n="t_details_p1">Dans ce cours, nous apprendrons à créer et à travailler avec différentes matières. Nous verrons comment appliquer la couleur sur la texture et quel type de pinceau utiliser.</p>
-                <p data-i18n="t_details_p2">Nous ferons différents tests et chaque élève créera sa propre toile texturée. Tout le matériel nécessaire est inclus dans le prix du cours.</p>
-                <p style="font-size: 13px; font-style: italic; color: var(--muted);" data-i18n="t_details_note">*Les étudiants déjà inscrits à l'Atelier peuvent venir au cours de textures en utilisant leur abonnement, mais ils doivent apporter leur propre toile.</p>
+                <p data-i18n="t_details_p1">Dans ce cours, nous apprendrons à créer et à travailler avec différentes matières.</p>
             </div>
         </section>
 
@@ -592,17 +511,16 @@
                     <span class="tag" data-i18n="card_workshops_tag">Atelier Spécial • Vich</span>
                     <h1 id="portraitsTitle">Cours de <span>Portrait</span></h1>
                 </div>
-                <div class="status-badges">
-                    <div class="badge-status" data-i18n="val_schedule">Nouvelles dates à venir</div>
-                </div>
             </div>
             <div class="hero-section-workshop">
                 <div class="hero-content">
-                    <p data-i18n="po_desc" style="margin-bottom: 20px;">Maîtrisez les proportions, les traits du visage et les différentes techniques de crayon pour réaliser des portraits expressifs et fidèles.</p>
+                    <p data-i18n="po_desc" style="margin-bottom: 20px;">Maîtrisez les proportions, les traits du visage et les différentes techniques de crayon.</p>
 
-                    <div style="background: var(--card-bg); border-left: 3px solid var(--accent); border-radius: 0 12px 12px 0; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; align-items: flex-start; gap: 14px;">
-                        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--accent); flex-shrink: 0; margin-top: 2px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        <p data-i18n="notice_text" style="font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.5; margin: 0;">Nouvelles dates à venir. Contactez-nous pour être prévenu des prochains ateliers disponibles.</p>
+                    <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <div id="dynamic-classes-portraits" style="display: flex; flex-direction: column; gap: 8px;">
+                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                        </div>
                     </div>
 
                     <div class="info-grid" style="gap: 10px; margin-bottom: 0;">
@@ -617,9 +535,7 @@
             </div>
             <div class="content-block" style="margin-top: 30px;">
                 <h2 data-i18n="po_details_title">L'art de capturer l'expression humaine</h2>
-                <p data-i18n="po_details_p1">Dans ce cours, vous apprendrez à élaborer de manière solide un portrait de face et de profil. Nous maîtriserons les pratiques pour respecter les proportions et les traits du visage, ainsi que leurs formes.</p>
-                <p data-i18n="po_details_p2">Vous découvrirez également les différents crayons et outils indispensables pour obtenir un rendu final de haute qualité. Tout le matériel nécessaire est inclus dans le prix du cours.</p>
-                <p style="font-size: 13px; font-style: italic; color: var(--muted);" data-i18n="po_details_note">*Les étudiants déjà inscrits à l'Atelier peuvent participer en utilisant leur abonnement selon les conditions habituelles.</p>
+                <p data-i18n="po_details_p1">Dans ce cours, vous apprendrez à élaborer de manière solide un portrait.</p>
             </div>
         </section>
 
@@ -632,27 +548,9 @@
                 </div>
             </div>
             <div class="two-col-container">
-                <div class="image-wrapper">
-                    <img src="images/eloisa.webp" alt="Eloísa - Atelier Arte Vich" loading="lazy">
-                </div>
+                <div class="image-wrapper"><img src="images/eloisa.webp" alt="Eloísa - Atelier Arte Vich" loading="lazy"></div>
                 <div class="text-content">
-                    <p data-i18n="apropos_p1">Fondé sur une vision vivante et ouverte des arts plastiques, l'Atelier Arte est né de la volonté de créer un lieu d'échange, de liberté et de découverte au cœur de Vich. Ici, chaque élève — enfant ou adulte, débutant ou confirmé — trouve un accompagnement sur mesure pour révéler sa sensibilité artistique.</p>
-                    <p data-i18n="apropos_p2">Cet espace créatif nourrit des liens étroits avec la scène artistique contemporaine, notamment à travers le travail de l'artiste peintre <a href="https://eloisagr.com" target="_blank" rel="noopener">Eloísa</a>, dont vous pouvez découvrir l'univers personnel, les expositions et les créations sur son site officiel <a href="https://eloisagr.com" target="_blank" rel="noopener">eloisagr.com</a>.</p>
-                    <p data-i18n="apropos_p3">Transmettre les techniques du dessin, de la peinture et des médiums mixtes est bien plus qu'un enseignement : c'est partager un regard, encourager l'audace créative et offrir un sanctuaire où le temps s'arrête pour laisser s'exprimer l'émotion pure.</p>
-                </div>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h3 data-i18n="feat_1_title_ap">Passion & Création</h3>
-                    <p data-i18n="feat_1_desc_ap">Un engagement profond pour l'art sous toutes ses formes et le développement de l'autonomie créative.</p>
-                </div>
-                <div class="feature-card">
-                    <h3 data-i18n="feat_2_title_ap">Univers Artistique</h3>
-                    <p data-i18n="feat_2_desc_ap">Une source d'inspiration connectée au parcours professionnel d'artistes passionnés.</p>
-                </div>
-                <div class="feature-card">
-                    <h3 data-i18n="feat_3_title_ap">Partage & Écoute</h3>
-                    <p data-i18n="feat_3_desc_ap">Une approche humaine où chaque sensibilité trouve sa place pour grandir et s'épanouir.</p>
+                    <p data-i18n="apropos_p1">Fondé sur une vision vivante et ouverte des arts plastiques, l'Atelier Arte est né de la volonté de créer un lieu d'échange, de liberté et de découverte au cœur de Vich.</p>
                 </div>
             </div>
         </section>
@@ -665,67 +563,6 @@
                     <h1 id="tarifsTitle">Inscriptions, abonnements et <span>conditions des cours</span>.</h1>
                 </div>
             </div>
-            <div class="tarifs-grid">
-                <div class="tarif-card">
-                    <div>
-                        <h3>Atelier Enfants (5-10 ans)</h3>
-                        <div class="schedule">
-                            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
-                            Vendredis 15:45–17:00 / 15:20–17:00
-                        </div>
-                    </div>
-                    <ul class="tarif-list">
-                        <li><span>Standard (Trimestriel - 1h15)</span> <strong>285 CHF + 95 CHF juin</strong></li>
-                        <li><span>Standard (Annuel - 1h15)</span> <strong>900 CHF</strong></li>
-                        <li><span>Bus + Goûter + Cours (Trim.)</span> <strong>360 CHF + 120 CHF juin</strong></li>
-                        <li><span>Bus + Goûter + Cours (Annuel)</span> <strong>1'150 CHF</strong></li>
-                    </ul>
-                </div>
-
-                <div class="tarif-card">
-                    <div>
-                        <h3>Adolescents</h3>
-                        <div class="schedule">
-                            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
-                            Vendredis 17:00 – 18:30
-                        </div>
-                    </div>
-                    <ul class="tarif-list">
-                        <li><span>Peinture & Dessin (Trimestriel)</span> <strong>345 CHF + 115 CHF juin</strong></li>
-                        <li><span>Peinture & Dessin (Annuel)</span> <strong>1'100 CHF</strong></li>
-                        <li><span>Fréquence</span> <strong>Hebdomadaire</strong></li>
-                        <li><span>Calendrier</span> <strong>Système scolaire vaudois</strong></li>
-                    </ul>
-                </div>
-
-                <div class="tarif-card">
-                    <div>
-                        <h3>Adultes</h3>
-                        <div class="schedule">
-                            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"/></svg>
-                            Samedis (2h / session)
-                        </div>
-                    </div>
-                    <ul class="tarif-list">
-                        <li><span>Mensuel (4 cours de 2h)</span> <strong>150 CHF / mois</strong></li>
-                        <li><span>Abonnement 10 cours</span> <strong>360 CHF</strong></li>
-                        <li><span>Annuel (40 cours complets)</span> <strong>1'350 CHF / année</strong></li>
-                        <li><span>Fréquence</span> <strong>Samedis (sauf fériés)</strong></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="conditions-section">
-                <h3 data-i18n="cond_title">Conditions Générales & Modalités</h3>
-                <ul class="conditions-list">
-                    <li data-i18n="cond_1"><strong>Inscriptions :</strong> L'inscription des enfants se fait annuellement.</li>
-                    <li data-i18n="cond_2"><strong>Annulations :</strong> Toute annulation intervenant plus d'un mois avant le début du cours ou du trimestre n'est pas facturée. Passé ce délai, elle est facturée automatiquement.</li>
-                    <li data-i18n="cond_3"><strong>Paiements :</strong> S'effectue au début de chaque trimestre ou annuellement (enfants), au début du mois (cours mensuel/annuel adultes) ou à l'achat (abonnement adultes). Moyens acceptés : cash, virement bancaire, TWINT / QR code, online.</li>
-                    <li data-i18n="cond_4"><strong>Calendrier & Ambiance :</strong> L'atelier suit le calendrier scolaire vaudois (pas de cours pendant les vacances scolaires). L'atelier est un lieu de créativité et de plaisir (si un enfant perturbe le déroulement, il sera prié de quitter le cours et un remboursement sera effectué).</li>
-                    <li data-i18n="cond_5"><strong>Absences :</strong> En principe, la non-assistance aux cours n'est pas remboursée, mais les élèves ont la possibilité de récupérer ces cours au cours du même trimestre.</li>
-                    <li data-i18n="cond_6"><strong>Matériel :</strong> Le matériel de base de dessin et de peinture est fourni uniquement pour la première leçon. Par la suite, les élèves acquièrent leurs propres fournitures en accord avec l'enseignante.</li>
-                </ul>
-            </div>
         </section>
 
         <!-- 11. ATELIERS CRÉATIFS -->
@@ -736,9 +573,7 @@
                     <h1>Techniques <span>Mixtes & Relax</span></h1>
                 </div>
             </div>
-            <div class="content-block">
-                <p>Page en cours de création.</p>
-            </div>
+            <div class="content-block"><p>Page en cours de création.</p></div>
         </section>
 
         <!-- CONTACT -->
@@ -751,130 +586,45 @@
             </div>
 
             <div class="contact-grid">
-                <!-- Formulario de Contacto rápido (Izquierda en web / Primero en móvil) -->
                 <div class="info-card-lg">
                     <h3 data-i18n="contact_form_title">Envoyez-nous un message</h3>
                     <form action="mailto:atelierartevich@gmail.com" method="POST" enctype="text/plain" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
                         <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_name">Votre Nom</label>
-                            <input type="text" name="Nom" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Space Grotesk', sans-serif;">
+                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;">Votre Nom</label>
+                            <input type="text" name="Nom" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
                         </div>
                         <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_email">Votre Email</label>
-                            <input type="email" name="Email" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Space Grotesk', sans-serif;">
+                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;">Votre Email</label>
+                            <input type="email" name="Email" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
                         </div>
                         <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_message">Votre Message</label>
-                            <textarea name="Message" rows="4" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Space Grotesk', sans-serif; resize: vertical;"></textarea>
+                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;">Votre Message</label>
+                            <textarea name="Message" rows="4" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: vertical;"></textarea>
                         </div>
-                        <button type="submit" class="cta-btn" style="border: none; cursor: pointer; text-align: center; margin-top: 5px;" data-i18n="form_send">Envoyer le message</button>
+                        <button type="submit" class="cta-btn" style="border: none; cursor: pointer; text-align: center; margin-top: 5px;">Envoyer le message</button>
                     </form>
                 </div>
 
-                <!-- Información de Contacto / Prácticas (Derecha en web / Segundo en móvil) -->
                 <div class="info-card-lg">
                     <h3 data-i18n="contact_info_title">Informations Pratiques</h3>
-                    <p data-i18n="contact_info_desc">Vous avez une question concernant nos cours de peinture, les ateliers pour enfants ou les workshops spéciaux ? N'hésitez pas à nous écrire ou à nous appeler.</p>
-
                     <ul class="details-list" style="margin-top: 15px;">
                         <li>
                             <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                             <span><strong>Adresse :</strong> Grand'Rue 6, 1267 Vich, Suisse</span>
                         </li>
-                        <li>
-                            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                            <span><strong>Email :</strong> <a href="mailto:atelierartevich@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">atelierartevich@gmail.com</a></span>
-                        </li>
-                        <li>
-                            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <span><strong>Téléphone :</strong> <a href="tel:+41799137055" style="color: var(--accent); text-decoration: none; font-weight: 600;">+41 79 913 70 55</a></span>
-                        </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="map-section">
-                <div class="map-header">
-                    <h3 data-i18n="map_title">Notre Localisation</h3>
-                    <span>Grand'Rue 6, 1267 Vich, Suisse</span>
-                </div>
-                <div class="map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2754.743135544275!2d6.2307!3d46.4172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478c22222222222%3A0x2222222222222222!2sGrand&#39;Rue%206%2C%201267%20Vich%2C%20Switzerland!5e0!3m2!1sfr!2sch!4v1710000000000!5m2!1sfr!2sch" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <!-- Footer Modular con Enlaces de Redes Sociales Integrados -->
             <footer class="footer" style="border-top: 1px solid var(--border); background: var(--card-bg); padding: 50px 0 25px 0; margin-top: 60px; border-radius: 20px;">
                 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
                     <div class="footer-grid-modular">
-                        <!-- Columna 1: Logo -->
                         <div class="footer-col-logo" style="display: flex; align-items: center;">
                             <img src="images/logo.webp" alt="Atelier Arte Logo" style="width: 65px; height: auto; object-fit: contain;">
                         </div>
-
-                        <!-- Columna 2: Descripción y Marca -->
                         <div class="footer-col">
                             <span class="serif-font" style="font-size: 21px; font-weight: 600; color: var(--text); display: block; margin-bottom: 8px;">Atelier Arte Vich</span>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 14px;" data-i18n="footer_desc">
-                                Cours de peinture, dessin et ateliers d'expression créative pour tous à Vich (Vaud, Suisse).
-                            </p>
-                        </div>
-
-                        <!-- Columna 3: Navegación de Cursos -->
-                        <div class="footer-col">
-                            <h5 style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 15px; font-weight: 600;">Cours & Ateliers</h5>
-                            <ul class="footer-nav-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-                                <li><a href="#accueil" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_accueil">Accueil</a></li>
-                                <li><a href="#atelier" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_atelier">L'atelier</a></li>
-                                <li><a href="#enfants" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_enfants_sub1">Cours Enfants (5-10 ans)</a></li>
-                                <li><a href="#ados" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_enfants_sub2">Ateliers Ados</a></li>
-                                <li><a href="#adultes" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_adultes">Adultes</a></li>
-                                <li><a href="#pouring" style="color: var(--muted); text-decoration: none; font-size: 13.5px; transition: color 0.2s;" data-i18n="nav_workshops">Workshops (Pouring, Textures)</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Columna 4: Ventajas & Compromisos -->
-                        <div class="footer-col">
-                            <h5 style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 15px; font-weight: 600;">Engagements</h5>
-                            <ul class="footer-nav-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-                                <li><span style="color: var(--muted); font-size: 13.5px;">✓ Petits groupes (max 8 places)</span></li>
-                                <li><span style="color: var(--muted); font-size: 13.5px;">✓ Enseignement personnalisé</span></li>
-                                <li><span style="color: var(--muted); font-size: 13.5px;">✓ Option bus scolaire + goûter</span></li>
-                                <li><span style="color: var(--muted); font-size: 13.5px;">✓ Tous niveaux bienvenus</span></li>
-                            </ul>
-                        </div>
-
-                        <!-- Columna 5: Contact Direct -->
-                        <div class="footer-col">
-                            <h5 style="font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 15px; font-weight: 600;">Contact</h5>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.7; margin-bottom: 10px;">
-                                Grand'Rue 6<br>
-                                1267 Vich, Vaud<br>
-                                Suisse
-                            </p>
-                            <p style="font-size: 12.5px;">
-                                <a href="mailto:atelierartevich@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 500;">atelierartevich@gmail.com</a>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Barra Inferior con tus Enlaces de Redes Sociales y Crédito Profesional -->
-                    <div class="footer-bottom-bar" style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; flex-wrap: wrap; gap: 15px;">
-                        <p style="font-size: 12px; color: var(--muted); margin: 0;">
-                            <span>© 2026 Atelier Arte Vich. Tous droits réservés.</span>
-                        </p>
-
-                        <!-- Enlaces a Redes Sociales -->
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <a href="https://www.instagram.com/eloisarg_art/" target="_blank" rel="noopener" style="font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Instagram</a>
-                            <span style="color: var(--border);">•</span>
-                            <a href="https://m.facebook.com/100081551711285" target="_blank" rel="noopener" style="font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">Facebook</a>
-                        </div>
-
-                        <div style="display: flex; align-items: center; gap: 14px;">
-                            <span style="font-size: 11px; color: var(--muted); letter-spacing: 0.04em;">
-                                Web design & architecture by <a href="mailto:alinaresquintana@gmail.com" style="color: var(--accent); font-weight: 600; text-decoration: none;">Antonio Linares</a>
-                            </span>
+                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 14px;">Cours de peinture, dessin et ateliers d'expression créative pour tous à Vich (Vaud, Suisse).</p>
                         </div>
                     </div>
                 </div>
@@ -887,13 +637,11 @@
 <script src="sidebar.js"></script>
 
 <script>
-  /* --- CONTROL DE MENÚ MÓVIL --- */
   function toggleMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('mobile-open');
   }
 
-  /* --- RUTAS SPA CON SCROLL UP FORZADO EN MÓVIL Y WEB --- */
   function navigate() {
     let hash = window.location.hash.substring(1) || 'accueil';
     const pages = document.querySelectorAll('.spa-page');
@@ -912,14 +660,12 @@
       document.getElementById('accueil').classList.add('active');
     }
 
-    // Forzar el scroll arriba de forma instantánea en escritorio y móvil
     const mainContainer = document.querySelector('main');
     if (mainContainer) mainContainer.scrollTop = 0;
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
 
-    // Cierra el menú en móvil al navegar
     const sidebar = document.getElementById('sidebar');
     if (sidebar && window.innerWidth <= 1200) {
       sidebar.classList.remove('mobile-open');
@@ -940,69 +686,106 @@
   });
 
   window.addEventListener('hashchange', navigate);
-  window.addEventListener('load', navigate);
+  window.addEventListener('load', () => {
+    navigate();
+    renderPublicClassesAndWorkshops();
+  });
+
+  function renderPublicClassesAndWorkshops() {
+    const dbStr = localStorage.getItem('atelier_db');
+    if (!dbStr) return;
+
+    try {
+      const db = JSON.parse(dbStr);
+      const classes = db.classes || [];
+
+      const categoryMapping = {
+        'Clase Adultos': 'adultes',
+        'Clase niños 5-10': 'enfants',
+        'Clase Adolescentes': 'ados',
+        'Workshop Pouring': 'pouring',
+        'Workshop Texturas': 'textures',
+        'Workshop Retratos': 'portraits'
+      };
+
+      const grouped = {
+        adultes: [], enfants: [], ados: [],
+        pouring: [], textures: [], portraits: []
+      };
+
+      classes.forEach(cl => {
+        const catKey = categoryMapping[cl.classType];
+        if (catKey) {
+          const enrolledCount = (cl.enrolled || []).length;
+          const isFull = enrolledCount >= cl.capacity;
+
+          // Formatear fechas de inicio y fin (AAAA-MM-DD a DD/MM/AAAA)
+          const formatPubDate = (iso) => {
+            if (!iso) return '';
+            const p = iso.split('-');
+            return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
+          };
+
+          grouped[catKey].push({
+            name: cl.name,
+            schedule: cl.schedule,
+            duration: cl.duration || '2h',
+            startDate: formatPubDate(cl.startDate),
+            endDate: formatPubDate(cl.endDate),
+            isFull: isFull
+          });
+        }
+      });
+
+      Object.keys(grouped).forEach(catKey => {
+        const container = document.getElementById(`dynamic-classes-${catKey}`);
+        if (!container) return;
+
+        const items = grouped[catKey];
+        if (items.length === 0) {
+          container.innerHTML = `<p style="font-size: 13px; color: var(--muted);">Aucun cours configuré pour le moment.</p>`;
+          return;
+        }
+
+        container.innerHTML = items.map(item => {
+          const statusBadge = item.isFull
+            ? `<span style="background: rgba(230,53,0,0.1); color: #e63500; border: 1px solid #e63500; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">Complet</span>`
+            : `<span style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid #10b981; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">Places disponibles</span>`;
+
+          return `
+            <div style="background: var(--bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <strong style="color: var(--text); font-size: 15px;">${item.name}</strong>
+                <span style="font-size: 12.5px; color: var(--muted);">🕒 Horaire : ${item.schedule} (${item.duration})</span>
+                <span style="font-size: 12px; color: var(--muted);">📅 Période : Du ${item.startDate} au ${item.endDate}</span>
+              </div>
+              <div>${statusBadge}</div>
+            </div>
+          `;
+        }).join('');
+      });
+
+    } catch (e) {
+      console.error("Error al sincronizar las clases públicas:", e);
+    }
+  }
 
   let currentLang = 'fr';
   function setLanguage(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
     document.documentElement.lang = lang;
-
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
-
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (translations[lang][key]) {
         el.innerHTML = translations[lang][key];
       }
     });
-
-    const updates = [
-      { id: 'heroTitleAccueil', key: 'hero_title_acc' },
-      { id: 'atelierTitle', key: 'atelier_title' },
-      { id: 'enfantsTitle', key: 'p510_title' },
-      { id: 'adosTitle', key: 'ados_title' },
-      { id: 'adultesTitle', key: 'adultes_title' },
-      { id: 'pouringTitle', key: 'p_title' },
-      { id: 'texturesTitle', key: 't_title' },
-      { id: 'portraitsTitle', key: 'po_title' },
-      { id: 'aproposTitle', key: 'apropos_title' },
-      { id: 'tarifsTitle', key: 'tarifs_title' },
-      { id: 'contactTitle', key: 'contact_subtitle' }
-    ];
-
-    updates.forEach(item => {
-      const el = document.getElementById(item.id);
-      if (el && translations[lang][item.key]) {
-        if (item.id === 'contactTitle') {
-          el.innerHTML = lang === 'fr' ? "Contactez l'<span>Atelier Arte</span>" : lang === 'it' ? "Contatta l'<span>Atelier Arte</span>" : lang === 'es' ? "Contacta con el <span>Atelier Arte</span>" : "Contact the <span>Atelier Arte</span>";
-        } else {
-          el.innerHTML = translations[lang][item.key];
-        }
-      }
-    });
-
-    updateThemeLabel();
   }
 
-  function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.getAttribute('data-theme') === 'dark';
-    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    updateThemeLabel();
-  }
-
-  function updateThemeLabel() {
-    const themeLabel = document.getElementById('themeLabel');
-    if (themeLabel) {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      themeLabel.textContent = currentLang === 'fr' ? (isDark ? 'Mode Clair' : 'Mode Sombre') : currentLang === 'en' ? (isDark ? 'Light Mode' : 'Dark Mode') : currentLang === 'it' ? (isDark ? 'Modalità Chiara' : 'Modalità Scura') : (isDark ? 'Modo Claro' : 'Modo Oscuro');
-    }
-  }
-
-  /* --- FONDO ANIMADO CANVAS --- */
   const canvas = document.getElementById('paintCanvas');
   const ctx = canvas.getContext('2d');
   let width, height;
@@ -1021,8 +804,7 @@
     if (now - lastMove < 40) return;
     lastMove = now;
     strokes.push({
-      x: e.clientX,
-      y: e.clientY,
+      x: e.clientX, y: e.clientY,
       size: Math.random() * 70 + 25,
       color: ['rgba(255,59,0,0.1)', 'rgba(217,83,43,0.08)', 'rgba(197,160,89,0.06)', 'rgba(0,0,0,0.03)'][Math.floor(Math.random() * 4)],
       angle: Math.random() * Math.PI
