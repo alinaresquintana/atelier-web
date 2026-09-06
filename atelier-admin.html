@@ -47,9 +47,8 @@
             <button onclick="switchTab('prereg')" id="nav-prereg" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📥 Pre-inscripciones</button>
             <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">👥 Alumnos</button>
             <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📚 Clases y Precios</button>
-            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación</button>
-            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎟️ Bonos</button>
-            <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Material</button>
+            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación y Cobros</button>
+            <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Catálogo Material</button>
             <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos/Gastos</button>
         </div>
         <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 whitespace-nowrap">
@@ -84,16 +83,16 @@
                 <div class="space-y-6">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
                         <h3 class="font-bold text-gray-900 text-sm">🏖️ Gestionar Vacaciones / Festivos</h3>
-                        <p class="text-xs text-gray-500">Introduce las fechas en formato dd/mm/aaaa.</p>
+                        <p class="text-xs text-gray-500">Selecciona las fechas directamente desde el calendario.</p>
                         <form onsubmit="addHoliday(event)" class="space-y-3 pt-2">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Desde</label>
-                                    <input type="text" id="holiday-start" placeholder="dd/mm/aaaa" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                    <input type="date" id="holiday-start" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
-                                    <input type="text" id="holiday-end" placeholder="dd/mm/aaaa" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                    <input type="date" id="holiday-end" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white">
                                 </div>
                             </div>
                             <div>
@@ -230,7 +229,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: FACTURACIÓN GENERAL -->
+        <!-- TAB 3: FACTURACIÓN GENERAL Y COBROS -->
         <div id="tab-invoices" class="hidden space-y-6">
             <div class="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-50 to-white px-6 py-4 flex justify-between items-center cursor-pointer select-none hover:bg-indigo-100/50 transition" onclick="toggleRenewalsPanel()">
@@ -246,17 +245,22 @@
                 <div id="renewals-content" class="hidden p-6 space-y-6 border-t border-indigo-50"></div>
             </div>
 
-            <!-- BLOQUE PRINCIPAL DE FACTURACIÓN A ANCHO COMPLETO -->
-            <div class="space-y-6">
+            <!-- BLOQUE PRINCIPAL DE FACTURACIÓN CON ACCESOS A EMITIR BONO O MATERIAL -->
+            <div class="space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-4">
-                    <h2 class="text-lg font-bold text-gray-900">⚠️ Facturas Pendientes e Impagadas</h2>
-                    <button onclick="openInvoiceModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Nueva Factura Manual</button>
+                    <h2 class="text-lg font-bold text-gray-900">⚠️ Facturas y Cobros Pendientes</h2>
+                    <div class="flex items-center space-x-2 flex-wrap gap-2">
+                        <input type="text" id="invoice-search" oninput="renderInvoices()" placeholder="🔍 Filtrar por alumno o concepto..." class="px-3 py-2 border rounded-lg text-xs bg-white w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button onclick="openBonusModal()" class="bg-emerald-600 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-emerald-700">+ Emitir Bono 10</button>
+                        <button onclick="openMaterialSaleModal()" class="bg-gray-800 text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-gray-900">+ Vender Material</button>
+                        <button onclick="openInvoiceModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-indigo-700">+ Factura Manual</button>
+                    </div>
                 </div>
                 <div id="overdue-alert-container"></div>
                 <div id="pending-invoices-container" class="space-y-4"></div>
             </div>
 
-            <!-- ARCHIVO HISTÓRICO RECOLOCADO A ANCHO COMPLETO (DESPLEGABLE) -->
+            <!-- ARCHIVO HISTÓRICO DE FACTURAS -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="bg-gray-100 px-6 py-4 flex justify-between items-center cursor-pointer select-none hover:bg-gray-200/70 transition" onclick="toggleInvoiceArchivePanel()">
                     <div class="flex items-center space-x-3">
@@ -274,43 +278,18 @@
             </div>
         </div>
 
-        <!-- TAB 4: RENOVACIÓN DE BONOS -->
-        <div id="tab-bonus-renewals" class="hidden space-y-6">
-            <div class="flex justify-between items-center flex-wrap gap-4">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900">🎟️ Gestión y Emisión de Bonos de 10</h2>
-                    <p class="text-xs text-gray-500">Crea nuevos bonos (sin fecha de caducidad), súbelos y envíalos por email.</p>
-                </div>
-                <button onclick="openBonusModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Emitir Nuevo Bono 10</button>
-            </div>
-            <div id="bonus-list-container" class="space-y-4"></div>
-        </div>
-
-        <!-- TAB: COMPRA DE MATERIAL -->
+        <!-- TAB: CATÁLOGO DE MATERIAL -->
         <div id="tab-material" class="hidden space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
-                    <h2 class="text-lg font-bold text-gray-900">🎨 Gestión y Venta de Material</h2>
-                    <p class="text-xs text-gray-500">Define los tipos de material disponibles y registra las compras de los alumnos.</p>
+                    <h2 class="text-lg font-bold text-gray-900">🎨 Catálogo de Materiales</h2>
+                    <p class="text-xs text-gray-500">Define los artículos disponibles en el taller y sus precios estándar.</p>
                 </div>
-                <div class="flex space-x-2">
-                    <button onclick="openMaterialTypeModal()" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-900">+ Añadir Tipo de Material</button>
-                    <button onclick="openMaterialSaleModal()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700">+ Registrar Venta a Alumno</button>
-                </div>
+                <button onclick="openMaterialTypeModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Añadir Artículo al Catálogo</button>
             </div>
 
-            <!-- Catálogo de Tipos de Material -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
-                    <h3 class="font-bold text-gray-900 text-sm">📦 Catálogo de Materiales y Precios</h3>
-                    <div id="material-types-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-                </div>
-
-                <!-- Historial de Ventas / Ingresos por Material -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
-                    <h3 class="font-bold text-gray-900 text-sm">🧾 Historial de Materiales Vendidos</h3>
-                    <div id="material-sales-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
-                </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div id="material-types-list" class="space-y-3"></div>
             </div>
         </div>
 
@@ -407,7 +386,6 @@
             <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
         </div>
 
-        <!-- CONTENEDOR ESTILIZADO DEL INFORME PDF -->
         <div id="pdf-report-container" class="bg-white p-8 border border-gray-200 rounded-xl space-y-6 shadow-sm">
             <div class="flex justify-between items-start border-b-2 border-indigo-600 pb-4">
                 <div>
@@ -469,7 +447,7 @@
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium">Confirmar Alta</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Confirmar Alta</button>
             </div>
         </form>
     </div>
@@ -574,7 +552,7 @@
                 <div id="detail-client-classes" class="space-y-2 text-sm"></div>
             </div>
             <div>
-                <h4 class="text-xs font-semibold text-gray-400 uppercase mb-2">Historial Independiente de Bonos y Facturas</h4>
+                <h4 class="text-xs font-semibold text-gray-400 uppercase mb-2">Historial de Facturas y Cobros</h4>
                 <div id="detail-client-invoices" class="space-y-3 text-sm"></div>
             </div>
         </div>
@@ -603,16 +581,6 @@
                 </select>
             </div>
 
-            <!-- MODO DE PROGRAMACIÓN -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Modo de Programación</label>
-                <select id="class-schedule-mode" onchange="onScheduleModeChange()" class="w-full px-3 py-2 border rounded-lg text-sm bg-indigo-50 font-medium text-indigo-900">
-                    <option value="recurring">Recurrente (Curso semanal)</option>
-                    <option value="single">Puntual (Workshop / Día único)</option>
-                </select>
-            </div>
-
-            <!-- CAMPOS PARA CLASES RECURRENTES -->
             <div id="fields-recurring" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -634,22 +602,21 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo (dd/mm/aaaa)</label>
-                        <input type="text" id="class-startdate" placeholder="01/09/2026" class="w-full px-3 py-2 border rounded-lg text-sm" value="01/09/2026">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo</label>
+                        <input type="date" id="class-startdate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white" value="2026-09-01">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin (dd/mm/aaaa)</label>
-                        <input type="text" id="class-enddate" placeholder="30/06/2027" class="w-full px-3 py-2 border rounded-lg text-sm" value="30/06/2027">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin</label>
+                        <input type="date" id="class-enddate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white" value="2027-06-30">
                     </div>
                 </div>
             </div>
 
-            <!-- CAMPOS PARA CLASES PUNTUALES (WORKSHOPS DE UN DÍA) -->
             <div id="fields-single" class="hidden space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Workshop (dd/mm/aaaa)</label>
-                        <input type="text" id="class-singledate" placeholder="15/03/2027" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Workshop</label>
+                        <input type="date" id="class-singledate" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
@@ -732,7 +699,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
-                <input type="text" id="invoice-duedate" placeholder="dd/mm/aaaa" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <input type="date" id="invoice-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
@@ -745,15 +712,14 @@
 <!-- MODAL EMISIÓN DE BONO 10 -->
 <div id="bonus-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
-        <h3 class="text-lg font-bold" id="bonus-modal-title">Emitir Bono de 10 Clases</h3>
-        <form onsubmit="saveBonus(event)" class="space-y-4">
-            <input type="hidden" id="bonus-id">
+        <h3 class="text-lg font-bold">Emitir Bono de 10 Clases</h3>
+        <form onsubmit="saveBonusInvoice(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumno</label>
                 <select id="bonus-client" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Concepto del Bono</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Concepto</label>
                 <input type="text" id="bonus-concept" value="Bono 10 Clases" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
@@ -762,7 +728,7 @@
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Generar Bono</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Generar Factura de Bono</button>
             </div>
         </form>
     </div>
@@ -771,7 +737,7 @@
 <!-- MODAL: AÑADIR TIPO DE MATERIAL -->
 <div id="material-type-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
-        <h3 class="text-lg font-bold">Definir Nuevo Material</h3>
+        <h3 class="text-lg font-bold">Añadir Artículo al Catálogo</h3>
         <form onsubmit="saveMaterialType(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Material</label>
@@ -792,14 +758,14 @@
 <!-- MODAL: REGISTRAR VENTA DE MATERIAL A ALUMNO -->
 <div id="material-sale-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
-        <h3 class="text-lg font-bold">Registrar Compra de Material</h3>
+        <h3 class="text-lg font-bold">Vender Material a Alumno</h3>
         <form onsubmit="saveMaterialSale(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumno</label>
                 <select id="mat-sale-client" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar Material</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar del Catálogo</label>
                 <select id="mat-sale-type" onchange="onMaterialTypeSelect()" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
             </div>
             <div>
@@ -812,7 +778,7 @@
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Registrar y Generar Ingreso</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Generar Factura</button>
             </div>
         </form>
     </div>
@@ -843,7 +809,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
@@ -900,17 +866,15 @@
       { startDate: '2026-12-23', endDate: '2027-01-06', reason: 'Vacaciones de Navidad', scope: 'all' }
     ],
     invoices: [
-      { id: 'FAC-2026-001', clientId: '1', concept: 'Adultos - Mañana - Trimestre 1 (Sep-Nov)', amount: 350, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: true, fileName: 'factura_ana.pdf' }
-    ],
-    bonuses: [
-      { id: 'BON-2026-001', clientId: '2', concept: 'Bono 10 Clases', amount: 300, status: 'Pagado', date: '2026-09-01', emailSent: false, addedToClient: true, sessionsLeft: 8, attendanceLog: ['2026-09-01', '2026-09-03'], fileName: null }
+      { id: 'FAC-2026-001', clientId: '1', concept: 'Adultos - Mañana - Trimestre 1 (Sep-Nov)', amount: 350, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: true, fileName: 'factura_ana.pdf', isBonus: false },
+      { id: 'FAC-2026-002', clientId: '2', concept: 'Bono 10 Clases', amount: 300, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: false, fileName: 'factura_bono_marc.pdf', isBonus: true, sessionsLeft: 8, attendanceLog: ['2026-09-01', '2026-09-03'] }
     ],
     materialTypes: [
       { id: 'MT-1', name: 'Set de pinceles y lienzo', price: 45.00 }
     ],
-    materialSales: [],
     ledger: [
-      { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' }
+      { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov) (FAC-2026-001)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' },
+      { id: 'LED-002', type: 'income', category: 'Pago de abonos', concept: 'Marc Dubois - Bono 10 Clases (FAC-2026-002)', amount: 300, date: '2026-09-01', fileName: 'factura_bono_marc.pdf', originId: 'FAC-2026-002' }
     ],
     ignoredRenewals: [],
     preRegistrations: []
@@ -925,14 +889,6 @@
     const parts = isoStr.split('-');
     if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
     return isoStr;
-  }
-
-  function parseDateToISO(dateStr) {
-    if (!dateStr) return '';
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    const parts = dateStr.split(/[\/\-]/);
-    if (parts.length === 3) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-    return dateStr;
   }
 
   function handleLogin(e) {
@@ -954,7 +910,7 @@
   }
 
   function switchTab(tab) {
-    ['calendar', 'prereg', 'clients', 'classes', 'invoices', 'bonus-renewals', 'material', 'ledger'].forEach(t => {
+    ['calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
     });
@@ -986,7 +942,6 @@
     renderClients();
     renderClasses();
     renderInvoices();
-    renderBonusRenewals();
     renderMaterialSection();
     populateLedgerYears();
     renderLedger();
@@ -999,13 +954,10 @@
 
   function addHoliday(e) {
     e.preventDefault();
-    const rawStart = document.getElementById('holiday-start').value;
-    const rawEnd = document.getElementById('holiday-end').value || rawStart;
+    const startDate = document.getElementById('holiday-start').value;
+    const endDate = document.getElementById('holiday-end').value || startDate;
     const reason = document.getElementById('holiday-reason').value;
     const scope = document.getElementById('holiday-scope').value;
-
-    const startDate = parseDateToISO(rawStart);
-    const endDate = parseDateToISO(rawEnd);
 
     if (startDate > endDate) {
       alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
@@ -1183,7 +1135,6 @@
     }).join('') + (filtered.length > 30 ? `<div class="text-center text-gray-400 text-[10px] pt-1">Mostrando las primeras 30 coincidencias...</div>` : '');
   }
 
-  // --- PRE-INSCRIPCIONES WEB ---
   function renderPreRegistrations() {
     const tbody = document.getElementById('prereg-table-body');
     if (!tbody) return;
@@ -1321,11 +1272,11 @@
   }
 
   function getClientTotalBonusSessions(clientId) {
-    if (!db.bonuses) return 0;
+    if (!db.invoices) return 0;
     let total = 0;
-    db.bonuses.forEach(b => {
-      if (b.clientId === clientId && b.status === 'Pagado' && b.addedToClient) {
-        total += (b.sessionsLeft !== undefined ? b.sessionsLeft : 0);
+    db.invoices.forEach(inv => {
+      if (inv.clientId === clientId && inv.isBonus && inv.status === 'Pagado') {
+        total += (inv.sessionsLeft !== undefined ? inv.sessionsLeft : 0);
       }
     });
     return total;
@@ -1517,11 +1468,7 @@
     const statusText = client.status === 'past' ? `<span class="text-red-600 font-semibold">Alumno Pasado</span>` : `<span class="text-green-600 font-semibold">Alumno Presente (Activo)</span>`;
 
     const clientInvoices = db.invoices.filter(i => i.clientId === clientId);
-    const clientBonuses = (db.bonuses || []).filter(b => b.clientId === clientId);
-    
-    const totalPaidInvoices = clientInvoices.filter(i => i.status === 'Pagado').reduce((sum, i) => sum + i.amount, 0);
-    const totalBonusesSpent = clientBonuses.filter(b => b.status === 'Pagado').reduce((sum, b) => sum + b.amount, 0);
-    const totalSpent = totalPaidInvoices + totalBonusesSpent;
+    const totalSpent = clientInvoices.filter(i => i.status === 'Pagado').reduce((sum, i) => sum + i.amount, 0);
     const totalSessionsRemaining = getClientTotalBonusSessions(clientId);
 
     document.getElementById('detail-client-extra').innerHTML = `
@@ -1550,41 +1497,30 @@
     document.getElementById('detail-client-classes').innerHTML = clientEnrollments.length > 0 ? clientEnrollments.join('') : '<p class="text-xs text-gray-400 italic">No está inscrito en ninguna clase.</p>';
 
     let historyHtml = '';
-    if (clientInvoices.length > 0 || clientBonuses.length > 0) {
-      if (clientBonuses.length > 0) {
-        historyHtml += `<h5 class="font-bold text-gray-700 text-xs mb-1">🎟️ Historial de Bonos de 10 Independientes:</h5><div class="space-y-2 mb-4">`;
-        clientBonuses.forEach(b => {
-          const log = b.attendanceLog || [];
-          const logList = log.length > 0
-            ? `<ul class="list-disc pl-4 mt-1 space-y-0.5 text-xs text-gray-600"><strong>Días consumidos de este bono:</strong>${log.map(dateStr => `<li>${formatDate(dateStr)}</li>`).join('')}</ul>`
-            : `<div class="text-xs text-gray-400 italic mt-1">Aún no se han consumido clases de este bono.</div>`;
-
-          const fileInfo = b.fileName ? `<div class="text-indigo-600 font-medium">📎 Fichero: ${b.fileName}</div>` : `<div class="text-gray-400 italic">Sin fichero subido</div>`;
-
-          historyHtml += `
-            <div class="bg-indigo-50/40 p-3 rounded border border-indigo-100 text-xs space-y-1">
-                <div class="flex justify-between items-center font-bold text-indigo-900">
-                    <span>${b.id} - ${b.concept} (${b.amount} CHF)</span>
-                    <span class="px-2 py-0.5 rounded text-[10px] ${b.status === 'Pagado' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${b.status}</span>
-                </div>
-                <div class="text-gray-600">Clases restantes en este bono: <strong class="px-1 py-0.2 rounded border ${getBonusBadgeColor(b.sessionsLeft)}">${b.sessionsLeft}/10</strong></div>
-                ${fileInfo}
-                ${logList}
-            </div>`;
-        });
-        historyHtml += `</div>`;
-      }
-
-      if (clientInvoices.length > 0) {
-        historyHtml += `<h5 class="font-bold text-gray-700 text-xs mb-1">📄 Facturas Generales:</h5><div class="space-y-2">`;
-        clientInvoices.forEach(inv => {
-          const fileInfo = inv.fileName ? `<span class="text-indigo-600">📎 ${inv.fileName}</span>` : `<span class="text-gray-400 italic">Sin fichero</span>`;
-          historyHtml += `<div class="bg-gray-50 p-2.5 rounded border text-xs space-y-1"><div class="flex justify-between font-bold text-gray-800"><span class="font-mono">${inv.id} - ${inv.concept}</span><span>${inv.amount} CHF</span></div><div class="flex justify-between text-gray-500"><span>Vence: ${formatDate(inv.dueDate)} | <strong class="${inv.status === 'Pagado' ? 'text-green-600' : 'text-amber-600'}">${inv.status}</strong></span><span>${fileInfo}</span></div></div>`;
-        });
-        historyHtml += `</div>`;
-      }
+    if (clientInvoices.length > 0) {
+      historyHtml = `<div class="space-y-2">`;
+      clientInvoices.forEach(inv => {
+        const fileInfo = inv.fileName ? `<span class="text-indigo-600">📎 ${inv.fileName}</span>` : `<span class="text-gray-400 italic">Sin fichero</span>`;
+        let bonusExtra = '';
+        if (inv.isBonus) {
+          bonusExtra = `<div class="text-indigo-600 font-semibold">Clases restantes: ${inv.sessionsLeft}/10</div>`;
+        }
+        historyHtml += `
+          <div class="bg-gray-50 p-2.5 rounded border text-xs space-y-1">
+              <div class="flex justify-between font-bold text-gray-800">
+                  <span class="font-mono">${inv.id} - ${inv.concept}</span>
+                  <span>${inv.amount} CHF</span>
+              </div>
+              ${bonusExtra}
+              <div class="flex justify-between text-gray-500">
+                  <span>Vence: ${formatDate(inv.dueDate)} | <strong class="${inv.status === 'Pagado' ? 'text-green-600' : 'text-amber-600'}">${inv.status}</strong></span>
+                  <span>${fileInfo}</span>
+              </div>
+          </div>`;
+      });
+      historyHtml += `</div>`;
     } else {
-      historyHtml = '<p class="p-4 text-xs text-gray-400 italic">No hay registros históricos de bonos ni facturas.</p>';
+      historyHtml = '<p class="p-4 text-xs text-gray-400 italic">No hay facturas registradas.</p>';
     }
 
     document.getElementById('detail-client-invoices').innerHTML = historyHtml;
@@ -1612,7 +1548,7 @@
   }
 
   function deleteClient(id) {
-    if (confirm('¿Eliminar alumno?')) {
+    if (confirm('¿Eliminar alumno? Se desvinculará de las clases y sus registros financieros quedarán como histórico.')) {
       db.clients = db.clients.filter(c => c.id !== id);
       db.classes.forEach(cl => { cl.enrolled = cl.enrolled.filter(e => e.clientId !== id); });
       saveDB(); renderAll();
@@ -1794,11 +1730,11 @@
     cl.enrolled.forEach(e => {
       if (presentClientIds.has(e.clientId)) {
         if (isBonusRate(e.rateName)) {
-          const activeBonus = (db.bonuses || []).find(b => b.clientId === e.clientId && b.status === 'Pagado' && b.addedToClient && b.sessionsLeft > 0);
-          if (activeBonus) {
-            activeBonus.sessionsLeft--;
-            if (!activeBonus.attendanceLog) activeBonus.attendanceLog = [];
-            activeBonus.attendanceLog.push(attendanceDate);
+          const activeBonusInv = (db.invoices || []).find(inv => inv.clientId === e.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0);
+          if (activeBonusInv) {
+            activeBonusInv.sessionsLeft--;
+            if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
+            activeBonusInv.attendanceLog.push(attendanceDate);
             deductedCount++;
           }
         } else {
@@ -1831,20 +1767,6 @@
     }
   }
 
-  function onScheduleModeChange() {
-    const mode = document.getElementById('class-schedule-mode').value;
-    const recurringFields = document.getElementById('fields-recurring');
-    const singleFields = document.getElementById('fields-single');
-
-    if (mode === 'single') {
-      recurringFields.classList.add('hidden');
-      singleFields.classList.remove('hidden');
-    } else {
-      recurringFields.classList.remove('hidden');
-      singleFields.classList.add('hidden');
-    }
-  }
-
   function openClassModal(id = null) {
     document.getElementById('class-id').value = id || '';
     const container = document.getElementById('class-rates-container');
@@ -1859,13 +1781,13 @@
       onScheduleModeChange();
 
       if (cl.scheduleMode === 'single') {
-        document.getElementById('class-singledate').value = formatDate(cl.singleDate || '');
+        document.getElementById('class-singledate').value = cl.singleDate || '';
         document.getElementById('class-singleschedule').value = cl.singleSchedule || '10:00';
       } else {
         document.getElementById('class-dayofweek').value = cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1;
         document.getElementById('class-schedule').value = cl.schedule || '10:00';
-        document.getElementById('class-startdate').value = formatDate(cl.startDate || '2026-09-01');
-        document.getElementById('class-enddate').value = formatDate(cl.endDate || '2027-06-30');
+        document.getElementById('class-startdate').value = cl.startDate || '2026-09-01';
+        document.getElementById('class-enddate').value = cl.endDate || '2027-06-30';
       }
 
       document.getElementById('class-duration').value = cl.duration || '2 horas';
@@ -1883,8 +1805,8 @@
       document.getElementById('class-singleschedule').value = '10:00';
       document.getElementById('class-duration').value = '2 horas';
       document.getElementById('class-capacity').value = 8;
-      document.getElementById('class-startdate').value = '01/09/2026';
-      document.getElementById('class-enddate').value = '30/06/2027';
+      document.getElementById('class-startdate').value = '2026-09-01';
+      document.getElementById('class-enddate').value = '2027-06-30';
       onClassTypeChange();
     }
     document.getElementById('class-modal').classList.remove('hidden');
@@ -1943,34 +1865,18 @@
     };
 
     if (scheduleMode === 'single') {
-      const rawSingleDate = document.getElementById('class-singledate').value;
-      data.singleDate = parseDateToISO(rawSingleDate);
+      data.singleDate = document.getElementById('class-singledate').value;
       data.singleSchedule = document.getElementById('class-singleschedule').value;
       data.dayOfWeek = undefined;
       data.startDate = undefined;
       data.endDate = undefined;
-
-      if (data.singleDate) {
-        const [y, m] = data.singleDate.split('-');
-        currentCalendarDate = new Date(parseInt(y), parseInt(m) - 1, 1);
-      }
     } else {
-      const rawStartDate = document.getElementById('class-startdate').value;
-      const startDateISO = parseDateToISO(rawStartDate);
-      const rawEndDate = document.getElementById('class-enddate').value;
-      const endDateISO = parseDateToISO(rawEndDate);
-
       data.dayOfWeek = parseInt(document.getElementById('class-dayofweek').value);
       data.schedule = document.getElementById('class-schedule').value;
-      data.startDate = startDateISO;
-      data.endDate = endDateISO;
+      data.startDate = document.getElementById('class-startdate').value;
+      data.endDate = document.getElementById('class-enddate').value;
       data.singleDate = undefined;
       data.singleSchedule = undefined;
-
-      if (startDateISO) {
-        const [y, m] = startDateISO.split('-');
-        currentCalendarDate = new Date(parseInt(y), parseInt(m) - 1, 1);
-      }
     }
 
     if (id) {
@@ -1987,7 +1893,11 @@
   }
 
   function deleteClass(id) {
-    if (confirm('¿Eliminar clase?')) { db.classes = db.classes.filter(c => c.id !== id); saveDB(); renderAll(); }
+    if (confirm('¿Eliminar clase? Se eliminarán también las inscripciones asociadas.')) { 
+      db.classes = db.classes.filter(c => c.id !== id); 
+      saveDB(); 
+      renderAll(); 
+    }
   }
 
   function openEnrollModal(classId) {
@@ -2023,35 +1933,19 @@
     saveDB(); renderAll();
   }
 
-  // --- SECCIÓN: COMPRA DE MATERIAL ---
+  // --- SECCIÓN: CATÁLOGO DE MATERIAL ---
   function renderMaterialSection() {
     if (!db.materialTypes) db.materialTypes = [];
-    if (!db.materialSales) db.materialSales = [];
+    const container = document.getElementById('material-types-list');
 
-    const typesContainer = document.getElementById('material-types-list');
-    typesContainer.innerHTML = db.materialTypes.length === 0 
-      ? `<p class="text-gray-400 italic text-xs">No hay materiales definidos.</p>`
+    container.innerHTML = db.materialTypes.length === 0 
+      ? `<p class="text-gray-400 italic text-xs">No hay materiales en el catálogo.</p>`
       : db.materialTypes.map((m, idx) => `
-        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded border text-xs">
+        <div class="flex justify-between items-center bg-gray-50 p-3 rounded border text-xs">
             <div><strong>${m.name}</strong><br><span class="text-indigo-600 font-semibold">${m.price.toFixed(2)} CHF</span></div>
-            <button onclick="deleteMaterialType(${idx})" class="text-red-500 hover:underline">🗑️</button>
+            <button onclick="deleteMaterialType(${idx})" class="text-red-500 hover:underline">🗑️ Eliminar</button>
         </div>
       `).join('');
-
-    const salesContainer = document.getElementById('material-sales-list');
-    salesContainer.innerHTML = db.materialSales.length === 0 
-      ? `<p class="text-gray-400 italic text-xs">No hay ventas de material registradas.</p>`
-      : db.materialSales.map(s => {
-        const client = db.clients.find(c => c.id === s.clientId) || { name: 'Desconocido' };
-        return `
-          <div class="bg-gray-50 p-2.5 rounded border text-xs space-y-1">
-              <div class="flex justify-between font-bold text-gray-800">
-                  <span>${client.name}</span>
-                  <span class="text-emerald-600">+${s.amount.toFixed(2)} CHF</span>
-              </div>
-              <div class="text-gray-500">${s.concept} — ${formatDate(s.date)}</div>
-          </div>`;
-      }).join('');
   }
 
   function openMaterialTypeModal() {
@@ -2098,41 +1992,572 @@
     if (opt && opt.value) {
       const price = opt.getAttribute('data-price');
       const name = opt.getAttribute('data-name');
-      document.getElementById('mat-sale-concept').value = `Compra de material: ${name}`;
+      document.getElementById('mat-sale-concept').value = `Material: ${name}`;
       document.getElementById('mat-sale-amount').value = price;
     }
   }
 
   function saveMaterialSale(e) {
     e.preventDefault();
-    if (!db.materialSales) db.materialSales = [];
+    if (!db.invoices) db.invoices = [];
+
     const clientId = document.getElementById('mat-sale-client').value;
     const concept = document.getElementById('mat-sale-concept').value;
     const amount = parseFloat(document.getElementById('mat-sale-amount').value);
     const date = new Date().toISOString().split('T')[0];
-    const saleId = 'MAT-' + Date.now();
+    const invoiceId = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
 
-    db.materialSales.push({ id: saleId, clientId, concept, amount, date });
+    const futureDueDate = new Date();
+    futureDueDate.setDate(futureDueDate.getDate() + 15);
+    const dueDateStr = futureDueDate.toISOString().split('T')[0];
 
-    if (!db.ledger) db.ledger = [];
-    const client = db.clients.find(c => c.id === clientId);
-    db.ledger.push({
-      id: 'LED-' + saleId,
-      type: 'income',
-      category: 'Compra de material',
-      concept: `${client ? client.name : 'Cliente'} - ${concept}`,
+    db.invoices.push({
+      id: invoiceId,
+      clientId: clientId,
+      concept: concept,
       amount: amount,
+      status: 'Pendiente',
       date: date,
+      dueDate: dueDateStr,
+      emailSent: false,
       fileName: null,
-      originId: saleId
+      isMaterial: true
     });
 
     saveDB();
     closeModals();
     renderAll();
+    alert(`¡Factura ${invoiceId} de material generada correctamente!`);
   }
 
-  // --- SECCIÓN: INGRESOS Y GASTOS (LEDGER) ---
+  // --- FACTURACIÓN GENERAL, BONOS Y COBROS ---
+  function toggleRenewalsPanel() {
+    renewalsPanelOpen = !renewalsPanelOpen;
+    const content = document.getElementById('renewals-content');
+    const toggleText = document.getElementById('renewals-toggle-text');
+    const icon = document.getElementById('renewals-icon');
+    if (renewalsPanelOpen) {
+      content.classList.remove('hidden'); toggleText.innerText = "Ocultar panel"; icon.style.transform = "rotate(180deg)";
+    } else {
+      content.classList.add('hidden'); toggleText.innerText = "Mostrar panel"; icon.style.transform = "rotate(0deg)";
+    }
+  }
+
+  function toggleClientRenewal(clientId) {
+    const content = document.getElementById(`client-renewals-${clientId}`);
+    const icon = document.getElementById(`client-icon-${clientId}`);
+    if (content.classList.contains('hidden')) {
+      content.classList.remove('hidden');
+      icon.style.transform = "rotate(180deg)";
+      openRenewalClients.add(clientId);
+    } else {
+      content.classList.add('hidden');
+      icon.style.transform = "rotate(0deg)";
+      openRenewalClients.delete(clientId);
+    }
+  }
+
+  function renderRenewals() {
+    const container = document.getElementById('renewals-content');
+    const badge = document.getElementById('renewals-badge');
+    let groupedRenewals = { annual: [], quarterly: [], monthly: [], single: [] };
+
+    db.classes.forEach(cl => {
+      (cl.enrolled || []).forEach(e => {
+        const client = db.clients.find(c => c.id === e.clientId);
+        const rate = (cl.rates || []).find(r => r.name === e.rateName);
+        if (!client || client.status === 'past' || !rate || isBonusRate(e.rateName)) return;
+
+        if (cl.scheduleMode === 'single') {
+          const milestoneLabel = `Workshop (${formatDate(cl.singleDate)})`;
+          const alreadyInvoiced = db.invoices.some(inv =>
+            inv.clientId === client.id &&
+            inv.date === cl.singleDate &&
+            (inv.concept.includes(cl.name) || inv.concept.includes(milestoneLabel))
+          );
+          if (!alreadyInvoiced) {
+            groupedRenewals.single.push({
+              clientId: client.id, clientName: client.name, className: cl.name,
+              rateName: rate.name, price: rate.price, milestoneLabel: milestoneLabel, milestoneDate: cl.singleDate
+            });
+          }
+        } else {
+          getSchoolMilestones(rate.type).forEach(m => {
+            const alreadyInvoiced = db.invoices.some(inv =>
+              inv.clientId === client.id &&
+              inv.date.substring(0, 7) === m.date.substring(0, 7) &&
+              (inv.concept.includes(m.label) || inv.concept.includes(rate.name))
+            );
+            if (!alreadyInvoiced) {
+              groupedRenewals[rate.type].push({
+                clientId: client.id, clientName: client.name, className: cl.name,
+                rateName: rate.name, price: rate.price, milestoneLabel: m.label, milestoneDate: m.date
+              });
+            }
+          });
+        }
+      });
+    });
+
+    const totalPending = groupedRenewals.annual.length + groupedRenewals.quarterly.length + groupedRenewals.monthly.length + groupedRenewals.single.length;
+    badge.innerText = `${totalPending} pendientes`;
+
+    if (totalPending === 0) {
+      container.innerHTML = `<p class="text-xs text-gray-400 italic">¡Todo al día! No hay cuotas ni workshops pendientes de emitir.</p>`;
+      return;
+    }
+
+    let html = '';
+    if (groupedRenewals.annual.length > 0) html += renderModalidadGroup('🌟 Modalidad Anual', groupedRenewals.annual);
+    if (groupedRenewals.quarterly.length > 0) html += renderModalidadGroup('📆 Modalidad Trimestral', groupedRenewals.quarterly);
+    if (groupedRenewals.monthly.length > 0) html += renderModalidadGroup('🗓️ Modalidad Mensual', groupedRenewals.monthly);
+    if (groupedRenewals.single.length > 0) html += renderModalidadGroup('🎨 Workshops y Clases Puntuales', groupedRenewals.single);
+    container.innerHTML = html;
+  }
+
+  function renderModalidadGroup(title, items) {
+    const byClient = {};
+    items.forEach(item => {
+      const ignoredList = db.ignoredRenewals || [];
+      const isIgnored = ignoredList.some(ig => ig.clientId === item.clientId && ig.milestoneDate === item.milestoneDate && ig.concept.includes(item.rateName));
+      if (isIgnored) return;
+
+      if (!byClient[item.clientId]) byClient[item.clientId] = { clientName: item.clientName, cuotas: [] };
+      byClient[item.clientId].cuotas.push(item);
+    });
+
+    let groupHtml = `<div class="space-y-3 mb-6"><h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 border-b pb-1">${title}</h4>`;
+
+    let hasItems = false;
+    for (const clientId in byClient) {
+      let clientData = byClient[clientId];
+      if (clientData.cuotas.length === 0) continue;
+      hasItems = true;
+
+      const isOpen = openRenewalClients.has(clientId);
+      const hiddenClass = isOpen ? '' : 'hidden';
+      const rotateStyle = isOpen ? 'transform: rotate(180deg);' : '';
+
+      groupHtml += `
+        <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+            <div onclick="toggleClientRenewal('${clientId}')" class="px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition select-none text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="font-bold text-gray-900">👤 ${clientData.clientName}</span>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-semibold">${clientData.cuotas.length} pend.</span>
+                </div>
+                <div class="flex items-center space-x-1 text-xs font-semibold text-indigo-600">
+                    <span>Ver</span>
+                    <svg id="client-icon-${clientId}" class="w-4 h-4 transform transition-transform duration-200" style="${rotateStyle}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+            <div id="client-renewals-${clientId}" class="${hiddenClass} p-4 bg-white border-t border-gray-200 space-y-3 text-xs">
+                ${clientData.cuotas.map(p => `
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 gap-2">
+                        <div class="space-y-1">
+                            <div class="text-gray-700 font-medium">${p.className} — <span class="text-indigo-600 font-semibold">${p.rateName}</span></div>
+                            <div class="text-gray-400 text-xs">Período: <strong class="text-gray-600">${p.milestoneLabel}</strong> | Previsto: ${formatDate(p.milestoneDate)}</div>
+                        </div>
+                        <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                            <button onclick="generateAutomaticInvoice('${p.clientId}', '${p.className} - ${p.rateName} (${p.milestoneLabel})', ${p.price}, '${p.milestoneDate}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded font-medium hover:bg-indigo-700 transition text-center text-xs">
+                                ⚡ Emitir (${p.price} CHF)
+                            </button>
+                            <button onclick="ignoreRenewal('${p.clientId}', '${p.milestoneDate}', '${p.className} - ${p.rateName} (${p.milestoneLabel})')" class="bg-gray-200 hover:bg-red-100 text-gray-700 hover:text-red-700 px-2.5 py-1.5 rounded font-medium transition text-xs">
+                                ❌ Ignorar
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+    groupHtml += `</div>`;
+    return hasItems ? groupHtml : '';
+  }
+
+  function ignoreRenewal(clientId, milestoneDate, concept) {
+    if (!db.ignoredRenewals) db.ignoredRenewals = [];
+    db.ignoredRenewals.push({ clientId, milestoneDate, concept });
+    saveDB();
+    renderAll();
+  }
+
+  function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
+    const d = new Date(issueDate); d.setDate(d.getDate() + 15);
+    db.invoices.push({
+      id: `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`,
+      clientId: clientId, concept: concept, amount: amount,
+      status: 'Pendiente', date: issueDate, dueDate: d.toISOString().split('T')[0], emailSent: false, fileName: null
+    });
+    saveDB(); renderAll();
+  }
+
+  function renderInvoices() {
+    renderRenewals();
+    const today = new Date().toISOString().split('T')[0];
+    const searchTerm = (document.getElementById('invoice-search')?.value || '').toLowerCase().trim();
+
+    const overdueInvoices = db.invoices.filter(i => i.status === 'Pendiente' && i.dueDate < today);
+    const alertContainer = document.getElementById('overdue-alert-container');
+
+    if (overdueInvoices.length > 0) {
+      alertContainer.innerHTML = `
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg space-y-1 text-sm">
+            <span class="font-bold text-red-800">⚠️ Hay ${overdueInvoices.length} factura(s) con fecha vencida:</span>
+            ${overdueInvoices.map(inv => {
+        const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente' };
+        return `<div class="text-xs text-red-700 flex justify-between"><span><strong>${inv.id}</strong> - ${client.name} (${inv.concept}) - ${inv.amount} CHF</span><span>Venció: ${formatDate(inv.dueDate)}</span></div>`;
+      }).join('')}
+        </div>`;
+    } else { alertContainer.innerHTML = ''; }
+
+    const pendingContainer = document.getElementById('pending-invoices-container');
+    const pendingInvoices = db.invoices.filter(i => {
+      if (i.status !== 'Pendiente') return false;
+      if (!searchTerm) return true;
+      const client = db.clients.find(c => c.id === i.clientId) || { name: '' };
+      return client.name.toLowerCase().includes(searchTerm) || i.concept.toLowerCase().includes(searchTerm) || i.id.toLowerCase().includes(searchTerm);
+    });
+
+    if (pendingInvoices.length === 0) {
+      pendingContainer.innerHTML = `<div class="bg-white p-8 rounded-xl border border-gray-200 text-center text-gray-400 text-sm">No hay facturas pendientes que coincidan con la búsqueda.</div>`;
+    } else {
+      pendingContainer.innerHTML = pendingInvoices.map(inv => {
+        const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente (Eliminado)' };
+        const isOverdue = inv.dueDate < today;
+        const isPaid = inv.status === 'Pagado';
+
+        const emailStatus = inv.emailSent
+          ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">✅ Email enviado</span>`
+          : `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-semibold">✉️ Email pendiente</span>`;
+
+        const fileBadge = inv.fileName
+          ? `<span class="text-indigo-600 font-medium">📎 ${inv.fileName}</span>`
+          : `<span class="text-red-500 font-semibold">⚠️ Falta adjuntar fichero</span>`;
+
+        const emailBtnDisabled = !inv.fileName;
+        const emailBtnClasses = emailBtnDisabled
+          ? 'border border-gray-200 bg-gray-100 text-gray-400 p-2 rounded-lg cursor-not-allowed flex items-center justify-center text-sm'
+          : 'border border-gray-300 bg-white text-gray-700 p-2 rounded-lg hover:bg-gray-50 flex items-center justify-center text-sm shadow-sm';
+        
+        let badgeType = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${isOverdue ? 'Vencida' : 'Pendiente'}</span>`;
+        if (inv.isBonus) {
+          badgeType += ` <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs font-bold">🎟️ Bono (${inv.sessionsLeft}/10)</span>`;
+        } else if (inv.isMaterial) {
+          badgeType += ` <span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-xs font-bold">🎨 Material</span>`;
+        }
+
+        return `
+          <div class="bg-white rounded-xl shadow-sm border ${isOverdue ? 'border-red-300 bg-red-50/10' : 'border-gray-200'} p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm">
+              <div class="space-y-1">
+                  <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                      <span class="font-mono font-bold text-xs bg-gray-100 px-2 py-0.5 rounded">${inv.id}</span>
+                      <span class="font-bold text-gray-900">${client.name}</span>
+                      ${badgeType}
+                      ${emailStatus}
+                  </div>
+                  <div class="text-gray-600">${inv.concept} — <strong class="text-gray-900">${inv.amount} CHF</strong></div>
+                  <div class="text-xs text-gray-400 flex items-center space-x-2 flex-wrap gap-y-1">
+                      <span>Emisión: ${formatDate(inv.date)} | Vencimiento: <span class="${isOverdue ? 'text-red-600 font-bold' : ''}">${formatDate(inv.dueDate)}</span></span>
+                      <span>| ${fileBadge}</span>
+                  </div>
+              </div>
+              <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                  <button onclick="sendReminderEmail('invoice', '${inv.id}')" title="Enviar recordatorio de pago" class="border border-amber-300 bg-amber-50 text-amber-700 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 flex items-center text-xs shadow-sm font-medium">🔔 Rappel</button>
+                  <button onclick="toggleInvoiceStatus('${inv.id}')" class="${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                      ${isPaid ? '↩️ Desmarcar' : '✓ Marcar Pagado'}
+                  </button>
+                  <label class="border border-gray-300 bg-white text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center text-xs shadow-sm" title="Subir fichero de factura">
+                      📎 Subir Factura <input type="file" class="hidden" onchange="uploadInvoiceFile('${inv.id}', event)">
+                  </label>
+                  <button onclick="${emailBtnDisabled ? '' : `simulateInvoiceEmail('${inv.id}')`}" ${emailBtnDisabled ? 'disabled' : ''} title="Enviar Email" class="${emailBtnClasses}">✉️</button>
+                  <button onclick="openInvoiceModal('${inv.id}')" title="Editar" class="text-indigo-600 p-1 text-sm">✏️</button>
+                  <button onclick="deleteInvoice('${inv.id}')" title="Eliminar factura" class="text-red-600 p-1 text-sm hover:underline">🗑️</button>
+              </div>
+          </div>`;
+      }).join('');
+    }
+    renderArchiveTree();
+  }
+
+  function deleteInvoice(id) {
+    if (confirm(`¿Estás seguro de que deseas eliminar la factura ${id}?`)) {
+      db.invoices = db.invoices.filter(i => i.id !== id);
+      if (db.ledger) {
+        db.ledger = db.ledger.filter(l => l.originId !== id);
+      }
+      saveDB();
+      renderAll();
+    }
+  }
+
+  function uploadInvoiceFile(id, event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const inv = db.invoices.find(i => i.id === id);
+    if (inv) {
+      inv.fileName = file.name;
+      if (db.ledger) {
+        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
+        if (ledgerItem) ledgerItem.fileName = file.name;
+      }
+      saveDB(); renderAll();
+      alert(`Fichero "${file.name}" asociado a la factura ${id} correctamente.`);
+    }
+  }
+
+  function simulateInvoiceEmail(id) {
+    const inv = db.invoices.find(i => i.id === id);
+    if (!inv.fileName) {
+      alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
+      return;
+    }
+    const client = db.clients.find(c => c.id === inv.clientId);
+    if (!client || !client.email || !client.email.includes('@')) {
+      alert('El alumno no tiene un correo electrónico válido registrado.');
+      return;
+    }
+    
+    currentEmailContext = {
+      type: 'invoice',
+      id: inv.id,
+      email: client.email,
+      subject: `Facture ${inv.id} - Atelier de Eloísa`,
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Fichier joint : ${inv.fileName})\n\nCordialement,\nAtelier de Eloísa`
+    };
+    
+    openEmailPreviewModal();
+  }
+
+  function sendReminderEmail(type, targetId) {
+    const inv = db.invoices.find(i => i.id === targetId);
+    if (!inv) return;
+    const client = db.clients.find(c => c.id === inv.clientId);
+
+    if (!client || !client.email || !client.email.includes('@')) {
+      alert('El alumno no tiene un correo electrónico válido registrado.');
+      return;
+    }
+
+    let subject, body;
+    if (inv.isBonus && inv.sessionsLeft <= 2) {
+      subject = `Rappel : Bientôt épuisé (${inv.id}) - Atelier de Eloísa`;
+      body = `Bonjour ${client.name},\n\nNous vous informons qu'il ne vous reste plus que ${inv.sessionsLeft} cours sur votre carnet (${inv.id}). Pensez à le renouveler.\n\nCordialement,\nAtelier de Eloísa`;
+    } else {
+      subject = `Rappel : Facture en attente (${inv.id}) - Atelier de Eloísa`;
+      body = `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier de Eloísa`;
+    }
+
+    currentEmailContext = {
+      type: 'reminder',
+      id: inv.id,
+      email: client.email,
+      subject: subject,
+      body: body
+    };
+
+    openEmailPreviewModal();
+  }
+
+  function openEmailPreviewModal() {
+    document.getElementById('preview-email-to').value = currentEmailContext.email;
+    document.getElementById('preview-email-subject').value = currentEmailContext.subject;
+    document.getElementById('preview-email-body').value = currentEmailContext.body;
+    document.getElementById('email-preview-modal').classList.remove('hidden');
+  }
+
+  function confirmAndSendEmail() {
+    if (!currentEmailContext) return;
+
+    const subject = encodeURIComponent(document.getElementById('preview-email-subject').value);
+    const body = encodeURIComponent(document.getElementById('preview-email-body').value);
+
+    const inv = db.invoices.find(i => i.id === currentEmailContext.id);
+    if (inv) { inv.emailSent = true; }
+
+    saveDB();
+    closeModals();
+    renderAll();
+
+    window.location.href = `mailto:${currentEmailContext.email}?subject=${subject}&body=${body}`;
+  }
+
+  function renderArchiveTree() {
+    const treeContainer = document.getElementById('archive-tree-container');
+    const archiveBadge = document.getElementById('archive-count');
+    const paidInvoices = db.invoices.filter(i => i.status === 'Pagado');
+    archiveBadge.innerText = `${paidInvoices.length} pagadas`;
+
+    if (paidInvoices.length === 0) {
+      treeContainer.innerHTML = `<p class="text-gray-400 italic text-center py-2 text-xs">No hay facturas archivadas.</p>`;
+      return;
+    }
+
+    const tree = {};
+    paidInvoices.forEach(inv => {
+      const year = inv.date ? inv.date.substring(0, 4) : 'Sin año';
+      const month = inv.date ? inv.date.substring(5, 7) : '00';
+      if (!tree[year]) tree[year] = {};
+      if (!tree[year][month]) tree[year][month] = [];
+      tree[year][month].push(inv);
+    });
+
+    const monthNames = { '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril', '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto', '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre' };
+    let html = '';
+    Object.keys(tree).sort().reverse().forEach(year => {
+      let yearTotal = Object.values(tree[year]).flat().length;
+      html += `<details class="group space-y-1"><summary class="cursor-pointer font-bold text-indigo-900 bg-indigo-50/80 hover:bg-indigo-100 px-3 py-2 rounded flex justify-between items-center text-xs"><span>📁 ${year}</span><span class="text-xs text-indigo-600 font-normal">${yearTotal} facturas</span></summary><div class="pl-4 space-y-1.5 border-l-2 border-indigo-100 ml-1 mt-1">`;
+      Object.keys(tree[year]).sort().reverse().forEach(month => {
+        let invoicesInMonth = tree[year][month];
+        html += `<details class="group/month"><summary class="cursor-pointer font-medium text-gray-700 hover:text-indigo-600 py-1.5 px-2 rounded flex justify-between items-center text-xs"><span>📂 ${monthNames[month]}</span><span class="text-xs text-gray-400">(${invoicesInMonth.length})</span></summary><div class="pl-3 space-y-1 py-1 border-l border-gray-200 ml-1">`;
+        invoicesInMonth.forEach(inv => {
+          const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente (Eliminado)' };
+          html += `<div class="bg-gray-50 hover:bg-gray-100 p-2.5 rounded border border-gray-100 flex justify-between items-center text-xs"><div><span class="font-mono font-bold text-gray-800">${inv.id}</span> — <span class="text-gray-600">${client.name}</span> <span class="text-gray-400">(${inv.concept})</span></div><div class="flex items-center space-x-3"><span class="font-semibold text-green-700">${inv.amount} CHF</span><button onclick="toggleInvoiceStatus('${inv.id}')" class="text-amber-600 hover:underline" title="Desmarcar como pagada">↩️</button><button onclick="deleteInvoice('${inv.id}')" class="text-red-600 hover:underline" title="Eliminar factura">🗑️</button></div></div>`;
+        });
+        html += `</div></details>`;
+      });
+      html += `</div></details>`;
+    });
+    treeContainer.innerHTML = html;
+  }
+
+  function openInvoiceModal(id = null) {
+    document.getElementById('invoice-id').value = id || '';
+    const clientSelect = document.getElementById('invoice-client');
+    clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+    if (id) {
+      const inv = db.invoices.find(i => i.id === id);
+      document.getElementById('invoice-modal-title').innerText = `Editar Factura (${inv.id})`;
+      clientSelect.value = inv.clientId;
+      document.getElementById('invoice-concept').value = inv.concept;
+      document.getElementById('invoice-amount').value = inv.amount;
+      document.getElementById('invoice-duedate').value = inv.dueDate;
+      document.getElementById('invoice-rate-select').innerHTML = `<option value="">-- Escritura manual libre --</option>`;
+    } else {
+      document.getElementById('invoice-modal-title').innerText = 'Nueva Factura Manual';
+      const future = new Date(); future.setDate(future.getDate() + 15);
+      document.getElementById('invoice-duedate').value = future.toISOString().split('T')[0];
+      document.getElementById('invoice-concept').value = '';
+      document.getElementById('invoice-amount').value = '';
+      onInvoiceClientChange();
+    }
+    document.getElementById('invoice-modal').classList.remove('hidden');
+  }
+
+  function openBonusModal() {
+    const clientSelect = document.getElementById('bonus-client');
+    clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    document.getElementById('bonus-modal').classList.remove('hidden');
+  }
+
+  function saveBonusInvoice(e) {
+    e.preventDefault();
+    if (!db.invoices) db.invoices = [];
+    const clientId = document.getElementById('bonus-client').value;
+    const concept = document.getElementById('bonus-concept').value;
+    const amount = parseFloat(document.getElementById('bonus-amount').value);
+    const date = new Date().toISOString().split('T')[0];
+    const invoiceId = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
+
+    const future = new Date(); future.setDate(future.getDate() + 15);
+
+    db.invoices.push({
+      id: invoiceId,
+      clientId: clientId,
+      concept: concept,
+      amount: amount,
+      status: 'Pendiente',
+      date: date,
+      dueDate: future.toISOString().split('T')[0],
+      emailSent: false,
+      fileName: null,
+      isBonus: true,
+      sessionsLeft: 10,
+      attendanceLog: []
+    });
+
+    saveDB();
+    closeModals();
+    renderAll();
+    alert(`¡Factura de bono ${invoiceId} generada correctamente!`);
+  }
+
+  function onInvoiceClientChange() {
+    const clientId = document.getElementById('invoice-client').value;
+    const rateSelect = document.getElementById('invoice-rate-select');
+    let options = `<option value="">-- Escritura manual libre --</option>`;
+    db.classes.filter(cl => cl.enrolled.some(e => e.clientId === clientId)).forEach(cl => {
+      (cl.rates || []).forEach(r => {
+        options += `<option value="${cl.name} - ${r.name}|${r.price}">${cl.name} ➔ ${r.name} (${r.price} CHF)</option>`;
+      });
+    });
+    rateSelect.innerHTML = options;
+  }
+
+  function onInvoiceRateSelect() {
+    const val = document.getElementById('invoice-rate-select').value;
+    if (!val) return;
+    const [concept, price] = val.split('|');
+    document.getElementById('invoice-concept').value = concept;
+    document.getElementById('invoice-amount').value = price;
+  }
+
+  function saveInvoice(e) {
+    e.preventDefault();
+    const id = document.getElementById('invoice-id').value;
+    const data = {
+      clientId: document.getElementById('invoice-client').value,
+      concept: document.getElementById('invoice-concept').value,
+      amount: parseFloat(document.getElementById('invoice-amount').value),
+      dueDate: document.getElementById('invoice-duedate').value
+    };
+
+    if (id) {
+      Object.assign(db.invoices.find(i => i.id === id), data);
+    } else {
+      data.id = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
+      data.status = 'Pendiente';
+      data.date = new Date().toISOString().split('T')[0];
+      data.emailSent = false;
+      data.fileName = null;
+      db.invoices.push(data);
+    }
+    saveDB(); closeModals(); renderAll();
+  }
+
+  function toggleInvoiceStatus(id) {
+    const inv = db.invoices.find(i => i.id === id);
+    if (!inv) return;
+
+    if (inv.status === 'Pendiente') {
+      inv.status = 'Pagado';
+      if (!db.ledger) db.ledger = [];
+      const client = db.clients.find(c => c.id === inv.clientId);
+      
+      let category = 'Pago de clases';
+      if (inv.isBonus) category = 'Pago de abonos';
+      else if (inv.isMaterial) category = 'Compra de material';
+
+      db.ledger.push({
+        id: 'LED-' + inv.id,
+        type: 'income',
+        category: category,
+        concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.id})`,
+        amount: inv.amount,
+        date: inv.date || new Date().toISOString().split('T')[0],
+        fileName: inv.fileName,
+        originId: inv.id
+      });
+    } else {
+      inv.status = 'Pendiente';
+      if (db.ledger) {
+        db.ledger = db.ledger.filter(l => l.originId !== inv.id);
+      }
+    }
+    saveDB(); renderAll();
+  }
+
+  // --- INGRESOS Y GASTOS (LEDGER) ---
   function openLedgerModal() {
     document.getElementById('ledger-id').value = '';
     document.getElementById('ledger-type').value = 'income';
@@ -2353,628 +2778,6 @@
     const todayStr = new Date().toLocaleDateString('es-ES');
     document.getElementById('report-modal-date').innerText = `Fecha de emisión: ${todayStr}`;
     document.getElementById('ledger-report-modal').classList.remove('hidden');
-  }
-
-  // --- SECCIÓN: RENOVACIÓN Y GESTIÓN DE BONOS ---
-  function openBonusModal() {
-    document.getElementById('bonus-id').value = '';
-    const clientSelect = document.getElementById('bonus-client');
-    clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    document.getElementById('bonus-concept').value = 'Bono 10 Clases';
-    document.getElementById('bonus-amount').value = '300';
-    document.getElementById('bonus-modal').classList.remove('hidden');
-  }
-
-  function saveBonus(e) {
-    e.preventDefault();
-    const newBonus = {
-      id: `BON-2026-${String((db.bonuses || []).length + 1).padStart(3, '0')}`,
-      clientId: document.getElementById('bonus-client').value,
-      concept: document.getElementById('bonus-concept').value,
-      amount: parseFloat(document.getElementById('bonus-amount').value),
-      status: 'Pendiente',
-      date: new Date().toISOString().split('T')[0],
-      emailSent: false,
-      addedToClient: false,
-      sessionsLeft: 10,
-      attendanceLog: [],
-      fileName: null
-    };
-
-    if (!db.bonuses) db.bonuses = [];
-    db.bonuses.push(newBonus);
-    saveDB(); closeModals(); renderAll();
-  }
-
-  function renderBonusRenewals() {
-    const container = document.getElementById('bonus-list-container');
-    if (!db.bonuses) db.bonuses = [];
-
-    if (db.bonuses.length === 0) {
-      container.innerHTML = `<div class="bg-white p-8 rounded-xl border border-gray-200 text-center text-gray-400 text-sm">No hay bonos de 10 emitidos.</div>`;
-      return;
-    }
-
-    container.innerHTML = db.bonuses.map(b => {
-      const client = db.clients.find(c => c.id === b.clientId) || { name: 'Desconocido' };
-      const isPaid = b.status === 'Pagado';
-
-      const emailBadge = b.emailSent
-        ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">✅ Email enviado</span>`
-        : `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-semibold">✉️ Email pendiente</span>`;
-
-      const fileBadge = b.fileName
-        ? `<span class="text-indigo-600 font-medium">📎 ${b.fileName}</span>`
-        : `<span class="text-red-500 font-semibold">⚠️ Falta adjuntar fichero</span>`;
-
-      const emailBtnDisabled = !b.fileName;
-      const emailBtnClasses = emailBtnDisabled
-        ? 'border border-gray-200 bg-gray-100 text-gray-400 p-2 rounded-lg cursor-not-allowed flex items-center justify-center text-sm'
-        : 'border border-gray-300 bg-white text-gray-700 p-2 rounded-lg hover:bg-gray-50 flex items-center justify-center text-sm shadow-sm';
-      const emailTitle = emailBtnDisabled ? 'Debe adjuntar un fichero antes de enviar el email' : 'Enviar Email con fichero';
-
-      return `
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm">
-            <div class="space-y-1">
-                <div class="flex items-center space-x-2 flex-wrap gap-y-1">
-                    <span class="font-mono font-bold text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">${b.id}</span>
-                    <span class="font-bold text-gray-900">${client.name}</span>
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isPaid ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">${b.status}</span>
-                    ${emailBadge}
-                </div>
-                <div class="text-gray-600">${b.concept} — <strong class="text-gray-900">${b.amount} CHF</strong></div>
-                <div class="text-xs text-gray-400 flex items-center space-x-2 flex-wrap gap-y-1">
-                    <span>Emisión: ${formatDate(b.date)} (Sin caducidad) ${b.addedToClient ? '| <strong class="text-indigo-600">Bono activo sumado</strong>' : ''}</span>
-                    <span>| ${fileBadge}</span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                <button onclick="toggleBonusStatus('${b.id}')" class="${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                    ${isPaid ? '↩️ Desmarcar' : '✓ Marcar Pagado (+10)'}
-                </button>
-                <label class="border border-gray-300 bg-white text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center text-xs shadow-sm" title="Subir fichero de bono">
-                    📎 Subir Factura <input type="file" class="hidden" onchange="uploadBonusFile('${b.id}', event)">
-                </label>
-                <button onclick="${emailBtnDisabled ? '' : `simulateBonusEmail('${b.id}')`}" ${emailBtnDisabled ? 'disabled' : ''} title="${emailTitle}" class="${emailBtnClasses}">✉️</button>
-                <button onclick="deleteBonus('${b.id}')" title="Eliminar" class="text-red-600 p-1 text-sm">🗑️</button>
-            </div>
-        </div>`;
-    }).join('');
-  }
-
-  function toggleBonusStatus(id) {
-    const bonus = db.bonuses.find(b => b.id === id);
-    if (!bonus) return;
-
-    if (bonus.status === 'Pendiente') {
-      bonus.status = 'Pagado';
-      bonus.addedToClient = true;
-
-      if (!db.ledger) db.ledger = [];
-      const client = db.clients.find(c => c.id === bonus.clientId);
-      db.ledger.push({
-        id: 'LED-BON-' + bonus.id,
-        type: 'income',
-        category: 'Pago de abonos',
-        concept: `${client ? client.name : 'Cliente'} - ${bonus.concept} (${bonus.id})`,
-        amount: bonus.amount,
-        date: new Date().toISOString().split('T')[0],
-        fileName: bonus.fileName,
-        originId: bonus.id
-      });
-    } else {
-      bonus.status = 'Pendiente';
-      bonus.addedToClient = false;
-
-      if (db.ledger) {
-        db.ledger = db.ledger.filter(l => l.originId !== bonus.id);
-      }
-    }
-    saveDB(); renderAll();
-  }
-
-  function uploadBonusFile(id, event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const bonus = db.bonuses.find(b => b.id === id);
-    if (bonus) {
-      bonus.fileName = file.name;
-      if (db.ledger) {
-        const ledgerItem = db.ledger.find(l => l.originId === bonus.id);
-        if (ledgerItem) ledgerItem.fileName = file.name;
-      }
-      saveDB(); renderAll();
-      alert(`Fichero "${file.name}" asociado al bono ${id} correctamente.`);
-    }
-  }
-
-  function simulateBonusEmail(id) {
-    const bonus = db.bonuses.find(b => b.id === id);
-    if (!bonus.fileName) {
-      alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
-      return;
-    }
-    const client = db.clients.find(c => c.id === bonus.clientId);
-    
-    currentEmailContext = {
-      type: 'bonus',
-      id: bonus.id,
-      email: client.email,
-      subject: `Reçu de votre carnet de 10 cours (${bonus.id}) - Atelier de Eloísa`,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre carnet de 10 cours (${bonus.id}) pour un montant de ${bonus.amount} CHF.\n\n(Fichier joint : ${bonus.fileName})\n\nCordialement,\nAtelier de Eloísa`
-    };
-    
-    openEmailPreviewModal();
-  }
-
-  function deleteBonus(id) {
-    if (confirm('¿Eliminar este bono?')) {
-      db.bonuses = db.bonuses.filter(b => b.id !== id);
-      if (db.ledger) db.ledger = db.ledger.filter(l => l.originId !== id);
-      saveDB(); renderAll();
-    }
-  }
-
-  // --- FACTURACIÓN GENERAL Y RENOVACIONES ---
-  function toggleRenewalsPanel() {
-    renewalsPanelOpen = !renewalsPanelOpen;
-    const content = document.getElementById('renewals-content');
-    const toggleText = document.getElementById('renewals-toggle-text');
-    const icon = document.getElementById('renewals-icon');
-    if (renewalsPanelOpen) {
-      content.classList.remove('hidden'); toggleText.innerText = "Ocultar panel"; icon.style.transform = "rotate(180deg)";
-    } else {
-      content.classList.add('hidden'); toggleText.innerText = "Mostrar panel"; icon.style.transform = "rotate(0deg)";
-    }
-  }
-
-  function toggleClientRenewal(clientId) {
-    const content = document.getElementById(`client-renewals-${clientId}`);
-    const icon = document.getElementById(`client-icon-${clientId}`);
-    if (content.classList.contains('hidden')) {
-      content.classList.remove('hidden');
-      icon.style.transform = "rotate(180deg)";
-      openRenewalClients.add(clientId);
-    } else {
-      content.classList.add('hidden');
-      icon.style.transform = "rotate(0deg)";
-      openRenewalClients.delete(clientId);
-    }
-  }
-
-  function renderRenewals() {
-    const container = document.getElementById('renewals-content');
-    const badge = document.getElementById('renewals-badge');
-    let groupedRenewals = { annual: [], quarterly: [], monthly: [], single: [] };
-
-    db.classes.forEach(cl => {
-      (cl.enrolled || []).forEach(e => {
-        const client = db.clients.find(c => c.id === e.clientId);
-        const rate = (cl.rates || []).find(r => r.name === e.rateName);
-        if (!client || client.status === 'past' || !rate || isBonusRate(e.rateName)) return;
-
-        if (cl.scheduleMode === 'single') {
-          const milestoneLabel = `Workshop (${formatDate(cl.singleDate)})`;
-          const alreadyInvoiced = db.invoices.some(inv =>
-            inv.clientId === client.id &&
-            inv.date === cl.singleDate &&
-            (inv.concept.includes(cl.name) || inv.concept.includes(milestoneLabel))
-          );
-          if (!alreadyInvoiced) {
-            groupedRenewals.single.push({
-              clientId: client.id, clientName: client.name, className: cl.name,
-              rateName: rate.name, price: rate.price, milestoneLabel: milestoneLabel, milestoneDate: cl.singleDate
-            });
-          }
-        } else {
-          getSchoolMilestones(rate.type).forEach(m => {
-            const alreadyInvoiced = db.invoices.some(inv =>
-              inv.clientId === client.id &&
-              inv.date.substring(0, 7) === m.date.substring(0, 7) &&
-              (inv.concept.includes(m.label) || inv.concept.includes(rate.name))
-            );
-            if (!alreadyInvoiced) {
-              groupedRenewals[rate.type].push({
-                clientId: client.id, clientName: client.name, className: cl.name,
-                rateName: rate.name, price: rate.price, milestoneLabel: m.label, milestoneDate: m.date
-              });
-            }
-          });
-        }
-      });
-    });
-
-    const totalPending = groupedRenewals.annual.length + groupedRenewals.quarterly.length + groupedRenewals.monthly.length + groupedRenewals.single.length;
-    badge.innerText = `${totalPending} pendientes`;
-
-    if (totalPending === 0) {
-      container.innerHTML = `<p class="text-xs text-gray-400 italic">¡Todo al día! No hay cuotas ni workshops pendientes de emitir.</p>`;
-      return;
-    }
-
-    let html = '';
-    if (groupedRenewals.annual.length > 0) html += renderModalidadGroup('🌟 Modalidad Anual', groupedRenewals.annual);
-    if (groupedRenewals.quarterly.length > 0) html += renderModalidadGroup('📆 Modalidad Trimestral', groupedRenewals.quarterly);
-    if (groupedRenewals.monthly.length > 0) html += renderModalidadGroup('🗓️ Modalidad Mensual', groupedRenewals.monthly);
-    if (groupedRenewals.single.length > 0) html += renderModalidadGroup('🎨 Workshops y Clases Puntuales', groupedRenewals.single);
-    container.innerHTML = html;
-  }
-
-  function renderModalidadGroup(title, items) {
-    const byClient = {};
-    items.forEach(item => {
-      const ignoredList = db.ignoredRenewals || [];
-      const isIgnored = ignoredList.some(ig => ig.clientId === item.clientId && ig.milestoneDate === item.milestoneDate && ig.concept.includes(item.rateName));
-      if (isIgnored) return;
-
-      if (!byClient[item.clientId]) byClient[item.clientId] = { clientName: item.clientName, cuotas: [] };
-      byClient[item.clientId].cuotas.push(item);
-    });
-
-    let groupHtml = `<div class="space-y-3 mb-6"><h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 border-b pb-1">${title}</h4>`;
-
-    let hasItems = false;
-    for (const clientId in byClient) {
-      let clientData = byClient[clientId];
-      if (clientData.cuotas.length === 0) continue;
-      hasItems = true;
-
-      const isOpen = openRenewalClients.has(clientId);
-      const hiddenClass = isOpen ? '' : 'hidden';
-      const rotateStyle = isOpen ? 'transform: rotate(180deg);' : '';
-
-      groupHtml += `
-        <div class="bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
-            <div onclick="toggleClientRenewal('${clientId}')" class="px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-gray-100 transition select-none text-sm">
-                <div class="flex items-center space-x-2">
-                    <span class="font-bold text-gray-900">👤 ${clientData.clientName}</span>
-                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-semibold">${clientData.cuotas.length} pend.</span>
-                </div>
-                <div class="flex items-center space-x-1 text-xs font-semibold text-indigo-600">
-                    <span>Ver</span>
-                    <svg id="client-icon-${clientId}" class="w-4 h-4 transform transition-transform duration-200" style="${rotateStyle}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
-            <div id="client-renewals-${clientId}" class="${hiddenClass} p-4 bg-white border-t border-gray-200 space-y-3 text-xs">
-                ${clientData.cuotas.map(p => `
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded border border-gray-200 gap-2">
-                        <div class="space-y-1">
-                            <div class="text-gray-700 font-medium">${p.className} — <span class="text-indigo-600 font-semibold">${p.rateName}</span></div>
-                            <div class="text-gray-400 text-xs">Período: <strong class="text-gray-600">${p.milestoneLabel}</strong> | Previsto: ${formatDate(p.milestoneDate)}</div>
-                        </div>
-                        <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                            <button onclick="generateAutomaticInvoice('${p.clientId}', '${p.className} - ${p.rateName} (${p.milestoneLabel})', ${p.price}, '${p.milestoneDate}')" class="bg-indigo-600 text-white px-3 py-1.5 rounded font-medium hover:bg-indigo-700 transition text-center text-xs">
-                                ⚡ Emitir (${p.price} CHF)
-                            </button>
-                            <button onclick="ignoreRenewal('${p.clientId}', '${p.milestoneDate}', '${p.className} - ${p.rateName} (${p.milestoneLabel})')" class="bg-gray-200 hover:bg-red-100 text-gray-700 hover:text-red-700 px-2.5 py-1.5 rounded font-medium transition text-xs" title="Ocultar y no ver más esta cuota automática">
-                                ❌ Ignorar
-                            </button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>`;
-    }
-    groupHtml += `</div>`;
-    return hasItems ? groupHtml : '';
-  }
-
-  function ignoreRenewal(clientId, milestoneDate, concept) {
-    if (!db.ignoredRenewals) db.ignoredRenewals = [];
-    db.ignoredRenewals.push({ clientId, milestoneDate, concept });
-    saveDB();
-    renderAll();
-  }
-
-  function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
-    const d = new Date(issueDate); d.setDate(d.getDate() + 15);
-    db.invoices.push({
-      id: `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`,
-      clientId: clientId, concept: concept, amount: amount,
-      status: 'Pendiente', date: issueDate, dueDate: d.toISOString().split('T')[0], emailSent: false, fileName: null
-    });
-    saveDB(); renderAll();
-  }
-
-  function renderInvoices() {
-    renderRenewals();
-    const today = new Date().toISOString().split('T')[0];
-    const overdueInvoices = db.invoices.filter(i => i.status === 'Pendiente' && i.dueDate < today);
-    const alertContainer = document.getElementById('overdue-alert-container');
-
-    if (overdueInvoices.length > 0) {
-      alertContainer.innerHTML = `
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg space-y-1 text-sm">
-            <span class="font-bold text-red-800">⚠️ Hay ${overdueInvoices.length} factura(s) con fecha vencida:</span>
-            ${overdueInvoices.map(inv => {
-        const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente' };
-        return `<div class="text-xs text-red-700 flex justify-between"><span><strong>${inv.id}</strong> - ${client.name} (${inv.concept}) - ${inv.amount} CHF</span><span>Venció: ${formatDate(inv.dueDate)}</span></div>`;
-      }).join('')}
-        </div>`;
-    } else { alertContainer.innerHTML = ''; }
-
-    const pendingContainer = document.getElementById('pending-invoices-container');
-    const pendingInvoices = db.invoices.filter(i => i.status === 'Pendiente');
-
-    if (pendingInvoices.length === 0) {
-      pendingContainer.innerHTML = `<div class="bg-white p-8 rounded-xl border border-gray-200 text-center text-gray-400 text-sm">¡Excelente! No hay facturas pendientes de cobro.</div>`;
-    } else {
-      pendingContainer.innerHTML = pendingInvoices.map(inv => {
-        const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Desconocido' };
-        const isOverdue = inv.dueDate < today;
-        const isPaid = inv.status === 'Pagado';
-
-        const emailStatus = inv.emailSent
-          ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">✅ Email enviado</span>`
-          : `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-semibold">✉️ Email pendiente</span>`;
-
-        const fileBadge = inv.fileName
-          ? `<span class="text-indigo-600 font-medium">📎 ${inv.fileName}</span>`
-          : `<span class="text-red-500 font-semibold">⚠️ Falta adjuntar fichero</span>`;
-
-        const emailBtnDisabled = !inv.fileName;
-        const emailBtnClasses = emailBtnDisabled
-          ? 'border border-gray-200 bg-gray-100 text-gray-400 p-2 rounded-lg cursor-not-allowed flex items-center justify-center text-sm'
-          : 'border border-gray-300 bg-white text-gray-700 p-2 rounded-lg hover:bg-gray-50 flex items-center justify-center text-sm shadow-sm';
-        const emailTitle = emailBtnDisabled ? 'Debe adjuntar un fichero antes de enviar el email' : 'Enviar Email con fichero';
-
-        return `
-          <div class="bg-white rounded-xl shadow-sm border ${isOverdue ? 'border-red-300 bg-red-50/10' : 'border-gray-200'} p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm">
-              <div class="space-y-1">
-                  <div class="flex items-center space-x-2 flex-wrap gap-y-1">
-                      <span class="font-mono font-bold text-xs bg-gray-100 px-2 py-0.5 rounded">${inv.id}</span>
-                      <span class="font-bold text-gray-900">${client.name}</span>
-                      <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${isOverdue ? 'Vencida' : 'Pendiente'}</span>
-                      ${emailStatus}
-                  </div>
-                  <div class="text-gray-600">${inv.concept} — <strong class="text-gray-900">${inv.amount} CHF</strong></div>
-                  <div class="text-xs text-gray-400 flex items-center space-x-2 flex-wrap gap-y-1">
-                      <span>Emisión: ${formatDate(inv.date)} | Vencimiento: <span class="${isOverdue ? 'text-red-600 font-bold' : ''}">${formatDate(inv.dueDate)}</span></span>
-                      <span>| ${fileBadge}</span>
-                  </div>
-              </div>
-              <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                  <button onclick="sendReminderEmail('invoice', '${inv.id}')" title="Enviar recordatorio de pago" class="border border-amber-300 bg-amber-50 text-amber-700 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 flex items-center text-xs shadow-sm font-medium">🔔 Mandar recordatorio</button>
-                  <button onclick="toggleInvoiceStatus('${inv.id}')" class="${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
-                      ${isPaid ? '↩️ Desmarcar' : '✓ Marcar Pagado'}
-                  </button>
-                  <label class="border border-gray-300 bg-white text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center text-xs shadow-sm" title="Subir fichero de factura">
-                      📎 Subir Factura <input type="file" class="hidden" onchange="uploadInvoiceFile('${inv.id}', event)">
-                  </label>
-                  <button onclick="${emailBtnDisabled ? '' : `simulateInvoiceEmail('${inv.id}')`}" ${emailBtnDisabled ? 'disabled' : ''} title="${emailTitle}" class="${emailBtnClasses}">✉️</button>
-                  <button onclick="openInvoiceModal('${inv.id}')" title="Editar" class="text-indigo-600 p-1 text-sm">✏️</button>
-              </div>
-          </div>`;
-      }).join('');
-    }
-    renderArchiveTree();
-  }
-
-  function uploadInvoiceFile(id, event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const inv = db.invoices.find(i => i.id === id);
-    if (inv) {
-      inv.fileName = file.name;
-      if (db.ledger) {
-        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
-        if (ledgerItem) ledgerItem.fileName = file.name;
-      }
-      saveDB(); renderAll();
-      alert(`Fichero "${file.name}" asociado a la factura ${id} correctamente.`);
-    }
-  }
-
-  function simulateInvoiceEmail(id) {
-    const inv = db.invoices.find(i => i.id === id);
-    if (!inv.fileName) {
-      alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
-      return;
-    }
-    const client = db.clients.find(c => c.id === inv.clientId);
-    
-    currentEmailContext = {
-      type: 'invoice',
-      id: inv.id,
-      email: client.email,
-      subject: `Facture ${inv.id} - Atelier de Eloísa`,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Fichier joint : ${inv.fileName})\n\nCordialement,\nAtelier de Eloísa`
-    };
-    
-    openEmailPreviewModal();
-  }
-
-  function sendReminderEmail(type, targetId) {
-    let client, subject, body, entityId;
-
-    if (type === 'invoice') {
-      const inv = db.invoices.find(i => i.id === targetId);
-      if (!inv) return;
-      client = db.clients.find(c => c.id === inv.clientId);
-      entityId = inv.id;
-      subject = `Rappel : Facture en attente (${inv.id}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est actuellement en attente de règlement.\n\nMerci de bien vouloir régulariser cette situation.\n\nCordialement,\nAtelier de Eloísa`;
-    } else if (type === 'bonus') {
-      const bonus = db.bonuses.find(b => b.id === targetId);
-      if (!bonus) return;
-      client = db.clients.find(c => c.id === bonus.clientId);
-      entityId = bonus.id;
-      subject = `Rappel : Bientôt épuisé (${bonus.id}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous informons qu'il ne vous reste plus que ${bonus.sessionsLeft} cours sur votre carnet (${bonus.id}). Pensez à le renouveler prochainement.\n\nCordialement,\nAtelier de Eloísa`;
-    }
-
-    if (!client) return;
-
-    currentEmailContext = {
-      type: 'reminder',
-      id: entityId,
-      email: client.email,
-      subject: subject,
-      body: body
-    };
-
-    openEmailPreviewModal();
-  }
-
-  function openEmailPreviewModal() {
-    document.getElementById('preview-email-to').value = currentEmailContext.email;
-    document.getElementById('preview-email-subject').value = currentEmailContext.subject;
-    document.getElementById('preview-email-body').value = currentEmailContext.body;
-    document.getElementById('email-preview-modal').classList.remove('hidden');
-  }
-
-  function confirmAndSendEmail() {
-    if (!currentEmailContext) return;
-
-    const subject = encodeURIComponent(document.getElementById('preview-email-subject').value);
-    const body = encodeURIComponent(document.getElementById('preview-email-body').value);
-
-    if (currentEmailContext.type === 'invoice') {
-      const inv = db.invoices.find(i => i.id === currentEmailContext.id);
-      if (inv) { inv.emailSent = true; }
-    } else if (currentEmailContext.type === 'bonus') {
-      const bonus = db.bonuses.find(b => b.id === currentEmailContext.id);
-      if (bonus) { bonus.emailSent = true; }
-    }
-
-    saveDB();
-    closeModals();
-    renderAll();
-
-    window.location.href = `mailto:${currentEmailContext.email}?subject=${subject}&body=${body}`;
-  }
-
-  function renderArchiveTree() {
-    const treeContainer = document.getElementById('archive-tree-container');
-    const archiveBadge = document.getElementById('archive-count');
-    const paidInvoices = db.invoices.filter(i => i.status === 'Pagado');
-    archiveBadge.innerText = `${paidInvoices.length} pagadas`;
-
-    if (paidInvoices.length === 0) {
-      treeContainer.innerHTML = `<p class="text-gray-400 italic text-center py-2 text-xs">No hay facturas archivadas.</p>`;
-      return;
-    }
-
-    const tree = {};
-    paidInvoices.forEach(inv => {
-      const year = inv.date ? inv.date.substring(0, 4) : 'Sin año';
-      const month = inv.date ? inv.date.substring(5, 7) : '00';
-      if (!tree[year]) tree[year] = {};
-      if (!tree[year][month]) tree[year][month] = [];
-      tree[year][month].push(inv);
-    });
-
-    const monthNames = { '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril', '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto', '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre' };
-    let html = '';
-    Object.keys(tree).sort().reverse().forEach(year => {
-      let yearTotal = Object.values(tree[year]).flat().length;
-      html += `<details class="group space-y-1"><summary class="cursor-pointer font-bold text-indigo-900 bg-indigo-50/80 hover:bg-indigo-100 px-3 py-2 rounded flex justify-between items-center text-xs"><span>📁 ${year}</span><span class="text-xs text-indigo-600 font-normal">${yearTotal} facturas</span></summary><div class="pl-4 space-y-1.5 border-l-2 border-indigo-100 ml-1 mt-1">`;
-      Object.keys(tree[year]).sort().reverse().forEach(month => {
-        let invoicesInMonth = tree[year][month];
-        html += `<details class="group/month"><summary class="cursor-pointer font-medium text-gray-700 hover:text-indigo-600 py-1.5 px-2 rounded flex justify-between items-center text-xs"><span>📂 ${monthNames[month]}</span><span class="text-xs text-gray-400">(${invoicesInMonth.length})</span></summary><div class="pl-3 space-y-1 py-1 border-l border-gray-200 ml-1">`;
-        invoicesInMonth.forEach(inv => {
-          const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente' };
-          html += `<div class="bg-gray-50 hover:bg-gray-100 p-2.5 rounded border border-gray-100 flex justify-between items-center text-xs"><div><span class="font-mono font-bold text-gray-800">${inv.id}</span> — <span class="text-gray-600">${client.name}</span> <span class="text-gray-400">(${inv.concept})</span></div><div class="flex items-center space-x-3"><span class="font-semibold text-green-700">${inv.amount} CHF</span><button onclick="toggleInvoiceStatus('${inv.id}')" class="text-amber-600 hover:underline" title="Desmarcar como pagada">↩️</button></div></div>`;
-        });
-        html += `</div></details>`;
-      });
-      html += `</div></details>`;
-    });
-    treeContainer.innerHTML = html;
-  }
-
-  function openInvoiceModal(id = null) {
-    document.getElementById('invoice-id').value = id || '';
-    const clientSelect = document.getElementById('invoice-client');
-    clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
-    if (id) {
-      const inv = db.invoices.find(i => i.id === id);
-      document.getElementById('invoice-modal-title').innerText = `Editar Factura (${inv.id})`;
-      clientSelect.value = inv.clientId;
-      document.getElementById('invoice-concept').value = inv.concept;
-      document.getElementById('invoice-amount').value = inv.amount;
-      document.getElementById('invoice-duedate').value = formatDate(inv.dueDate);
-      document.getElementById('invoice-rate-select').innerHTML = `<option value="">-- Escritura manual libre --</option>`;
-    } else {
-      document.getElementById('invoice-modal-title').innerText = 'Nueva Factura Manual';
-      const future = new Date(); future.setDate(future.getDate() + 15);
-      document.getElementById('invoice-duedate').value = formatDate(future.toISOString().split('T')[0]);
-      document.getElementById('invoice-concept').value = '';
-      document.getElementById('invoice-amount').value = '';
-      onInvoiceClientChange();
-    }
-    document.getElementById('invoice-modal').classList.remove('hidden');
-  }
-
-  function onInvoiceClientChange() {
-    const clientId = document.getElementById('invoice-client').value;
-    const rateSelect = document.getElementById('invoice-rate-select');
-    let options = `<option value="">-- Escritura manual libre --</option>`;
-    db.classes.filter(cl => cl.enrolled.some(e => e.clientId === clientId)).forEach(cl => {
-      (cl.rates || []).forEach(r => {
-        options += `<option value="${cl.name} - ${r.name}|${r.price}">${cl.name} ➔ ${r.name} (${r.price} CHF)</option>`;
-      });
-    });
-    rateSelect.innerHTML = options;
-  }
-
-  function onInvoiceRateSelect() {
-    const val = document.getElementById('invoice-rate-select').value;
-    if (!val) return;
-    const [concept, price] = val.split('|');
-    document.getElementById('invoice-concept').value = concept;
-    document.getElementById('invoice-amount').value = price;
-  }
-
-  function saveInvoice(e) {
-    e.preventDefault();
-    const id = document.getElementById('invoice-id').value;
-    const data = {
-      clientId: document.getElementById('invoice-client').value,
-      concept: document.getElementById('invoice-concept').value,
-      amount: parseFloat(document.getElementById('invoice-amount').value),
-      dueDate: parseDateToISO(document.getElementById('invoice-duedate').value)
-    };
-
-    if (id) {
-      Object.assign(db.invoices.find(i => i.id === id), data);
-    } else {
-      data.id = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
-      data.status = 'Pendiente';
-      data.date = new Date().toISOString().split('T')[0];
-      data.emailSent = false;
-      data.fileName = null;
-      db.invoices.push(data);
-    }
-    saveDB(); closeModals(); renderAll();
-  }
-
-  function toggleInvoiceStatus(id) {
-    const inv = db.invoices.find(i => i.id === id);
-    if (!inv) return;
-
-    if (inv.status === 'Pendiente') {
-      inv.status = 'Pagado';
-      if (!db.ledger) db.ledger = [];
-      const client = db.clients.find(c => c.id === inv.clientId);
-      db.ledger.push({
-        id: 'LED-' + inv.id,
-        type: 'income',
-        category: 'Pago de clases',
-        concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.id})`,
-        amount: inv.amount,
-        date: inv.date || new Date().toISOString().split('T')[0],
-        fileName: inv.fileName,
-        originId: inv.id
-      });
-    } else {
-      inv.status = 'Pendiente';
-      if (db.ledger) {
-        db.ledger = db.ledger.filter(l => l.originId !== inv.id);
-      }
-    }
-    saveDB(); renderAll();
   }
 
   function closeModals() {
