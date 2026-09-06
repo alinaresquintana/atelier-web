@@ -62,7 +62,7 @@
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-gray-900">📅 Calendario y Horarios del Curso</h2>
-                    <p class="text-xs text-gray-500">Visualiza el calendario mensual, los períodos de vacaciones y busca sesiones específicas.</p>
+                    <p class="text-xs text-gray-500">Visualiza el calendario mensual, los períodos de vacaciones selectivos y busca sesiones específicas.</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <button onclick="changeCalendarMonth(-1)" class="px-3 py-1.5 bg-white border rounded-lg text-xs font-medium hover:bg-gray-100">← Mes Anterior</button>
@@ -74,7 +74,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
                     <div class="grid grid-cols-7 gap-2 text-center font-semibold text-xs text-gray-500 pb-2 border-b">
-                        <div class="text-red-600">Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div class="text-red-600">Dom</div>
+                          <div class="">Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div class="text-red-600">Sáb</div><div class="text-red-600">Dom</div>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
                 </div>
@@ -93,6 +93,14 @@
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
                                     <input type="text" id="holiday-end" placeholder="dd/mm/aaaa" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
                                 </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">¿A qué clases afecta?</label>
+                                <select id="holiday-scope" class="w-full px-2 py-1.5 border rounded-lg text-xs bg-white font-medium text-indigo-900">
+                                    <option value="all">🌐 Todos los cursos (Junior y Adultos)</option>
+                                    <option value="junior">🎨 Solo Niños (5-10) y Adolescentes</option>
+                                    <option value="adults">🧑‍🎨 Solo Adultos y Workshops</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Motivo (Ej. Navidad)</label>
@@ -702,7 +710,7 @@
       }
     ],
     holidays: [
-      { startDate: '2026-12-23', endDate: '2027-01-06', reason: 'Vacaciones de Navidad' }
+      { startDate: '2026-12-23', endDate: '2027-01-06', reason: 'Vacaciones de Navidad', scope: 'all' }
     ],
     invoices: [
       { id: 'FAC-2026-001', clientId: '1', concept: 'Adultos - Mañana - Trimestre 1 (Sep-Nov)', amount: 350, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: true, fileName: 'factura_ana.pdf' }
@@ -794,6 +802,7 @@
     const rawStart = document.getElementById('holiday-start').value;
     const rawEnd = document.getElementById('holiday-end').value || rawStart;
     const reason = document.getElementById('holiday-reason').value;
+    const scope = document.getElementById('holiday-scope').value;
 
     const startDate = parseDateToISO(rawStart);
     const endDate = parseDateToISO(rawEnd);
@@ -803,40 +812,15 @@
       return;
     }
 
-    let affectedSessions = 0;
-    let curr = new Date(startDate);
-    const endD = new Date(endDate);
-    while (curr <= endD) {
-      const y = curr.getFullYear();
-      const m = String(curr.getMonth() + 1).padStart(2, '0');
-      const d = String(curr.getDate()).padStart(2, '0');
-      const dStr = `${y}-${m}-${d}`;
-      const dayOfWeek = curr.getDay();
-
-      (db.classes || []).forEach(cl => {
-        if (cl.scheduleMode === 'single') {
-          if (cl.singleDate === dStr) affectedSessions++;
-        } else {
-          const cStart = cl.startDate || '2026-09-01';
-          const cEnd = cl.endDate || '2027-07-31';
-          if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dStr >= cStart && dStr <= cEnd) {
-            affectedSessions++;
-          }
-        }
-      });
-      curr.setDate(curr.getDate() + 1);
-    }
-
     if (!db.holidays) db.holidays = [];
-    db.holidays.push({ startDate, endDate, reason });
+    db.holidays.push({ startDate, endDate, reason, scope });
     saveDB();
 
     document.getElementById('holiday-start').value = '';
     document.getElementById('holiday-end').value = '';
     document.getElementById('holiday-reason').value = '';
     renderAll();
-
-    alert(`Vacaciones añadidas correctamente. Se han sobrescrito y suspendido ${affectedSessions} sesión(es) de clase durante este período.`);
+    alert('Período de vacaciones añadido correctamente.');
   }
 
   function deleteHoliday(index) {
@@ -845,10 +829,13 @@
     renderAll();
   }
 
-  function isDateInHolidayRange(dateStr, holidays) {
-    for (const h of holidays) {
+  function getHolidayForClass(dateStr, classType) {
+    const isJunior = (classType || '').toLowerCase().includes('niños') || (classType || '').toLowerCase().includes('adolescentes');
+    for (const h of (db.holidays || [])) {
       if (dateStr >= h.startDate && dateStr <= h.endDate) {
-        return h;
+        if (!h.scope || h.scope === 'all') return h;
+        if (h.scope === 'junior' && isJunior) return h;
+        if (h.scope === 'adults' && !isJunior) return h;
       }
     }
     return null;
@@ -857,13 +844,15 @@
   function renderHolidaysList() {
     const container = document.getElementById('holidays-list');
     const holidays = db.holidays || [];
+    const scopeLabels = { all: '🌐 Todos', junior: '🎨 Solo Junior', adults: '🧑‍🎨 Solo Adultos' };
+
     if (holidays.length === 0) {
       container.innerHTML = `<p class="text-gray-400 italic text-[11px]">No hay períodos de vacaciones registrados.</p>`;
       return;
     }
     container.innerHTML = holidays.map((h, index) => `
       <div class="flex justify-between items-center bg-gray-50 p-2 rounded border text-xs">
-          <div><strong>${formatDate(h.startDate)} al ${formatDate(h.endDate)}</strong>: ${h.reason}</div>
+          <div><strong>${formatDate(h.startDate)} al ${formatDate(h.endDate)}</strong><br><span class="text-indigo-600 font-semibold">${scopeLabels[h.scope || 'all']}</span>: ${h.reason}</div>
           <button onclick="deleteHoliday(${index})" class="text-red-500 hover:text-red-700 text-xs">🗑️</button>
       </div>
     `).join('');
@@ -886,21 +875,10 @@
       grid.innerHTML += `<div class="bg-gray-50/50 rounded-lg min-h-[90px] border border-gray-100 opacity-30"></div>`;
     }
 
-    const holidays = db.holidays || [];
-
     for (let day = 1; day <= totalDays; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const currentDateObj = new Date(year, month, day);
       const dayOfWeek = currentDateObj.getDay();
-
-      const activeHoliday = isDateInHolidayRange(dateStr, holidays);
-      let cellBg = 'bg-white';
-      let headerExtra = '';
-
-      if (activeHoliday) {
-        cellBg = 'bg-rose-50/70 border-rose-200';
-        headerExtra = `<span class="text-[9px] bg-rose-200 text-rose-800 px-1 rounded font-bold block truncate" title="${activeHoliday.reason}">🏖️ ${activeHoliday.reason}</span>`;
-      }
 
       const classesOnThisDay = (db.classes || []).filter(cl => {
         if (cl.scheduleMode === 'single') {
@@ -914,20 +892,21 @@
       });
 
       let classesHtml = '';
-      if (activeHoliday) {
-        classesHtml = `<div class="text-[10px] text-rose-600 italic mt-1 font-medium">Sin clases (Vacaciones)</div>`;
-      } else {
-        classesOnThisDay.forEach(cl => {
-          const sch = cl.scheduleMode === 'single' ? cl.singleSchedule : cl.schedule;
+      classesOnThisDay.forEach(cl => {
+        const activeHoliday = getHolidayForClass(dateStr, cl.classType);
+        const sch = cl.scheduleMode === 'single' ? cl.singleSchedule : cl.schedule;
+
+        if (activeHoliday) {
+          classesHtml += `<div class="bg-rose-50 text-rose-700 border border-rose-200 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate line-through" title="Suspendida por: ${activeHoliday.reason}">🏖️ ${cl.name}</div>`;
+        } else {
           classesHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${sch} - ${cl.duration})">📚 ${cl.name} (${sch})</div>`;
-        });
-      }
+        }
+      });
 
       grid.innerHTML += `
-        <div class="${cellBg} rounded-lg p-2 min-h-[95px] border border-gray-200 flex flex-col justify-between overflow-hidden shadow-sm">
+        <div class="bg-white rounded-lg p-2 min-h-[95px] border border-gray-200 flex flex-col justify-between overflow-hidden shadow-sm">
             <div class="flex justify-between items-center">
                 <span class="font-bold text-xs text-gray-800">${day}</span>
-                ${headerExtra}
             </div>
             <div class="flex-1 mt-1 overflow-y-auto max-h-[70px]">${classesHtml}</div>
         </div>
@@ -947,14 +926,13 @@
     const sessions = [];
     const startDate = new Date(2026, 8, 1);
     const endDate = new Date(2027, 6, 31);
-    const holidays = db.holidays || [];
 
-    // Añadir clases puntuales directamente
     (db.classes || []).forEach(cl => {
       if (cl.scheduleMode === 'single' && cl.singleDate) {
         sessions.push({
           date: cl.singleDate,
           className: cl.name,
+          classType: cl.classType,
           schedule: cl.singleSchedule || '10:00',
           duration: cl.duration
         });
@@ -967,26 +945,23 @@
       const month = String(curr.getMonth() + 1).padStart(2, '0');
       const day = String(curr.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
-
       const dayOfWeek = curr.getDay();
-      const isHoliday = isDateInHolidayRange(dateStr, holidays);
 
-      if (!isHoliday) {
-        (db.classes || []).forEach(cl => {
-          if (cl.scheduleMode !== 'single') {
-            const classStart = cl.startDate || '2026-09-01';
-            const classEnd = cl.endDate || '2027-07-31';
-            if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dateStr >= classStart && dateStr <= classEnd) {
-              sessions.push({
-                date: dateStr,
-                className: cl.name,
-                schedule: cl.schedule,
-                duration: cl.duration
-              });
-            }
+      (db.classes || []).forEach(cl => {
+        if (cl.scheduleMode !== 'single') {
+          const classStart = cl.startDate || '2026-09-01';
+          const classEnd = cl.endDate || '2027-07-31';
+          if (cl.dayOfWeek !== undefined && parseInt(cl.dayOfWeek) === dayOfWeek && dateStr >= classStart && dateStr <= classEnd) {
+            sessions.push({
+              date: dateStr,
+              className: cl.name,
+              classType: cl.classType,
+              schedule: cl.schedule,
+              duration: cl.duration
+            });
           }
-        });
-      }
+        }
+      });
       curr.setDate(curr.getDate() + 1);
     }
 
@@ -997,12 +972,15 @@
       return;
     }
 
-    container.innerHTML = filtered.slice(0, 30).map(s => `
-      <div class="bg-gray-50 border border-gray-200 rounded p-1.5 flex justify-between items-center text-xs">
-          <div><strong>${formatDate(s.date)}</strong> — ${s.className}</div>
-          <span class="text-gray-500 bg-white px-2 py-0.5 rounded border">${s.schedule}</span>
-      </div>
-    `).join('') + (filtered.length > 30 ? `<div class="text-center text-gray-400 text-[10px] pt-1">Mostrando las primeras 30 coincidencias...</div>` : '');
+    container.innerHTML = filtered.slice(0, 30).map(s => {
+      const holiday = getHolidayForClass(s.date, s.classType);
+      const statusText = holiday ? `<span class="text-rose-600 font-semibold">(Vacaciones)</span>` : `<span class="text-indigo-600">${s.schedule}</span>`;
+      return `
+        <div class="bg-gray-50 border border-gray-200 rounded p-1.5 flex justify-between items-center text-xs">
+            <div><strong>${formatDate(s.date)}</strong> — ${s.className}</div>
+            <div>${statusText}</div>
+        </div>`;
+    }).join('') + (filtered.length > 30 ? `<div class="text-center text-gray-400 text-[10px] pt-1">Mostrando las primeras 30 coincidencias...</div>` : '');
   }
 
   function getBonusBadgeColor(sessions) {
