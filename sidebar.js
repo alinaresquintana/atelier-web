@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <!-- Fila 3: Copyright y Autoría -->
       <div style="font-size: 11px; color: var(--muted); line-height: 1.4; border-top: 1px dashed var(--border); padding-top: 10px;">
         <span>Atelier Arte Vich © 2026</span><br>
-        <span>Design & Architecture by <a href="mailto:antonio.linares@swissquote.ch" style="color: var(--accent); text-decoration: none; font-weight: 600;">Antonio Linares</a></span>
+        <span>Design & Architecture by <a href="mailto:alinaresquintana@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">Antonio Linares</a></span>
       </div>
     </div>
   `;

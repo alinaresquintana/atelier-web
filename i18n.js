@@ -359,7 +359,7 @@ const translations = {
 
     "po_desc": "Padroneggia le proporzioni, i tratti del viso e le tecniche di matita per realizzare ritratti espressivi e fedeli.",
     "po_duration": "4 giorni (2h)", "po_price": "160 CHF",
-    "po_details_title": "L'arte di catturare l'espressione umana",
+    "po_details_title": "L'art de capturer l'expression humaine",
     "po_details_p1": "In questo corso imparerai a elaborare un ritratto solido di fronte e di profilo, rispettando proporzioni e tratti.",
     "po_details_p2": "Scoprirai le matite e gli strumenti indispensabili per un risultato di alta qualità.",
     "po_details_note": "*Gli studenti iscritti possono partecipare usando l'abbonamento secondo le condizioni abituali.",
