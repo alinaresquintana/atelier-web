@@ -44,10 +44,11 @@
     <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center overflow-x-auto">
         <div class="flex space-x-8">
             <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📅 Calendario del Curso</button>
-            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Alumnos</button>
-            <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Clases y Precios</button>
-            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Facturación General</button>
-            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">Renovación de Bonos</button>
+            <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">👥 Alumnos</button>
+            <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📚 Clases y Precios</button>
+            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación General</button>
+            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎟️ Renovación de Bonos</button>
+            <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Compra de Material</button>
             <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos y Gastos</button>
         </div>
         <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 whitespace-nowrap">
@@ -74,7 +75,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
                     <div class="grid grid-cols-7 gap-2 text-center font-semibold text-xs text-gray-500 pb-2 border-b">
-                          <div class="">Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div class="text-red-600">Sáb</div><div class="text-red-600">Dom</div>
+                        <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div class="text-red-600">Sáb</div><div class="text-red-600">Dom</div>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-2"></div>
                 </div>
@@ -249,6 +250,34 @@
                 <button onclick="openBonusModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Emitir Nuevo Bono 10</button>
             </div>
             <div id="bonus-list-container" class="space-y-4"></div>
+        </div>
+
+        <!-- TAB: COMPRA DE MATERIAL -->
+        <div id="tab-material" class="hidden space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">🎨 Gestión y Venta de Material</h2>
+                    <p class="text-xs text-gray-500">Define los tipos de material disponibles y registra las compras de los alumnos.</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="openMaterialTypeModal()" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-900">+ Añadir Tipo de Material</button>
+                    <button onclick="openMaterialSaleModal()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700">+ Registrar Venta a Alumno</button>
+                </div>
+            </div>
+
+            <!-- Catálogo de Tipos de Material -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                    <h3 class="font-bold text-gray-900 text-sm">📦 Catálogo de Materiales y Precios</h3>
+                    <div id="material-types-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <!-- Historial de Ventas / Ingresos por Material -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
+                    <h3 class="font-bold text-gray-900 text-sm">🧾 Historial de Materiales Vendidos</h3>
+                    <div id="material-sales-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+            </div>
         </div>
 
         <!-- TAB 5: INGRESOS Y GASTOS -->
@@ -633,6 +662,56 @@
     </div>
 </div>
 
+<!-- MODAL: AÑADIR TIPO DE MATERIAL -->
+<div id="material-type-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-sm w-full p-6 space-y-4">
+        <h3 class="text-lg font-bold">Definir Nuevo Material</h3>
+        <form onsubmit="saveMaterialType(event)" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Material</label>
+                <input type="text" id="mat-type-name" placeholder="Ej. Set de pinceles y lienzo" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Precio por Defecto (CHF)</label>
+                <input type="number" step="0.01" id="mat-type-price" placeholder="45.00" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: REGISTRAR VENTA DE MATERIAL A ALUMNO -->
+<div id="material-sale-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+        <h3 class="text-lg font-bold">Registrar Compra de Material</h3>
+        <form onsubmit="saveMaterialSale(event)" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Alumno</label>
+                <select id="mat-sale-client" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar Material</label>
+                <select id="mat-sale-type" onchange="onMaterialTypeSelect()" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Detalle</label>
+                <input type="text" id="mat-sale-concept" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Importe Total (CHF)</label>
+                <input type="number" step="0.01" id="mat-sale-amount" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Registrar y Generar Ingreso</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- MODAL NUEVO MOVIMIENTO DE INGRESOS Y GASTOS -->
 <div id="ledger-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
@@ -718,6 +797,10 @@
     bonuses: [
       { id: 'BON-2026-001', clientId: '2', concept: 'Bono 10 Clases', amount: 300, status: 'Pagado', date: '2026-09-01', emailSent: false, addedToClient: true, sessionsLeft: 8, attendanceLog: ['2026-09-01', '2026-09-03'], fileName: null }
     ],
+    materialTypes: [
+      { id: 'MT-1', name: 'Set de pinceles y lienzo', price: 45.00 }
+    ],
+    materialSales: [],
     ledger: [
       { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' }
     ],
@@ -762,7 +845,7 @@
   }
 
   function switchTab(tab) {
-    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals', 'ledger'].forEach(t => {
+    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals', 'material', 'ledger'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
     });
@@ -773,6 +856,9 @@
       renderCalendar();
       renderHolidaysList();
       renderAnnualList();
+    }
+    if (tab === 'material') {
+      renderMaterialSection();
     }
     if (tab === 'ledger') {
       populateLedgerYears();
@@ -788,6 +874,7 @@
     renderClasses();
     renderInvoices();
     renderBonusRenewals();
+    renderMaterialSection();
     populateLedgerYears();
     renderLedger();
   }
@@ -1641,6 +1728,115 @@
     saveDB(); renderAll();
   }
 
+  // --- SECCIÓN: COMPRA DE MATERIAL ---
+  function renderMaterialSection() {
+    if (!db.materialTypes) db.materialTypes = [];
+    if (!db.materialSales) db.materialSales = [];
+
+    const typesContainer = document.getElementById('material-types-list');
+    typesContainer.innerHTML = db.materialTypes.length === 0 
+      ? `<p class="text-gray-400 italic text-xs">No hay materiales definidos.</p>`
+      : db.materialTypes.map((m, idx) => `
+        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded border text-xs">
+            <div><strong>${m.name}</strong><br><span class="text-indigo-600 font-semibold">${m.price.toFixed(2)} CHF</span></div>
+            <button onclick="deleteMaterialType(${idx})" class="text-red-500 hover:underline">🗑️</button>
+        </div>
+      `).join('');
+
+    const salesContainer = document.getElementById('material-sales-list');
+    salesContainer.innerHTML = db.materialSales.length === 0 
+      ? `<p class="text-gray-400 italic text-xs">No hay ventas de material registradas.</p>`
+      : db.materialSales.map(s => {
+        const client = db.clients.find(c => c.id === s.clientId) || { name: 'Desconocido' };
+        return `
+          <div class="bg-gray-50 p-2.5 rounded border text-xs space-y-1">
+              <div class="flex justify-between font-bold text-gray-800">
+                  <span>${client.name}</span>
+                  <span class="text-emerald-600">+${s.amount.toFixed(2)} CHF</span>
+              </div>
+              <div class="text-gray-500">${s.concept} — ${formatDate(s.date)}</div>
+          </div>`;
+      }).join('');
+  }
+
+  function openMaterialTypeModal() {
+    document.getElementById('mat-type-name').value = '';
+    document.getElementById('mat-type-price').value = '';
+    document.getElementById('material-type-modal').classList.remove('hidden');
+  }
+
+  function saveMaterialType(e) {
+    e.preventDefault();
+    if (!db.materialTypes) db.materialTypes = [];
+    db.materialTypes.push({
+      id: 'MT-' + Date.now(),
+      name: document.getElementById('mat-type-name').value,
+      price: parseFloat(document.getElementById('mat-type-price').value)
+    });
+    saveDB();
+    closeModals();
+    renderAll();
+  }
+
+  function deleteMaterialType(index) {
+    db.materialTypes.splice(index, 1);
+    saveDB();
+    renderAll();
+  }
+
+  function openMaterialSaleModal() {
+    const clientSelect = document.getElementById('mat-sale-client');
+    clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+    const typeSelect = document.getElementById('mat-sale-type');
+    typeSelect.innerHTML = `<option value="">-- Seleccionar material --</option>` + 
+      (db.materialTypes || []).map(m => `<option value="${m.id}" data-price="${m.price}" data-name="${m.name}">${m.name} (${m.price.toFixed(2)} CHF)</option>`).join('');
+
+    document.getElementById('mat-sale-concept').value = '';
+    document.getElementById('mat-sale-amount').value = '';
+    document.getElementById('material-sale-modal').classList.remove('hidden');
+  }
+
+  function onMaterialTypeSelect() {
+    const select = document.getElementById('mat-sale-type');
+    const opt = select.options[select.selectedIndex];
+    if (opt && opt.value) {
+      const price = opt.getAttribute('data-price');
+      const name = opt.getAttribute('data-name');
+      document.getElementById('mat-sale-concept').value = `Compra de material: ${name}`;
+      document.getElementById('mat-sale-amount').value = price;
+    }
+  }
+
+  function saveMaterialSale(e) {
+    e.preventDefault();
+    if (!db.materialSales) db.materialSales = [];
+    const clientId = document.getElementById('mat-sale-client').value;
+    const concept = document.getElementById('mat-sale-concept').value;
+    const amount = parseFloat(document.getElementById('mat-sale-amount').value);
+    const date = new Date().toISOString().split('T')[0];
+    const saleId = 'MAT-' + Date.now();
+
+    db.materialSales.push({ id: saleId, clientId, concept, amount, date });
+
+    if (!db.ledger) db.ledger = [];
+    const client = db.clients.find(c => c.id === clientId);
+    db.ledger.push({
+      id: 'LED-' + saleId,
+      type: 'income',
+      category: 'Compra de material',
+      concept: `${client ? client.name : 'Cliente'} - ${concept}`,
+      amount: amount,
+      date: date,
+      fileName: null,
+      originId: saleId
+    });
+
+    saveDB();
+    closeModals();
+    renderAll();
+  }
+
   // --- SECCIÓN: INGRESOS Y GASTOS (LEDGER) ---
   function openLedgerModal() {
     document.getElementById('ledger-id').value = '';
@@ -1660,6 +1856,7 @@
       catSelect.innerHTML = `
         <option value="Pago de clases">Pago de clases</option>
         <option value="Pago de abonos">Pago de abonos</option>
+        <option value="Compra de material">Compra de material</option>
         <option value="Otros">Otros</option>
       `;
     } else {
@@ -1741,13 +1938,20 @@
     select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
   }
 
-  function renderLedger() {
+function renderLedger() {
     if (!db.ledger) db.ledger = [];
     const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
 
     const filteredItems = db.ledger.filter(item => {
       const itemYear = item.date ? item.date.substring(0, 4) : '';
       return itemYear === selectedYear;
+    });
+
+    // Ordenar siempre de más nuevo a más antiguo (por fecha descendiente, y secundariamente por ID descendiente)
+    filteredItems.sort((a, b) => {
+      const dateComparison = (b.date || '').localeCompare(a.date || '');
+      if (dateComparison !== 0) return dateComparison;
+      return (b.id || '').localeCompare(a.id || '');
     });
 
     const tbody = document.getElementById('ledger-table-body');
@@ -1776,8 +1980,7 @@
     if (paginatedItems.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 italic">No hay movimientos financieros registrados para el año ${selectedYear}.</td></tr>`;
     } else {
-      const sorted = [...paginatedItems].sort((a, b) => b.date.localeCompare(a.date));
-      tbody.innerHTML = sorted.map(item => {
+      tbody.innerHTML = paginatedItems.map(item => {
         const isIncome = item.type === 'income';
         const badge = isIncome
           ? '<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">Ingreso</span>'
@@ -2411,7 +2614,7 @@
   }
 
   function closeModals() {
-    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal'].forEach(m => {
+    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal'].forEach(m => {
       document.getElementById(m).classList.add('hidden');
     });
   }
