@@ -240,6 +240,13 @@
                 <textarea id="enrollComments" rows="3" placeholder="Ex: Je souhaite réserver une classe d'essai gratuite..." style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: vertical;"></textarea>
             </div>
 
+            <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 5px;">
+                <input type="checkbox" id="enrollPrivacyConsent" required style="margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent);">
+                <label for="enrollPrivacyConsent" style="font-size: 12px; color: var(--muted); line-height: 1.5;" data-i18n="field_privacy_consent">
+                    J'accepte la <a href="#privacidad" style="color: var(--accent); text-decoration: underline;" onclick="closeEnrollmentModal()">politique de confidentialité</a> et autorise le traitement de mes données pour la gestion de l'inscription *
+                </label>
+            </div>
+
             <button type="submit" class="cta-btn" style="width: 100%; margin-top: 5px;" data-i18n="btn_submit_enroll">Envoyer la pré-inscription</button>
         </form>
     </div>
@@ -710,6 +717,48 @@
             <div class="content-block"><p>Page en cours de création.</p></div>
         </section>
 
+<!-- 12. POLITIQUE DE CONFIDENTIALITÉ (RGPD / nLPD) -->
+   <section id="privacidad" class="spa-page">
+    <div class="page-header">
+        <div>
+            <span class="tag" data-i18n="priv_tag">Protection des données • Suisse</span>
+            <h1 data-i18n="priv_title">Politique de <span>Confidentialité et Mentions Légales</span></h1>
+        </div>
+    </div>
+    
+    <div class="content-block" style="display: flex; flex-direction: column; gap: 20px;">
+        <div>
+            <h2 data-i18n="priv_h1">1. Responsable du traitement</h2>
+            <p data-i18n="priv_p1">Le responsable de la collecte et du traitement des données personnelles sur ce site est l'<strong>Atelier Arte Vich</strong>, situé à la Grand'Rue 6, 1267 Vich (Suisse). Contact : atelierartevich@gmail.com / +41 79 913 70 55.</p>
+        </div>
+
+        <div>
+            <h2 data-i18n="priv_h2">2. Base légale et finalité de la collecte</h2>
+            <p data-i18n="priv_p2">Conformément à la <strong>nouvelle Loi fédérale sur la protection des données (nLPD)</strong> et, le cas échéant, au Règlement général sur la protection des données (RGPD) de l'Union européenne, les données collectées (nom, email, téléphone, adresse) sont strictement utilisées pour :</p>
+            <ul style="list-style: disc; padding-left: 20px; font-size: 15px; color: var(--muted); font-weight: 300; line-height: 1.7;">
+                <li data-i18n="priv_li1">La gestion des inscriptions et pré-inscriptions aux cours de peinture et ateliers.</li>
+                <li data-i18n="priv_li2">La facturation, le suivi des paiements et la comptabilité obligatoire en Suisse.</li>
+                <li data-i18n="priv_li3">La communication directe avec les élèves ou leurs représentants légaux concernant les horaires et les cours.</li>
+            </ul>
+        </div>
+
+        <div>
+            <h2 data-i18n="priv_h3">3. Conservation des données et sécurité</h2>
+            <p data-i18n="priv_p3">Les données personnelles sont stockées de manière sécurisée et ne sont en aucun cas vendues, louées ou cédées à des tiers. Elles sont conservées pendant la durée légale requise par le droit fiscal suisse (10 ans pour les pièces comptables et factures) ou jusqu'à la demande de suppression par l'utilisateur pour les données non comptables.</p>
+        </div>
+
+        <div>
+            <h2 data-i18n="priv_h4">4. Droits des utilisateurs</h2>
+            <p data-i18n="priv_p4">Conformément à la nLPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Pour exercer ces droits, vous pouvez nous contacter directement par courrier électronique à l'adresse <strong>atelierartevich@gmail.com</strong>.</p>
+        </div>
+
+        <div>
+            <h2 data-i18n="priv_h5">5. Droit à l'image des participants</h2>
+            <p data-i18n="priv_p5">L'utilisation de photographies prises durant les cours et ateliers nécessitant une publication publique fait l'objet d'un consentement explicite recueilli individuellement auprès des élèves ou de leurs tuteurs légaux lors de l'inscription administrative.</p>
+        </div>
+    </div>
+</section>
+
         <!-- CONTACT -->
         <section id="contact" class="spa-page">
             <div class="page-header">
@@ -787,10 +836,10 @@
                             </ul>
                         </div>
                         <div class="footer-col">
-                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;">Contact & Infos</span>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 8px;">Grand'Rue 6, 1267 Vich</p>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 8px;">+41 79 913 70 55</p>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6;">atelierartevich@gmail.com</p>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;">Légal</span>
+                            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                                <li><a href="#privacidad" style="color: var(--muted); text-decoration: none; font-size: 13px;">Politique de Confidentialité</a></li>
+                            </ul>
                         </div>
                     </div>
                     <div class="footer-bottom" style="display: flex; justify-content: space-between; align-items: center; padding-top: 25px; flex-wrap: wrap; gap: 15px;">
@@ -915,7 +964,7 @@
     document.getElementById('enrollmentForm').reset();
   }
 
-function renderPublicClassesAndWorkshops() {
+  function renderPublicClassesAndWorkshops() {
     const dbStr = localStorage.getItem('atelier_db');
     if (!dbStr) return;
 
@@ -931,6 +980,8 @@ function renderPublicClassesAndWorkshops() {
         'Workshop Texturas': 'textures',
         'Workshop Retratos': 'portraits'
       };
+
+      const dayNamesFr = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
       const grouped = {
         adultes: [], enfants: [], ados: [],
@@ -949,10 +1000,20 @@ function renderPublicClassesAndWorkshops() {
             return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
           };
 
+          // Construir el texto del horario incluyendo explícitamente el día de la semana si es recurrente
+          let scheduleText = '';
+          if (cl.scheduleMode === 'single') {
+            scheduleText = `Atelier unique le ${formatPubDate(cl.singleDate)} à ${cl.singleSchedule || cl.schedule || ''}`;
+          } else {
+            const dayName = (cl.dayOfWeek !== undefined && dayNamesFr[cl.dayOfWeek]) ? dayNamesFr[cl.dayOfWeek] : '';
+            const timeVal = cl.schedule || '';
+            scheduleText = dayName ? `${dayName}s à ${timeVal}` : timeVal;
+          }
+
           grouped[catKey].push({
             id: cl.id,
             name: cl.name,
-            schedule: cl.schedule,
+            schedule: scheduleText || 'Horaire à convenir',
             duration: cl.duration || '2h',
             startDate: formatPubDate(cl.startDate),
             endDate: formatPubDate(cl.endDate),
@@ -967,24 +1028,28 @@ function renderPublicClassesAndWorkshops() {
 
         const items = grouped[catKey];
         if (items.length === 0) {
-          container.innerHTML = `<p style="font-size: 13px; color: var(--muted);">${currentLang === 'fr' ? 'Aucun cours configuré pour le moment.' : currentLang === 'en' ? 'No courses configured at the moment.' : 'Ningún curso configurado por el momento.'}</p>`;
+          container.innerHTML = `<p style="font-size: 13.5px; color: var(--muted);">${currentLang === 'fr' ? 'Aucun cours configuré pour le moment.' : currentLang === 'en' ? 'No courses configured at the moment.' : 'Ningún curso configurado por el momento.'}</p>`;
           return;
         }
 
         container.innerHTML = items.map(item => {
-          const fullText = (translations && translations[currentLang] && translations[currentLang]['status_full']) || (currentLang === 'fr' ? 'Complet' : currentLang === 'en' ? 'Full' : 'Completo');
-          const enrollText = (translations && translations[currentLang] && translations[currentLang]['btn_enroll']) || (currentLang === 'fr' ? "S'inscrire (Pré-inscription)" : currentLang === 'en' ? 'Register (Pre-registration)' : 'Apuntarme (Pre-inscripción)');
+          const fullText = (translations && translations[currentLang] && translations[currentLang]['status_full']) || 'Complet';
+          const enrollText = (translations && translations[currentLang] && translations[currentLang]['btn_enroll']) || "S'inscrire (Pré-inscription)";
 
           const statusBadge = item.isFull
             ? `<span style="background: rgba(230,53,0,0.1); color: #e63500; border: 1px solid #e63500; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">${fullText}</span>`
             : `<button onclick="openEnrollmentModal('${item.id}', '${item.name.replace(/'/g, "\\'")}')" class="cta-btn" style="padding: 8px 16px; font-size: 12px; border-radius: 30px;">${enrollText}</button>`;
 
+          const dateDisplay = (item.startDate && item.endDate) 
+            ? `<span style="font-size: 12px; color: var(--muted);">📅 Période : Du ${item.startDate} au ${item.endDate}</span>` 
+            : '';
+
           return `
             <div style="background: var(--bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-              <div style="display: flex; flex-direction: column; gap: 4px;">
+              <div style="display: flex; flex-direction: column; gap: 5px;">
                 <strong style="color: var(--text); font-size: 15px;">${item.name}</strong>
-                <span style="font-size: 12.5px; color: var(--muted);">🕒 Horaire : ${item.schedule} (${item.duration})</span>
-                <span style="font-size: 12px; color: var(--muted);">📅 Période : Du ${item.startDate} au ${item.endDate}</span>
+                <span style="font-size: 13px; color: var(--text); font-weight: 500;">🕒 ${item.schedule} (${item.duration})</span>
+                ${dateDisplay}
               </div>
               <div>${statusBadge}</div>
             </div>
@@ -1011,7 +1076,6 @@ function renderPublicClassesAndWorkshops() {
         el.innerHTML = translations[lang][key];
       }
     });
-    // Volver a renderizar las clases dinámicas para que los botones/badges respeten el idioma recién seleccionado
     renderPublicClassesAndWorkshops();
   }
 

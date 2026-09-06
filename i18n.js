@@ -128,7 +128,6 @@ const translations = {
     "cond_5": "<strong>Absences :</strong> En principe, la non-assistance aux cours n'est pas remboursée, mais les élèves ont la possibilité de récupérer ces cours au cours du même trimestre.",
     "cond_6": "<strong>Matériel :</strong> Le matériel de base de dessin et de peinture est fourni uniquement pour la première leçon. Par la suite, les élèves acquièrent leurs propres fournitures en accord avec l'enseignante.",
 
-    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
     "status_full": "Complet",
     "btn_enroll": "S'inscrire (Pré-inscription)",
     "modal_title": "Formulaire de Pré-inscription",
@@ -139,8 +138,26 @@ const translations = {
     "field_email": "Email de contact *",
     "field_phone": "Téléphone *",
     "field_comments": "Commentaires / Souhaitez-vous une classe d'essai gratuite ?",
+    "field_privacy_consent": "J'accepte la <a href='#privacidad' style='color: var(--accent); text-decoration: underline;' onclick='closeEnrollmentModal()'>politique de confidentialité</a> et autorise le traitement de mes données pour la gestion de l'inscription *",
     "btn_submit_enroll": "Envoyer la pré-inscription",
-    "alert_success": "¡Pré-inscription envoyée avec succès !\n\nEloísa se mettra en contact avec vous prochainement pour valider et clôturer l'inscription. N'oubliez pas de nous contacter si vous souhaitez agender votre classe d'essai gratuite !"
+    "alert_success": "¡Pré-inscription envoyée avec succès !\n\nEloísa se mettra en contact avec vous prochainement pour valider et clôturer l'inscription. N'oubliez pas de nous contacter si vous souhaitez agender votre classe d'essai gratuite !",
+
+    // Textos de la sección Política de Privacidad (nLPD)
+    "priv_tag": "Protection des données • Suisse",
+    "priv_title": "Politique de <span>Confidentialité et Mentions Légales</span>",
+    "priv_h1": "1. Responsable du traitement",
+    "priv_p1": "Le responsable de la collecte et du traitement des données personnelles sur ce site est l'<strong>Atelier Arte Vich</strong>, situé à la Grand'Rue 6, 1267 Vich (Suisse). Contact : atelierartevich@gmail.com / +41 79 913 70 55.",
+    "priv_h2": "2. Base légale et finalité de la collecte",
+    "priv_p2": "Conformément à la <strong>nouvelle Loi fédérale sur la protection des données (nLPD)</strong> et, le cas échéant, au Règlement général sur la protection des données (RGPD) de l'Union européenne, les données collectées (nom, email, téléphone, adresse) sont strictement utilisées pour :",
+    "priv_li1": "La gestion des inscriptions et pré-inscriptions aux cours de peinture et ateliers.",
+    "priv_li2": "La facturation, le suivi des paiements et la comptabilité obligatoire en Suisse.",
+    "priv_li3": "La communication directe avec les élèves ou leurs représentants légaux concernant les horaires et les cours.",
+    "priv_h3": "3. Conservation des données et sécurité",
+    "priv_p3": "Les données personnelles sont stockées de manière sécurisée et ne sont en aucun cas vendues, louées ou cédées à des tiers. Elles sont conservées pendant la durée légale requise par le droit fiscal suisse (10 ans pour les pièces comptables et factures) ou jusqu'à la demande de suppression par l'utilisateur pour les données non comptables.",
+    "priv_h4": "4. Droits des utilisateurs",
+    "priv_p4": "Conformément à la nLPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Pour exercer ces droits, vous pouvez nous contacter directement par courrier électronique à l'adresse <strong>atelierartevich@gmail.com</strong>.",
+    "priv_h5": "5. Droit à l'image des participants",
+    "priv_p5": "L'utilisation de photographies prises durant les cours et ateliers nécessitant une publication publique fait l'objet d'un consentement explicite recueilli individuellement auprès des élèves ou de leurs tuteurs légaux lors de l'inscription administrative."
   },
 
   "en": {
@@ -272,7 +289,6 @@ const translations = {
     "cond_5": "<strong>Absences:</strong> Make-up classes are allowed within the same term.",
     "cond_6": "<strong>Material:</strong> Basic material is provided for the first lesson only.",
 
-    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
     "status_full": "Full",
     "btn_enroll": "Register (Pre-registration)",
     "modal_title": "Pre-registration Form",
@@ -283,8 +299,26 @@ const translations = {
     "field_email": "Contact Email *",
     "field_phone": "Phone *",
     "field_comments": "Comments / Would you like a free trial class?",
+    "field_privacy_consent": "I accept the <a href='#privacidad' style='color: var(--accent); text-decoration: underline;' onclick='closeEnrollmentModal()'>privacy policy</a> and authorize the processing of my data for registration management *",
     "btn_submit_enroll": "Send Pre-registration",
-    "alert_success": "Pre-registration sent successfully!\n\nEloísa will contact you soon to validate and finalize your registration. Don't forget to contact us if you want to schedule your free trial class!"
+    "alert_success": "Pre-registration sent successfully!\n\nEloísa will contact you soon to validate and finalize your registration. Don't forget to contact us if you want to schedule your free trial class!",
+
+    // Privacy Policy Texts (English)
+    "priv_tag": "Data Protection • Switzerland",
+    "priv_title": "Privacy Policy and <span>Legal Notice</span>",
+    "priv_h1": "1. Data Controller",
+    "priv_p1": "The entity responsible for collecting and processing personal data on this website is <strong>Atelier Arte Vich</strong>, located at Grand'Rue 6, 1267 Vich (Switzerland). Contact: atelierartevich@gmail.com / +41 79 913 70 55.",
+    "priv_h2": "2. Legal Basis and Purpose of Processing",
+    "priv_p2": "In accordance with the <strong>new Federal Act on Data Protection (FADP / nLPD)</strong> and, where applicable, the European Union's General Data Protection Regulation (GDPR), collected data (name, email, phone, address) is strictly used for:",
+    "priv_li1": "Managing registrations and pre-registrations for painting classes and workshops.",
+    "priv_li2": "Billing, payment tracking, and mandatory accounting in Switzerland.",
+    "priv_li3": "Direct communication with students or their legal guardians regarding schedules and classes.",
+    "priv_h3": "3. Data Retention and Security",
+    "priv_p3": "Personal data is stored securely and is never sold, rented, or transferred to third parties. It is kept for the legal duration required by Swiss tax law (10 years for accounting records and invoices) or until deletion is requested by the user for non-accounting data.",
+    "priv_h4": "4. User Rights",
+    "priv_p4": "Under the FADP, you have the right to access, rectify, and delete your personal data. To exercise these rights, you can contact us directly by email at <strong>atelierartevich@gmail.com</strong>.",
+    "priv_h5": "5. Image Rights of Participants",
+    "priv_p5": "The use of photographs taken during classes and workshops requiring public publication is subject to explicit consent collected individually from students or their legal guardians upon administrative registration."
   },
 
   "it": {
@@ -416,7 +450,6 @@ const translations = {
     "cond_5": "<strong>Assenze:</strong> È possibile recuperare le lezioni nello stesso trimestre.",
     "cond_6": "<strong>Materiale:</strong> Il materiale di base è fornito solo per la prima lezione.",
 
-    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
     "status_full": "Completo",
     "btn_enroll": "Iscriviti (Pre-iscrizione)",
     "modal_title": "Modulo di Pre-iscrizione",
@@ -427,8 +460,26 @@ const translations = {
     "field_email": "Email di contatto *",
     "field_phone": "Telefono *",
     "field_comments": "Commenti / Desideri una lezione di prova gratuita?",
+    "field_privacy_consent": "Accetto la <a href='#privacidad' style='color: var(--accent); text-decoration: underline;' onclick='closeEnrollmentModal()'>politica sulla riservatezza</a> e autorizzo il trattamento dei miei dati per la gestione dell'iscrizione *",
     "btn_submit_enroll": "Invia pre-iscrizione",
-    "alert_success": "Pre-iscrizione inviata con successo!\n\nEloísa ti contatterà presto per convalidare e finalizzare la tua iscrizione. Non dimenticare di contattarci se desideri programmare la tua lezione di prova gratuita!"
+    "alert_success": "Pre-iscrizione inviata con successo!\n\nEloísa ti contatterà presto per convalidare e finalizzare la tua iscrizione. Non dimenticare di contattarci se desideri programmare la tua lezione di prova gratuita!",
+
+    // Privacy Policy Texts (Italian)
+    "priv_tag": "Protezione dei dati • Svizzera",
+    "priv_title": "Informativa sulla <span>Privacy e Note Legali</span>",
+    "priv_h1": "1. Titolare del trattamento",
+    "priv_p1": "Il responsabile della raccolta e del trattamento dei dati personali su questo sito è l'<strong>Atelier Arte Vich</strong>, situato in Grand'Rue 6, 1267 Vich (Svizzera). Contatto: atelierartevich@gmail.com / +41 79 913 70 55.",
+    "priv_h2": "2. Base giuridica e finalità della raccolta",
+    "priv_p2": "Ai sensi della <strong>nuova Legge federale sulla protezione dei dati (nLPD)</strong> e, ove applicabile, del Regolamento generale sulla protezione dei dati (GDPR) dell'Unione Europea, i dati raccolti (nome, email, telefono, indirizzo) vengono utilizzati esclusivamente per:",
+    "priv_li1": "La gestione delle iscrizioni e pre-iscrizioni ai corsi di pittura e laboratori.",
+    "priv_li2": "La fatturazione, il controllo dei pagamenti e la contabilità obbligatoria in Svizzera.",
+    "priv_li3": "La comunicazione diretta con gli studenti o i loro rappresentanti legali in merito a orari e corsi.",
+    "priv_h3": "3. Conservazione dei dati e sicurezza",
+    "priv_p3": "I dati personali sono archiviati in modo sicuro e non vengono in alcun modo venduti, dati in affitto o ceduti a terzi. Vengono conservati per la durata legale richiesta dal diritto fiscale svizzero (10 anni per i documenti contabili e le fatture) o fino alla richiesta di cancellazione da parte dell'utente per i dati non contabili.",
+    "priv_h4": "4. Diritti degli utenti",
+    "priv_p4": "Ai sensi della nLPD, l'utente ha il diritto di accedere, rettificare e cancellare i propri dati personali. Per esercitare tali diritti, è possibile contattarci direttamente via email all'indirizzo <strong>atelierartevich@gmail.com</strong>.",
+    "priv_h5": "5. Diritto all'immagine dei partecipanti",
+    "priv_p5": "L'uso di fotografie scattate durante i corsi e i laboratori che richiedono una pubblicazione pubblica è soggetto a un consenso esplicito raccolto individualmente dagli studenti o dai loro tutori legali al momento dell'iscrizione amministrativa."
   },
 
   "es": {
@@ -560,7 +611,6 @@ const translations = {
     "cond_5": "<strong>Ausencias:</strong> Se pueden recuperar clases durante el mismo trimestre.",
     "cond_6": "<strong>Material:</strong> Se incluye el material básico solo para la primera lección.",
 
-    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
     "status_full": "Completo",
     "btn_enroll": "Apuntarme (Pre-inscripción)",
     "modal_title": "Formulario de Pre-inscripción",
@@ -571,7 +621,25 @@ const translations = {
     "field_email": "Email de contacto *",
     "field_phone": "Teléfono *",
     "field_comments": "Comentarios / ¿Deseas una clase de prueba gratuita?",
+    "field_privacy_consent": "Acepto la <a href='#privacidad' style='color: var(--accent); text-decoration: underline;' onclick='closeEnrollmentModal()'>política de privacidad</a> y autorizo el tratamiento de mis datos para la gestión de la inscripción *",
     "btn_submit_enroll": "Enviar pre-inscripción",
-    "alert_success": "¡Pre-inscripción enviada con éxito!\n\nEloísa se pondrá en contacto contigo próximamente para validar y cerrar la inscripción. ¡No olvides ponerte en contacto con nosotros si deseas agendar tu clase de prueba gratuita!"
+    "alert_success": "¡Pre-inscripción enviada con éxito!\n\nEloísa se pondrá en contacto contigo próximamente para validar y cerrar la inscripción. ¡No olvides ponerte en contacto con nosotros si deseas agendar tu clase de prueba gratuita!",
+
+    // Texts for Privacy Policy (Spanish)
+    "priv_tag": "Protección de datos • Suiza",
+    "priv_title": "Política de <span>Privacidad y Aviso Legal</span>",
+    "priv_h1": "1. Responsable del tratamiento",
+    "priv_p1": "El responsable de la recogida y el tratamiento de los datos personales en este sitio web es <strong>Atelier Arte Vich</strong>, situado en Grand'Rue 6, 1267 Vich (Suiza). Contacto: atelierartevich@gmail.com / +41 79 913 70 55.",
+    "priv_h2": "2. Base legal y finalidad de la recogida",
+    "priv_p2": "De conformidad con la <strong>nueva Ley federal sobre protección de datos (nLPD)</strong> y, en su caso, con el Reglamento general de protección de datos (RGPD) de la Unión Europea, los datos recogidos (nombre, email, teléfono, dirección) se utilizan estrictamente para:",
+    "priv_li1": "La gestión de las inscripciones y preinscripciones a las clases de pintura y talleres.",
+    "priv_li2": "La facturación, el seguimiento de los pagos y la contabilidad obligatoria en Suiza.",
+    "priv_li3": "La comunicación directa con los alumnos o sus representantes legales en relación con los horarios y las clases.",
+    "priv_h3": "3. Conservación de los datos y seguridad",
+    "priv_p3": "Los datos personales se almacenan de forma segura y no se venden, alquilan ni ceden en ningún caso a terceros. Se conservan durante el plazo legal exigido por el derecho fiscal suizo (10 años para los justificantes contables y facturas) o hasta que el usuario solicite su supresión para los datos no contables.",
+    "priv_h4": "4. Derechos de los usuarios",
+    "priv_p4": "De conformidad con la nLPD, usted dispone de un derecho de acceso, rectificación y supresión de sus datos personales. Para ejercer estos derechos, puede ponerse en contacto con nosotros directamente por correo electrónico en <strong>atelierartevich@gmail.com</strong>.",
+    "priv_h5": "5. Derecho a la propia imagen de los participantes",
+    "priv_p5": "El uso de fotografías tomadas durante las clases y talleres que requieran una publicación pública estará sujeto a un consentimiento explícito recabado individualmente de los alumnos o de sus tutores legales en el momento de la inscripción administrativa."
   }
 };
