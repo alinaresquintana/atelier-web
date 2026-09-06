@@ -12,6 +12,10 @@
             #pdf-report-container { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; background: white; }
             .no-print { display: none !important; }
         }
+        input[type="date"]::-webkit-datetime-edit { padding: 0; }
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-clear-button { display: none; }
+        input[type="date"] { position: relative; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans text-sm">
@@ -83,16 +87,16 @@
                 <div class="space-y-6">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-3">
                         <h3 class="font-bold text-gray-900 text-sm">🏖️ Gestionar Vacaciones / Festivos</h3>
-                        <p class="text-xs text-gray-500">Selecciona las fechas directamente desde el calendario.</p>
+                        <p class="text-xs text-gray-500">Selecciona las fechas de inicio y fin para marcar períodos festivos.</p>
                         <form onsubmit="addHoliday(event)" class="space-y-3 pt-2">
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Desde</label>
-                                    <input type="date" id="holiday-start" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white">
+                                    <input type="date" id="holiday-start" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
-                                    <input type="date" id="holiday-end" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white">
+                                    <input type="date" id="holiday-end" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
                                 </div>
                             </div>
                             <div>
@@ -364,7 +368,7 @@
             <input type="hidden" id="attendance-class-id">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de la sesión</label>
-                <input type="date" id="attendance-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50">
+                <input type="date" id="attendance-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 text-gray-800">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumnos Inscritos (Marca los presentes)</label>
@@ -524,7 +528,7 @@
                 </div>
                 <div id="client-departure-container" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Baja (Dejó de asistir)</label>
-                    <input type="date" id="client-departure-date" class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <input type="date" id="client-departure-date" class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800">
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
@@ -610,11 +614,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo</label>
-                        <input type="date" id="class-startdate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white" value="2026-09-01">
+                        <input type="date" id="class-startdate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin</label>
-                        <input type="date" id="class-enddate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white" value="2027-06-30">
+                        <input type="date" id="class-enddate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                 </div>
             </div>
@@ -623,7 +627,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Workshop</label>
-                        <input type="date" id="class-singledate" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                        <input type="date" id="class-singledate" class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
@@ -706,7 +710,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
-                <input type="date" id="invoice-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                <input type="date" id="invoice-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
@@ -816,7 +820,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
@@ -987,14 +991,34 @@
     saveDB();
     renderAll();
   }
+  
+  function getGlobalHoliday(dateStr) {
+    const targetTime = new Date(dateStr + 'T00:00:00').getTime();
+    for (const h of (db.holidays || [])) {
+      const startTime = new Date(h.startDate + 'T00:00:00').getTime();
+      const endTime = new Date(h.endDate + 'T00:00:00').getTime();
+      if (targetTime >= startTime && targetTime <= endTime) {
+        if (!h.scope || h.scope === 'all') return h;
+      }
+    }
+    return null;
+  }
 
   function getHolidayForClass(dateStr, classType) {
-    const isJunior = (classType || '').toLowerCase().includes('niños') || (classType || '').toLowerCase().includes('adolescentes');
+    const typeLower = (classType || '').toLowerCase();
+    const isJunior = typeLower.includes('niños') || typeLower.includes('adolescentes') || typeLower.includes('atelier') || typeLower.includes('pintura');
+    
+    const targetTime = new Date(dateStr + 'T00:00:00').getTime();
+
     for (const h of (db.holidays || [])) {
-      if (dateStr >= h.startDate && dateStr <= h.endDate) {
-        if (!h.scope || h.scope === 'all') return h;
-        if (h.scope === 'junior' && isJunior) return h;
-        if (h.scope === 'adults' && !isJunior) return h;
+      const startTime = new Date(h.startDate + 'T00:00:00').getTime();
+      const endTime = new Date(h.endDate + 'T00:00:00').getTime();
+
+      if (targetTime >= startTime && targetTime <= endTime) {
+        const scope = h.scope || 'all';
+        if (scope === 'all') return h;
+        if (scope === 'junior' && isJunior) return h;
+        if (scope === 'adults' && !isJunior) return h;
       }
     }
     return null;
@@ -1039,6 +1063,8 @@
       const currentDateObj = new Date(year, month, day);
       const dayOfWeek = currentDateObj.getDay();
 
+      let dayContentHtml = '';
+
       const classesOnThisDay = (db.classes || []).filter(cl => {
         if (cl.scheduleMode === 'single') {
           return cl.singleDate === dateStr;
@@ -1050,24 +1076,48 @@
         }
       });
 
-      let classesHtml = '';
-      classesOnThisDay.forEach(cl => {
-        const activeHoliday = getHolidayForClass(dateStr, cl.classType);
-        const sch = cl.scheduleMode === 'single' ? cl.singleSchedule : cl.schedule;
+      const globalHoliday = getGlobalHoliday(dateStr);
 
-        if (activeHoliday) {
-          classesHtml += `<div class="bg-rose-50 text-rose-700 border border-rose-200 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate line-through" title="Suspendida por: ${activeHoliday.reason}">🏖️ ${cl.name}</div>`;
-        } else {
-          classesHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${sch} - ${cl.duration})">📚 ${cl.name} (${sch})</div>`;
+      if (classesOnThisDay.length === 0) {
+        let matchedHoliday = globalHoliday;
+        if (!matchedHoliday) {
+          for (const h of (db.holidays || [])) {
+            const startTime = new Date(h.startDate + 'T00:00:00').getTime();
+            const endTime = new Date(h.endDate + 'T00:00:00').getTime();
+            const targetTime = new Date(dateStr + 'T00:00:00').getTime();
+            if (targetTime >= startTime && targetTime <= endTime) {
+              matchedHoliday = h;
+              break;
+            }
+          }
         }
-      });
+        if (matchedHoliday) {
+          dayContentHtml += `<div class="bg-rose-50 text-rose-700 border border-rose-200 rounded px-1.5 py-1 text-[10px] font-semibold mb-1 truncate" title="Vacaciones: ${matchedHoliday.reason}">🏖️ ${matchedHoliday.reason}</div>`;
+        }
+      } else {
+        if (globalHoliday) {
+          dayContentHtml += `<div class="bg-rose-50 text-rose-700 border border-rose-200 rounded px-1.5 py-1 text-[10px] font-semibold mb-1 truncate" title="Vacaciones: ${globalHoliday.reason}">🏖️ ${globalHoliday.reason}</div>`;
+        }
+
+        classesOnThisDay.forEach(cl => {
+          const specificHoliday = getHolidayForClass(dateStr, cl.classType);
+          const activeHoliday = specificHoliday || globalHoliday;
+          const sch = cl.scheduleMode === 'single' ? cl.singleSchedule : cl.schedule;
+
+          if (activeHoliday) {
+            dayContentHtml += `<div class="bg-rose-50 text-rose-700 border border-rose-200 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate line-through" title="Suspendida por: ${activeHoliday.reason}">🏖️ ${cl.name}</div>`;
+          } else {
+            dayContentHtml += `<div class="bg-indigo-50 text-indigo-800 border border-indigo-100 rounded px-1.5 py-0.5 text-[10px] font-medium mb-1 truncate" title="${cl.name} (${sch} - ${cl.duration})">📚 ${cl.name} (${sch})</div>`;
+          }
+        });
+      }
 
       grid.innerHTML += `
         <div class="bg-white rounded-lg p-2 min-h-[95px] border border-gray-200 flex flex-col justify-between overflow-hidden shadow-sm">
             <div class="flex justify-between items-center">
                 <span class="font-bold text-xs text-gray-800">${day}</span>
             </div>
-            <div class="flex-1 mt-1 overflow-y-auto max-h-[70px]">${classesHtml}</div>
+            <div class="flex-1 mt-1 overflow-y-auto max-h-[70px]">${dayContentHtml}</div>
         </div>
       `;
     }
@@ -1154,7 +1204,7 @@
 
     tbody.innerHTML = preRegs.map(pr => `
       <tr class="hover:bg-gray-50 align-top">
-          <td class="p-4 text-xs text-gray-500">${new Date(pr.date).toLocaleDateString('es-ES')}</td>
+          <td class="p-4 text-xs text-gray-500">${formatDate(pr.date)}</td>
           <td class="p-4">
               <div class="font-bold text-gray-900">${pr.name} ${pr.childName ? `(Alumno: ${pr.childName})` : ''}</div>
               <div class="text-xs text-indigo-600">${pr.email} | ${pr.phone}</div>
@@ -1802,10 +1852,7 @@
     const inputDuration = document.getElementById('class-duration');
     const inputCapacity = document.getElementById('class-capacity');
 
-    if (!modal) {
-        console.error("El modal de clases no se encuentra en el DOM.");
-        return;
-    }
+    if (!modal) return;
 
     if (classId) {
         const cls = (db.classes || []).find(c => c.id == classId);
@@ -1819,10 +1866,12 @@
             }
             if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 1;
             if (inputSchedule) inputSchedule.value = cls.schedule || '';
+            
             if (inputStartDate) inputStartDate.value = cls.startDate || '2026-09-01';
             if (inputEndDate) inputEndDate.value = cls.endDate || '2027-06-30';
             if (inputSingleDate) inputSingleDate.value = cls.singleDate || '';
             if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
+            
             if (inputDuration) inputDuration.value = cls.duration || '2 horas';
             if (inputCapacity) inputCapacity.value = cls.capacity || 8;
 
@@ -2054,7 +2103,7 @@
     const concept = document.getElementById('mat-sale-concept').value;
     const amount = parseFloat(document.getElementById('mat-sale-amount').value);
     const date = new Date().toISOString().split('T')[0];
-    const invoiceId = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
+    const invoiceId = `FAC-2026-${Date.now()}`;
 
     const futureDueDate = new Date();
     futureDueDate.setDate(futureDueDate.getDate() + 15);
@@ -2286,7 +2335,7 @@
         const emailBtnDisabled = !inv.fileName;
         const emailBtnClasses = emailBtnDisabled
           ? 'border border-gray-200 bg-gray-100 text-gray-400 p-2 rounded-lg cursor-not-allowed flex items-center justify-center text-sm'
-          : 'border border-gray-300 bg-white text-gray-700 p-2 rounded-lg hover:bg-gray-50 flex items-center justify-center text-sm shadow-sm';
+          : 'border border-gray-300 bg-white text-indigo-700 hover:bg-indigo-50 p-2 rounded-lg flex items-center justify-center text-sm shadow-sm';
         
         let badgeType = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isOverdue ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800'}">${isOverdue ? 'Vencida' : 'Pendiente'}</span>`;
         if (inv.isBonus) {
@@ -2311,12 +2360,12 @@
                   </div>
               </div>
               <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-                  <button onclick="sendReminderEmail('invoice', '${inv.id}')" title="Enviar recordatorio de pago" class="border border-amber-300 bg-amber-50 text-amber-700 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 flex items-center text-xs shadow-sm font-medium">🔔 Rappel</button>
+                  <button onclick="sendReminderEmail('invoice', '${inv.id}')" title="Enviar recordatorio de pago" class="border border-amber-300 bg-amber-50 text-amber-700 px-2.5 py-1.5 rounded-lg hover:bg-amber-100 flex items-center text-xs shadow-sm font-medium">🔔 Mandar recordatorio</button>
                   <button onclick="toggleInvoiceStatus('${inv.id}')" class="${isPaid ? 'bg-amber-600 hover:bg-amber-700' : 'bg-green-600 hover:bg-green-700'} text-white px-3 py-1.5 rounded-lg text-xs font-medium transition">
                       ${isPaid ? '↩️ Desmarcar' : '✓ Marcar Pagado'}
                   </button>
                   <label class="border border-gray-300 bg-white text-gray-700 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center text-xs shadow-sm" title="Subir fichero de factura">
-                      📎 Subir Factura <input type="file" class="hidden" onchange="uploadInvoiceFile('${inv.id}', event)">
+                      📎 Subir Factura <input type="file" class="hidden invoice-file-input" data-id="${inv.id}" onchange="uploadInvoiceFile('${inv.id}', event)">
                   </label>
                   <button onclick="${emailBtnDisabled ? '' : `simulateInvoiceEmail('${inv.id}')`}" ${emailBtnDisabled ? 'disabled' : ''} title="Enviar Email" class="${emailBtnClasses}">✉️</button>
                   <button onclick="openInvoiceModal('${inv.id}')" title="Editar" class="text-indigo-600 p-1 text-sm">✏️</button>
@@ -2342,16 +2391,28 @@
   function uploadInvoiceFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
-    const inv = db.invoices.find(i => i.id === id);
-    if (inv) {
-      inv.fileName = file.name;
-      if (db.ledger) {
-        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
-        if (ledgerItem) ledgerItem.fileName = file.name;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const inv = db.invoices.find(i => i.id === id);
+      if (inv) {
+        inv.fileName = file.name;
+        inv.fileData = e.target.result;
+
+        // Si es un bono o cualquier factura, actualizamos también el ledger si existe asociado
+        if (db.ledger) {
+          const ledgerItem = db.ledger.find(l => l.originId === inv.id);
+          if (ledgerItem) {
+            ledgerItem.fileName = file.name;
+            ledgerItem.fileData = e.target.result;
+          }
+        }
+
+        saveDB(); 
+        renderAll();
       }
-      saveDB(); renderAll();
-      alert(`Fichero "${file.name}" asociado a la factura ${id} correctamente.`);
-    }
+    };
+    reader.readAsDataURL(file);
   }
 
   function simulateInvoiceEmail(id) {
@@ -2480,7 +2541,7 @@
       clientSelect.value = inv.clientId;
       document.getElementById('invoice-concept').value = inv.concept;
       document.getElementById('invoice-amount').value = inv.amount;
-      document.getElementById('invoice-duedate').value = inv.dueDate;
+      document.getElementById('invoice-duedate').value = inv.dueDate || new Date().toISOString().split('T')[0];
       document.getElementById('invoice-rate-select').innerHTML = `<option value="">-- Escritura manual libre --</option>`;
     } else {
       document.getElementById('invoice-modal-title').innerText = 'Nueva Factura Manual';
@@ -2506,7 +2567,7 @@
     const concept = document.getElementById('bonus-concept').value;
     const amount = parseFloat(document.getElementById('bonus-amount').value);
     const date = new Date().toISOString().split('T')[0];
-    const invoiceId = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
+    const invoiceId = `FAC-2026-${Date.now()}`; // ID único garantizado
 
     const future = new Date(); future.setDate(future.getDate() + 15);
 
@@ -2564,7 +2625,7 @@
     if (id) {
       Object.assign(db.invoices.find(i => i.id === id), data);
     } else {
-      data.id = `FAC-2026-${String(db.invoices.length + 1).padStart(3, '0')}`;
+      data.id = `FAC-2026-${Date.now()}`;
       data.status = 'Pendiente';
       data.date = new Date().toISOString().split('T')[0];
       data.emailSent = false;
@@ -2595,6 +2656,7 @@
         amount: inv.amount,
         date: inv.date || new Date().toISOString().split('T')[0],
         fileName: inv.fileName,
+        fileData: inv.fileData,
         originId: inv.id
       });
     } else {
@@ -2642,24 +2704,49 @@
     if (!db.ledger) db.ledger = [];
     const id = document.getElementById('ledger-id').value;
     const fileInput = document.getElementById('ledger-file-input');
-    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : (id ? db.ledger.find(l => l.id === id)?.fileName : null);
-
-    const data = {
-      type: document.getElementById('ledger-type').value,
-      category: document.getElementById('ledger-category').value,
-      date: document.getElementById('ledger-date').value,
-      concept: document.getElementById('ledger-concept').value,
-      amount: parseFloat(document.getElementById('ledger-amount').value),
-      fileName: fileName
-    };
-
-    if (id) {
-      Object.assign(db.ledger.find(l => l.id === id), data);
+    
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const data = {
+          type: document.getElementById('ledger-type').value,
+          category: document.getElementById('ledger-category').value,
+          date: document.getElementById('ledger-date').value,
+          concept: document.getElementById('ledger-concept').value,
+          amount: parseFloat(document.getElementById('ledger-amount').value),
+          fileName: file.name,
+          fileData: evt.target.result
+        };
+        if (id) {
+          Object.assign(db.ledger.find(l => l.id === id), data);
+        } else {
+          data.id = 'LED-' + Date.now();
+          db.ledger.push(data);
+        }
+        saveDB(); closeModals(); renderAll();
+      };
+      reader.readAsDataURL(file);
     } else {
-      data.id = 'LED-' + Date.now();
-      db.ledger.push(data);
+      const existingFileName = id ? db.ledger.find(l => l.id === id)?.fileName : null;
+      const existingFileData = id ? db.ledger.find(l => l.id === id)?.fileData : null;
+      const data = {
+        type: document.getElementById('ledger-type').value,
+        category: document.getElementById('ledger-category').value,
+        date: document.getElementById('ledger-date').value,
+        concept: document.getElementById('ledger-concept').value,
+        amount: parseFloat(document.getElementById('ledger-amount').value),
+        fileName: existingFileName,
+        fileData: existingFileData
+      };
+      if (id) {
+        Object.assign(db.ledger.find(l => l.id === id), data);
+      } else {
+        data.id = 'LED-' + Date.now();
+        db.ledger.push(data);
+      }
+      saveDB(); closeModals(); renderAll();
     }
-    saveDB(); closeModals(); renderAll();
   }
 
   function deleteLedgerItem(id) {
@@ -2672,12 +2759,18 @@
   function uploadLedgerFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
-    const item = db.ledger.find(l => l.id === id);
-    if (item) {
-      item.fileName = file.name;
-      saveDB(); renderAll();
-      alert(`Fichero "${file.name}" adjuntado correctamente al movimiento.`);
-    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const item = db.ledger.find(l => l.id === id);
+      if (item) {
+        item.fileName = file.name;
+        item.fileData = e.target.result;
+        saveDB(); 
+        renderLedger();
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function changeLedgerPage(direction) {
