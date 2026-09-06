@@ -365,6 +365,31 @@
     </main>
 </div>
 
+<!-- MODAL PASAR LISTA (ASISTENCIA DIARIA) -->
+<div id="attendance-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+        <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="text-lg font-bold" id="attendance-modal-title">📋 Pasar Lista / Asistencia</h3>
+            <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+        </div>
+        <form onsubmit="saveAttendance(event)" class="space-y-4">
+            <input type="hidden" id="attendance-class-id">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de la sesión</label>
+                <input type="date" id="attendance-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Alumnos Inscritos (Marca los presentes)</label>
+                <div id="attendance-students-container" class="space-y-2 max-h-60 overflow-y-auto border p-3 rounded-lg bg-gray-50"></div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Guardar Asistencia</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- MODAL PREVISIÓN / VISTA PREVIA INFORME PDF -->
 <div id="ledger-report-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -1469,7 +1494,19 @@
     const addressStr = `${client.address || ''}, ${client.postal || ''} ${client.city || ''}`.trim();
     const statusText = client.status === 'past' ? `<span class="text-red-600 font-semibold">Alumno Pasado</span>` : `<span class="text-green-600 font-semibold">Alumno Presente (Activo)</span>`;
 
+    const clientInvoices = db.invoices.filter(i => i.clientId === clientId);
+    const clientBonuses = (db.bonuses || []).filter(b => b.clientId === clientId);
+    
+    const totalPaidInvoices = clientInvoices.filter(i => i.status === 'Pagado').reduce((sum, i) => sum + i.amount, 0);
+    const totalBonusesSpent = clientBonuses.filter(b => b.status === 'Pagado').reduce((sum, b) => sum + b.amount, 0);
+    const totalSpent = totalPaidInvoices + totalBonusesSpent;
+    const totalSessionsRemaining = getClientTotalBonusSessions(clientId);
+
     document.getElementById('detail-client-extra').innerHTML = `
+        <div class="grid grid-cols-2 gap-2 mb-2 pb-2 border-b border-gray-200">
+            <div class="bg-indigo-50 p-2 rounded text-indigo-900 font-bold">Total Invertido Histórico: ${totalSpent.toFixed(2)} CHF</div>
+            <div class="bg-emerald-50 p-2 rounded text-emerald-900 font-bold">Clases de Bono Disponibles: ${totalSessionsRemaining}</div>
+        </div>
         <div><strong>Dirección:</strong> ${addressStr !== ',' ? addressStr : 'No especificada'}</div>
         <div><strong>Tratamiento de imágenes:</strong> ${client.imageConsent ? 'Autorizado' : 'No autorizado'}</div>
         <div><strong>Estado:</strong> ${statusText}</div>
@@ -1481,8 +1518,7 @@
         if (e.clientId === clientId) {
           let sessionsHTML = '';
           if (isBonusRate(e.rateName)) {
-            const totalSessions = getClientTotalBonusSessions(clientId);
-            sessionsHTML = `<div class="mt-1">Clases restantes totales (todos los bonos): <strong class="px-1.5 py-0.2 rounded border ${getBonusBadgeColor(totalSessions)}">${totalSessions}</strong></div>`;
+            sessionsHTML = `<div class="mt-1">Clases restantes totales (todos los bonos): <strong class="px-1.5 py-0.2 rounded border ${getBonusBadgeColor(totalSessionsRemaining)}">${totalSessionsRemaining}</strong></div>`;
           }
           clientEnrollments.push(`<div class="p-3 bg-gray-50 rounded border space-y-1"><div><strong>${cl.name}</strong> — <span class="text-indigo-600 font-medium">${e.rateName}</span></div>${sessionsHTML}</div>`);
         }
@@ -1490,9 +1526,6 @@
     });
 
     document.getElementById('detail-client-classes').innerHTML = clientEnrollments.length > 0 ? clientEnrollments.join('') : '<p class="text-xs text-gray-400 italic">No está inscrito en ninguna clase.</p>';
-
-    const clientInvoices = db.invoices.filter(i => i.clientId === clientId);
-    const clientBonuses = (db.bonuses || []).filter(b => b.clientId === clientId);
 
     let historyHtml = '';
     if (clientInvoices.length > 0 || clientBonuses.length > 0) {
@@ -1564,7 +1597,7 @@
     }
   }
 
-  // --- CLASES Y PRECIOS ---
+  // --- CLASES Y PRECIOS Y ASISTENCIA ---
   function getClassTypeBadge(classType) {
     const type = (classType || '').toLowerCase();
     if (type.includes('niños')) {
@@ -1583,7 +1616,7 @@
     return `<span class="inline-block bg-gray-100 text-gray-800 border border-gray-300 px-2.5 py-0.5 rounded-full font-bold text-[11px] mb-1">📌 ${classType || 'General'}</span>`;
   }
 
-  function renderClasses() {
+   function renderClasses() {
     const tbody = document.getElementById('classes-table-body');
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -1627,15 +1660,11 @@
       const enrolledList = cl.enrolled.map(e => {
         const client = db.clients.find(c => c.id === e.clientId);
         if (!client) return '';
-        let bonusControls = '';
+        let bonusInfo = '';
         if (isBonusRate(e.rateName)) {
           const totalSessions = getClientTotalBonusSessions(client.id);
           const badgeColor = getBonusBadgeColor(totalSessions);
-          bonusControls = `
-            <div class="mt-1 flex items-center justify-between gap-2">
-                <span class="px-1.5 py-0.2 rounded border font-bold ${badgeColor}">${totalSessions} clases restantes</span>
-                <button onclick="decrementBonus('${cl.id}', '${e.clientId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-0.5 rounded text-[10px] font-semibold transition" title="Descontar 1 clase">-1 clase</button>
-            </div>`;
+          bonusInfo = `<div class="mt-0.5"><span class="px-1.5 py-0.2 rounded border font-bold ${badgeColor}">${totalSessions} clases restantes</span></div>`;
         }
         return `
           <div class="bg-gray-50 border border-gray-200 rounded p-2 mb-1.5 space-y-1 text-xs">
@@ -1646,7 +1675,7 @@
                   </div>
                   <button onclick="unenrollClient('${cl.id}', '${e.clientId}')" class="text-red-500 hover:underline text-[11px]">Quitar</button>
               </div>
-              ${bonusControls}
+              ${bonusInfo}
           </div>`;
       }).join('');
 
@@ -1658,7 +1687,12 @@
       `).join('') || '<span class="text-xs text-gray-400 italic">Sin precios definidos</span>';
 
       const enrollButton = !isFull
-        ? `<button onclick="openEnrollModal('${cl.id}')" class="mt-2 w-full bg-gray-800 text-white text-xs py-1.5 rounded hover:bg-gray-900 transition">+ Inscribir Alumno</button>`
+        ? `<button onclick="openEnrollModal('${cl.id}')" class="w-full bg-gray-800 text-white text-xs py-1.5 rounded hover:bg-gray-900 transition">+ Inscribir Alumno</button>`
+        : '';
+
+      const hasBonusRate = (cl.rates || []).some(r => isBonusRate(r.name));
+      const attendanceButton = (count > 0 && hasBonusRate)
+        ? `<button onclick="openAttendanceModal('${cl.id}')" class="w-full bg-indigo-600 text-white text-xs py-1.5 rounded hover:bg-indigo-700 transition font-medium">📋 Pasar Lista (Asistencia)</button>`
         : '';
 
       return `
@@ -1677,8 +1711,11 @@
                 <div class="flex items-center space-x-2 mb-2">
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">Aforo: ${count}/${cl.capacity}</span>
                 </div>
-                <div class="space-y-1 max-h-48 overflow-y-auto pr-1">${enrolledList || '<span class="text-xs text-gray-400 italic">Sin alumnos inscritos</span>'}</div>
-                ${enrollButton}
+                <div class="space-y-1 max-h-48 overflow-y-auto pr-1 mb-2">${enrolledList || '<span class="text-xs text-gray-400 italic">Sin alumnos inscritos</span>'}</div>
+                <div class="space-y-1.5">
+                    ${attendanceButton}
+                    ${enrollButton}
+                </div>
             </td>
             <td class="p-4 text-right space-x-2 whitespace-nowrap">
                 <button onclick="openClassModal('${cl.id}')" title="Editar" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">✏️</button>
@@ -1688,19 +1725,71 @@
     }).join('');
   }
 
-  function decrementBonus(classId, clientId) {
-    if (!db.bonuses) db.bonuses = [];
-    const activeBonus = db.bonuses.find(b => b.clientId === clientId && b.status === 'Pagado' && b.addedToClient && b.sessionsLeft > 0);
+  function openAttendanceModal(classId) {
+    const cl = db.classes.find(c => c.id === classId);
+    if (!cl) return;
 
-    if (!activeBonus) {
-      alert('El alumno no tiene bonos pagados con clases disponibles.');
+    document.getElementById('attendance-class-id').value = classId;
+    document.getElementById('attendance-modal-title').innerText = `📋 Pasar Lista: ${cl.name}`;
+    document.getElementById('attendance-date').value = new Date().toISOString().split('T')[0];
+
+    const container = document.getElementById('attendance-students-container');
+    if (cl.enrolled.length === 0) {
+      container.innerHTML = `<p class="text-xs text-gray-400 italic">No hay alumnos inscritos en esta clase.</p>`;
       return;
     }
 
-    activeBonus.sessionsLeft--;
-    if (!activeBonus.attendanceLog) activeBonus.attendanceLog = [];
-    activeBonus.attendanceLog.push(new Date().toISOString().split('T')[0]);
-    saveDB(); renderAll();
+    container.innerHTML = cl.enrolled.map(e => {
+      const client = db.clients.find(c => c.id === e.clientId);
+      if (!client) return '';
+      const isBonus = isBonusRate(e.rateName);
+      let bonusText = isBonus ? `<span class="text-indigo-600 font-semibold">(Bono)</span>` : `<span class="text-gray-400">(${e.rateName})</span>`;
+      
+      return `
+        <label class="flex items-center justify-between p-2 bg-white rounded border cursor-pointer hover:bg-indigo-50/50">
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" name="attendance-student" value="${client.id}" checked class="w-4 h-4 text-indigo-600 rounded border-gray-300">
+                <span class="font-medium text-gray-800">${client.name}</span>
+            </div>
+            <span class="text-xs">${bonusText}</span>
+        </label>`;
+    }).join('');
+
+    document.getElementById('attendance-modal').classList.remove('hidden');
+  }
+
+  function saveAttendance(e) {
+    e.preventDefault();
+    const classId = document.getElementById('attendance-class-id').value;
+    const attendanceDate = document.getElementById('attendance-date').value;
+    const cl = db.classes.find(c => c.id === classId);
+    if (!cl) return;
+
+    const checkboxes = document.querySelectorAll('input[name="attendance-student"]:checked');
+    const presentClientIds = new Set(Array.from(checkboxes).map(cb => cb.value));
+
+    let deductedCount = 0;
+    cl.enrolled.forEach(e => {
+      if (presentClientIds.has(e.clientId)) {
+        if (isBonusRate(e.rateName)) {
+          const activeBonus = (db.bonuses || []).find(b => b.clientId === e.clientId && b.status === 'Pagado' && b.addedToClient && b.sessionsLeft > 0);
+          if (activeBonus) {
+            activeBonus.sessionsLeft--;
+            if (!activeBonus.attendanceLog) activeBonus.attendanceLog = [];
+            activeBonus.attendanceLog.push(attendanceDate);
+            deductedCount++;
+          }
+        } else {
+          if (!e.attendanceLog) e.attendanceLog = [];
+          e.attendanceLog.push(attendanceDate);
+        }
+      }
+    });
+
+    saveDB();
+    closeModals();
+    renderAll();
+    alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.` + (deductedCount > 0 ? ` Se han descontado clases a ${deductedCount} alumno(s) de bono.` : ''));
   }
 
   function onClassTypeChange() {
@@ -2377,7 +2466,7 @@
     }
   }
 
-  function simulateBonusEmail(id) {
+function simulateBonusEmail(id) {
     const bonus = db.bonuses.find(b => b.id === id);
     if (!bonus.fileName) {
       alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
@@ -2389,8 +2478,8 @@
       type: 'bonus',
       id: bonus.id,
       email: client.email,
-      subject: `Bono 10 Clases (${bonus.id}) - Atelier de Eloísa`,
-      body: `Hola ${client.name},\n\nTe enviamos los detalles de tu bono de 10 clases (${bonus.id}) por un importe de ${bonus.amount} CHF.\n\n(Fichero adjunto: ${bonus.fileName})\n\nAtelier de Eloísa`
+      subject: `Reçu de votre carnet de 10 cours (${bonus.id}) - Atelier de Eloísa`,
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre carnet de 10 cours (${bonus.id}) pour un montant de ${bonus.amount} CHF.\n\n(Fichier joint : ${bonus.fileName})\n\nCordialement,\nAtelier de Eloísa`
     };
     
     openEmailPreviewModal();
@@ -2653,7 +2742,7 @@
     }
   }
 
-  function simulateInvoiceEmail(id) {
+function simulateInvoiceEmail(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv.fileName) {
       alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
@@ -2665,8 +2754,8 @@
       type: 'invoice',
       id: inv.id,
       email: client.email,
-      subject: `Factura ${inv.id} - Atelier de Eloísa`,
-      body: `Hola ${client.name},\n\nAdjunto los detalles de tu factura ${inv.id} por "${inv.concept}" con importe de ${inv.amount} CHF.\n\n(Fichero adjunto: ${inv.fileName})\n\nAtelier de Eloísa`
+      subject: `Facture ${inv.id} - Atelier de Eloísa`,
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Fichier joint : ${inv.fileName})\n\nCordialement,\nAtelier de Eloísa`
     };
     
     openEmailPreviewModal();
@@ -2834,7 +2923,7 @@
   }
 
   function closeModals() {
-    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal', 'convert-prereg-modal', 'email-preview-modal'].forEach(m => {
+    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal', 'convert-prereg-modal', 'email-preview-modal', 'attendance-modal'].forEach(m => {
       const el = document.getElementById(m);
       if (el) el.classList.add('hidden');
     });
