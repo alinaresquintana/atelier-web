@@ -126,7 +126,21 @@ const translations = {
     "cond_3": "<strong>Paiements :</strong> S'effectue au début de chaque trimestre ou annuellement (enfants), au début du mois (cours mensuel/annuel adultes) ou à l'achat (abonnement adultes). Moyens acceptés : cash, virement bancaire, TWINT / QR code, online.",
     "cond_4": "<strong>Calendrier & Ambiance :</strong> L'atelier suit le calendrier scolaire vaudois (pas de cours pendant les vacances scolaires). L'atelier est un lieu de créativité et de plaisir (si un enfant perturbe le déroulement, il sera prié de quitter le cours et un remboursement sera effectué).",
     "cond_5": "<strong>Absences :</strong> En principe, la non-assistance aux cours n'est pas remboursée, mais les élèves ont la possibilité de récupérer ces cours au cours du même trimestre.",
-    "cond_6": "<strong>Matériel :</strong> Le matériel de base de dessin et de peinture est fourni uniquement pour la première leçon. Par la suite, les élèves acquièrent leurs propres fournitures en accord avec l'enseignante."
+    "cond_6": "<strong>Matériel :</strong> Le matériel de base de dessin et de peinture est fourni uniquement pour la première leçon. Par la suite, les élèves acquièrent leurs propres fournitures en accord avec l'enseignante.",
+
+    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
+    "status_full": "Complet",
+    "btn_enroll": "S'inscrire (Pré-inscription)",
+    "modal_title": "Formulaire de Pré-inscription",
+    "modal_notice": "⚠️ <strong>Important :</strong> Ceci est une <strong>pré-inscription</strong>. Aucune facturation immédiate n'est requise. Eloísa se mettra en contact avec vous prochainement pour valider et clôturer l'inscription finale.<br><br>💡 <em>Une <strong>classe d'essai gratuite</strong> est disponible ! N'hésitez pas à nous contacter directement pour l'agender.</em>",
+    "field_selected_class": "Cours sélectionné",
+    "field_name": "Votre Nom / Prénom *",
+    "field_child_name": "Nom de l'élève (si enfant)",
+    "field_email": "Email de contact *",
+    "field_phone": "Téléphone *",
+    "field_comments": "Commentaires / Souhaitez-vous une classe d'essai gratuite ?",
+    "btn_submit_enroll": "Envoyer la pré-inscription",
+    "alert_success": "¡Pré-inscription envoyée avec succès !\n\nEloísa se mettra en contact avec vous prochainement pour valider et clôturer l'inscription. N'oubliez pas de nous contacter si vous souhaitez agender votre classe d'essai gratuite !"
   },
 
   "en": {
@@ -256,7 +270,21 @@ const translations = {
     "cond_3": "<strong>Payments:</strong> At the beginning of each term or month.",
     "cond_4": "<strong>Calendar:</strong> Follows the Vaud school calendar.",
     "cond_5": "<strong>Absences:</strong> Make-up classes are allowed within the same term.",
-    "cond_6": "<strong>Material:</strong> Basic material is provided for the first lesson only."
+    "cond_6": "<strong>Material:</strong> Basic material is provided for the first lesson only.",
+
+    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
+    "status_full": "Full",
+    "btn_enroll": "Register (Pre-registration)",
+    "modal_title": "Pre-registration Form",
+    "modal_notice": "⚠️ <strong>Important:</strong> This is a pre-registration. No immediate billing is required. Eloísa will contact you soon to validate and finalize the final registration.<br><br>💡 <em>A <strong>free trial class</strong> is available! Feel free to contact us directly to schedule it.</em>",
+    "field_selected_class": "Selected Course",
+    "field_name": "Your Name / First Name *",
+    "field_child_name": "Student's Name (if child)",
+    "field_email": "Contact Email *",
+    "field_phone": "Phone *",
+    "field_comments": "Comments / Would you like a free trial class?",
+    "btn_submit_enroll": "Send Pre-registration",
+    "alert_success": "Pre-registration sent successfully!\n\nEloísa will contact you soon to validate and finalize your registration. Don't forget to contact us if you want to schedule your free trial class!"
   },
 
   "it": {
@@ -386,7 +414,21 @@ const translations = {
     "cond_3": "<strong>Pagamenti:</strong> All'inizio di ogni trimestre o mese.",
     "cond_4": "<strong>Calendario:</strong> Segue il calendario scolastico di Vaud.",
     "cond_5": "<strong>Assenze:</strong> È possibile recuperare le lezioni nello stesso trimestre.",
-    "cond_6": "<strong>Materiale:</strong> Il materiale di base è fornito solo per la prima lezione."
+    "cond_6": "<strong>Materiale:</strong> Il materiale di base è fornito solo per la prima lezione.",
+
+    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
+    "status_full": "Completo",
+    "btn_enroll": "Iscriviti (Pre-iscrizione)",
+    "modal_title": "Modulo di Pre-iscrizione",
+    "modal_notice": "⚠️ <strong>Importante:</strong> Questa è una <strong>pre-iscrizione</strong>. Non è richiesta alcuna fatturazione immediata. Eloísa ti contatterà presto per convalidare e chiudere l'iscrizione finale.<br><br>💡 <em>È disponibile una <strong>lezione di prova gratuita</strong>! Non esitare a contattarci direttamente per programmarla.</em>",
+    "field_selected_class": "Corso selezionato",
+    "field_name": "Nome e Cognome *",
+    "field_child_name": "Nome dello studente (se minore)",
+    "field_email": "Email di contatto *",
+    "field_phone": "Telefono *",
+    "field_comments": "Commenti / Desideri una lezione di prova gratuita?",
+    "btn_submit_enroll": "Invia pre-iscrizione",
+    "alert_success": "Pre-iscrizione inviata con successo!\n\nEloísa ti contatterà presto per convalidare e finalizzare la tua iscrizione. Non dimenticare di contattarci se desideri programmare la tua lezione di prova gratuita!"
   },
 
   "es": {
@@ -513,9 +555,23 @@ const translations = {
     "cond_title": "Condiciones Generales y Modalidades",
     "cond_1": "<strong>Inscripciones:</strong> La inscripción de los niños se realiza anualmente.",
     "cond_2": "<strong>Cancelaciones:</strong> Toda cancelación con más de un mes de antelación no se factura.",
-    "cond_3": "<strong>Pagos:</strong> Al principio de cada trimestre o mes.",
+    "cond_3": "<strong>Pagos:</strong> Al principio de chaque trimestre o mes.",
     "cond_4": "<strong>Calendario:</strong> Alineado con el sistema escolar de Vaud.",
     "cond_5": "<strong>Ausencias:</strong> Se pueden recuperar clases durante el mismo trimestre.",
-    "cond_6": "<strong>Material:</strong> Se incluye el material básico solo para la primera lección."
+    "cond_6": "<strong>Material:</strong> Se incluye el material básico solo para la primera lección.",
+
+    // Claves añadidas para Estados, Botones Dinámicos y Formularios de Pre-inscripción
+    "status_full": "Completo",
+    "btn_enroll": "Apuntarme (Pre-inscripción)",
+    "modal_title": "Formulario de Pre-inscripción",
+    "modal_notice": "⚠️ <strong>Importante:</strong> Esto es una <strong>pre-inscripción</strong>. No se requiere facturación inmediata. Eloísa se pondrá en contacto contigo próximamente para validar y cerrar la inscripción final.<br><br>💡 <em>¡Disponemos de una <strong>clase de prueba gratuita</strong>! No dudes en ponerte en contacto con el atelier para agendarla.</em>",
+    "field_selected_class": "Curso seleccionado",
+    "field_name": "Tu Nombre y Apellidos *",
+    "field_child_name": "Nombre del alumno/a (si es menor)",
+    "field_email": "Email de contacto *",
+    "field_phone": "Teléfono *",
+    "field_comments": "Comentarios / ¿Deseas una clase de prueba gratuita?",
+    "btn_submit_enroll": "Enviar pre-inscripción",
+    "alert_success": "¡Pre-inscripción enviada con éxito!\n\nEloísa se pondrá en contacto contigo próximamente para validar y cerrar la inscripción. ¡No olvides ponerte en contacto con nosotros si deseas agendar tu clase de prueba gratuita!"
   }
 };

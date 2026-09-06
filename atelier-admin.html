@@ -42,14 +42,15 @@
 
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center overflow-x-auto">
-        <div class="flex space-x-8">
-            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📅 Calendario del Curso</button>
+        <div class="flex space-x-6">
+            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📅 Calendario</button>
+            <button onclick="switchTab('prereg')" id="nav-prereg" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📥 Pre-inscripciones</button>
             <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">👥 Alumnos</button>
             <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📚 Clases y Precios</button>
-            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación General</button>
-            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎟️ Renovación de Bonos</button>
-            <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Compra de Material</button>
-            <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos y Gastos</button>
+            <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación</button>
+            <button onclick="switchTab('bonus-renewals')" id="nav-bonus-renewals" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎟️ Bonos</button>
+            <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Material</button>
+            <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos/Gastos</button>
         </div>
         <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 whitespace-nowrap">
             <span>🔒 Admin Privada</span>
@@ -122,6 +123,30 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- TAB PREREG: PRE-INSCRIPCIONES WEB -->
+        <div id="tab-prereg" class="hidden space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">📥 Solicitudes de Pre-inscripción Web</h2>
+                    <p class="text-xs text-gray-500">Gestiona las solicitudes enviadas por los usuarios desde la página pública.</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                        <th class="p-4">Fecha</th>
+                        <th class="p-4">Solicitante / Alumno</th>
+                        <th class="p-4">Curso / Clase</th>
+                        <th class="p-4">Comentarios</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="prereg-table-body" class="divide-y divide-gray-200 text-sm"></tbody>
+                </table>
             </div>
         </div>
 
@@ -391,6 +416,28 @@
             <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-xs">Cerrar</button>
             <button type="button" onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700">🖨️ Imprimir / Guardar PDF</button>
         </div>
+    </div>
+</div>
+
+<!-- MODAL CONVERTIR PRE-INSCRIPCIÓN -->
+<div id="convert-prereg-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
+        <h3 class="text-lg font-bold">Convertir Pre-inscripción en Alumno</h3>
+        <form onsubmit="confirmConvertPreReg(event)" class="space-y-4">
+            <input type="hidden" id="convert-prereg-id">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Clase o Curso Asignado</label>
+                <select id="convert-class-id" onchange="updateConvertRates()" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white"></select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Modalidad de Pago / Tarifa</label>
+                <select id="convert-rate-name" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white"></select>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium">Confirmar Alta</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -804,7 +851,8 @@
     ledger: [
       { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' }
     ],
-    ignoredRenewals: []
+    ignoredRenewals: [],
+    preRegistrations: []
   };
 
   function saveDB() {
@@ -845,7 +893,7 @@
   }
 
   function switchTab(tab) {
-    ['calendar', 'clients', 'classes', 'invoices', 'bonus-renewals', 'material', 'ledger'].forEach(t => {
+    ['calendar', 'prereg', 'clients', 'classes', 'invoices', 'bonus-renewals', 'material', 'ledger'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
     });
@@ -856,6 +904,9 @@
       renderCalendar();
       renderHolidaysList();
       renderAnnualList();
+    }
+    if (tab === 'prereg') {
+      renderPreRegistrations();
     }
     if (tab === 'material') {
       renderMaterialSection();
@@ -870,6 +921,7 @@
     renderCalendar();
     renderHolidaysList();
     renderAnnualList();
+    renderPreRegistrations();
     renderClients();
     renderClasses();
     renderInvoices();
@@ -1068,6 +1120,112 @@
             <div>${statusText}</div>
         </div>`;
     }).join('') + (filtered.length > 30 ? `<div class="text-center text-gray-400 text-[10px] pt-1">Mostrando las primeras 30 coincidencias...</div>` : '');
+  }
+
+  // --- PRE-INSCRIPCIONES WEB ---
+  function renderPreRegistrations() {
+    const tbody = document.getElementById('prereg-table-body');
+    if (!tbody) return;
+    const preRegs = db.preRegistrations || [];
+
+    if (preRegs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400 italic">No hay solicitudes de pre-inscripción pendientes.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = preRegs.map(pr => `
+      <tr class="hover:bg-gray-50 align-top">
+          <td class="p-4 text-xs text-gray-500">${new Date(pr.date).toLocaleDateString('es-ES')}</td>
+          <td class="p-4">
+              <div class="font-bold text-gray-900">${pr.name} ${pr.childName ? `(Alumno: ${pr.childName})` : ''}</div>
+              <div class="text-xs text-indigo-600">${pr.email} | ${pr.phone}</div>
+          </td>
+          <td class="p-4 text-xs font-medium text-gray-800">${pr.className}</td>
+          <td class="p-4 text-xs text-gray-600">${pr.comments || 'Sin comentarios'}</td>
+          <td class="p-4 text-right space-x-2">
+              <button onclick="openConvertModal('${pr.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-xs font-medium transition">✓ Dar de alta...</button>
+              <button onclick="deletePreReg('${pr.id}')" class="text-red-600 hover:underline text-xs">🗑️</button>
+          </td>
+      </tr>
+    `).join('');
+  }
+
+  function openConvertModal(id) {
+    const pr = (db.preRegistrations || []).find(p => p.id === id);
+    if (!pr) return;
+
+    document.getElementById('convert-prereg-id').value = id;
+    const classSelect = document.getElementById('convert-class-id');
+    
+    classSelect.innerHTML = (db.classes || []).map(c => 
+      `<option value="${c.id}" ${pr.classId === c.id ? 'selected' : ''}>${c.name} (${c.classType})</option>`
+    ).join('');
+
+    updateConvertRates();
+    document.getElementById('convert-prereg-modal').classList.remove('hidden');
+  }
+
+  function updateConvertRates() {
+    const classId = document.getElementById('convert-class-id').value;
+    const rateSelect = document.getElementById('convert-rate-name');
+    const targetClass = (db.classes || []).find(c => c.id === classId);
+
+    if (!targetClass || !targetClass.rates || targetClass.rates.length === 0) {
+      rateSelect.innerHTML = `<option value="General">General</option>`;
+      return;
+    }
+
+    rateSelect.innerHTML = targetClass.rates.map(r => 
+      `<option value="${r.name}">${r.name} (${r.price} CHF)</option>`
+    ).join('');
+  }
+
+  function confirmConvertPreReg(e) {
+    e.preventDefault();
+    const id = document.getElementById('convert-prereg-id').value;
+    const classId = document.getElementById('convert-class-id').value;
+    const rateName = document.getElementById('convert-rate-name').value;
+
+    const pr = (db.preRegistrations || []).find(p => p.id === id);
+    if (!pr) return;
+
+    const newClient = {
+      id: 'cli_' + Date.now(),
+      name: pr.name,
+      email: pr.email,
+      phone: pr.phone,
+      address: '',
+      postal: '',
+      city: '',
+      imageConsent: false,
+      status: 'present',
+      departureDate: ''
+    };
+    db.clients.push(newClient);
+
+    const targetClass = db.classes.find(c => c.id === classId);
+    if (targetClass) {
+      targetClass.enrolled.push({
+        clientId: newClient.id,
+        rateName: rateName,
+        sessionsLeft: isBonusRate(rateName) ? 10 : null,
+        attendanceLog: []
+      });
+    }
+
+    db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
+    saveDB();
+    closeModals();
+    renderAll();
+    alert(`¡Alumno ${pr.name} dado de alta con la tarifa "${rateName}" correctamente!`);
+  }
+
+  function deletePreReg(id) {
+    if (confirm('¿Eliminar esta solicitud de pre-inscripción?')) {
+      db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
+      saveDB();
+      renderAll();
+    }
   }
 
   function getBonusBadgeColor(sessions) {
@@ -1938,7 +2096,7 @@
     select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
   }
 
-function renderLedger() {
+  function renderLedger() {
     if (!db.ledger) db.ledger = [];
     const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
 
@@ -1947,7 +2105,6 @@ function renderLedger() {
       return itemYear === selectedYear;
     });
 
-    // Ordenar siempre de más nuevo a más antiguo (por fecha descendiente, y secundariamente por ID descendiente)
     filteredItems.sort((a, b) => {
       const dateComparison = (b.date || '').localeCompare(a.date || '');
       if (dateComparison !== 0) return dateComparison;
@@ -2614,7 +2771,7 @@ function renderLedger() {
   }
 
   function closeModals() {
-    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal'].forEach(m => {
+    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal', 'convert-prereg-modal'].forEach(m => {
       document.getElementById(m).classList.add('hidden');
     });
   }
