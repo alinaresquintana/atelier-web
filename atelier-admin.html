@@ -1019,12 +1019,9 @@
     if (window.netlifyIdentity) {
       netlifyIdentity.on('init', user => {
         const hash = window.location.hash;
-
-        // Si venimos de un enlace de recuperación o invitación de correo
         if (hash && (hash.includes('recovery') || hash.includes('invite') || hash.includes('confirmation'))) {
           netlifyIdentity.open('recovery');
         } else if (user) {
-          // Si ya hay sesión activa, cerramos cualquier modal flotante del widget y mostramos la app
           netlifyIdentity.close();
           if (hash) history.replaceState(null, null, ' ');
           showAdminApp();
@@ -1034,18 +1031,26 @@
       });
 
       netlifyIdentity.on('login', user => {
-        // Justo al iniciar sesión, cerramos el modal flotante del widget y abrimos el panel
         netlifyIdentity.close();
         if (window.location.hash) history.replaceState(null, null, ' ');
         showAdminApp();
       });
 
       netlifyIdentity.on('logout', () => {
-        netlifyIdentity.close();
         showLoginScreen();
       });
     }
   });
+
+  // Función modificada para abrir el gestor de Netlify o ir directo al panel si ya estás dentro
+  function handleAdminAccess() {
+    if (window.netlifyIdentity && window.netlifyIdentity.currentUser()) {
+      // Si ya está logueado, en vez de abrir el widget flotante que bloquea, mostramos la app directamente
+      showAdminApp();
+    } else {
+      netlifyIdentity.open();
+    }
+  }
 
   async function showAdminApp() {
     document.getElementById('login-screen').classList.add('hidden');
