@@ -879,6 +879,7 @@
       const { data: invoices } = await supabaseClient.from('invoices').select('*');
       const { data: ledger } = await supabaseClient.from('ledger').select('*');
       const { data: materials } = await supabaseClient.from('material_catalog').select('*');
+      const { data: preRegs } = await supabaseClient.from('pre_registrations').select('*');
 
       db.clients = (clients || []).map(c => ({
         id: c.id,
@@ -951,6 +952,19 @@
         id: m.id,
         name: m.name,
         price: Number(m.price)
+      }));
+
+      db.preRegistrations = (preRegs || []).map(pr => ({
+        id: pr.id,
+        classId: pr.class_id,
+        className: pr.class_name,
+        name: pr.name,
+        childName: pr.child_name,
+        email: pr.email,
+        phone: pr.phone,
+        comments: pr.comments,
+        status: pr.status,
+        date: pr.date
       }));
 
     } catch (err) {
@@ -1042,23 +1056,14 @@
     }
   });
 
-  // Función modificada para abrir el gestor de Netlify o ir directo al panel si ya estás dentro
-  function handleAdminAccess() {
-    if (window.netlifyIdentity && window.netlifyIdentity.currentUser()) {
-      // Si ya está logueado, en vez de abrir el widget flotante que bloquea, mostramos la app directamente
-      showAdminApp();
-    } else {
-      netlifyIdentity.open();
-    }
-  }
-
-  async function showAdminApp() {
+  function showAdminApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-screen').classList.remove('hidden');
-    await loadDB();
-    switchTab('calendar');
-    renderAll();
-    initDatePickers();
+    loadDB().then(() => {
+      switchTab('calendar');
+      renderAll();
+      initDatePickers();
+    });
   }
 
   function showLoginScreen() {
@@ -1408,7 +1413,7 @@
     ).join('');
   }
 
-  function confirmConvertPreReg(e) {
+  async function confirmConvertPreReg(e) {
     e.preventDefault();
     const id = document.getElementById('convert-prereg-id').value;
     const classId = document.getElementById('convert-class-id').value;
@@ -1439,18 +1444,28 @@
         sessionsLeft: isBonusRate(rateName) ? 10 : null,
         attendanceLog: []
       });
+
+      await supabaseClient.from('enrollments').insert({
+        client_id: newClient.id,
+        class_id: classId,
+        rate_name: rateName,
+        sessions_left: isBonusRate(rateName) ? 10 : null
+      });
     }
 
     db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
+    await supabaseClient.from('pre_registrations').delete().eq('id', id);
+
     saveDB();
     closeModals();
     renderAll();
     alert(`¡Alumno ${pr.name} dado de alta con la tarifa "${rateName}" correctamente!`);
   }
 
-  function deletePreReg(id) {
+  async function deletePreReg(id) {
     if (confirm('¿Eliminar esta solicitud de pre-inscripción?')) {
       db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
+      await supabaseClient.from('pre_registrations').delete().eq('id', id);
       saveDB();
       renderAll();
     }
@@ -1974,7 +1989,6 @@
           }
         }
 
-        // Guardar registro en Supabase
         await supabaseClient.from('attendance_logs').insert({
           class_id: classId,
           client_id: eItem.clientId,
@@ -2169,7 +2183,6 @@
       db.classes.push(data);
     }
 
-    // Sincronizar en Supabase (clases y tarifas relacionales)
     if (id) {
       await supabaseClient.from('classes').update({
         name: data.name,
@@ -2185,7 +2198,6 @@
         capacity: data.capacity
       }).eq('id', id);
 
-      // Borramos tarifas anteriores y reinsertamos
       await supabaseClient.from('class_rates').delete().eq('class_id', id);
       for (const r of rates) {
         await supabaseClient.from('class_rates').insert({

@@ -1026,13 +1026,14 @@
           } else {
             const dayName = (cl.day_of_week !== undefined && dayNamesFr[cl.day_of_week]) ? dayNamesFr[cl.day_of_week] : '';
             const timeVal = cl.schedule || '';
-            scheduleText = dayName ? `${dayName}s à ${timeVal}` : timeVal;
+            // Mostrar correctamente el día y la hora configurada
+            scheduleText = dayName && timeVal ? `${dayName}s à ${timeVal}` : (timeVal || dayName || 'Horaire à convenir');
           }
 
           grouped[catKey].push({
             id: cl.id,
             name: cl.name,
-            schedule: scheduleText || 'Horaire à convenir',
+            schedule: scheduleText,
             duration: cl.duration || '2h',
             startDate: formatPubDate(cl.start_date),
             endDate: formatPubDate(cl.end_date),
