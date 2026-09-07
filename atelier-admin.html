@@ -1018,7 +1018,10 @@
   window.addEventListener('DOMContentLoaded', () => {
     if (window.netlifyIdentity) {
       netlifyIdentity.on('init', user => {
-        if (user) {
+        const hash = window.location.hash;
+        if (hash && (hash.includes('recovery') || hash.includes('invite') || hash.includes('confirmation'))) {
+          netlifyIdentity.open('recovery');
+        } else if (user) {
           showAdminApp();
         } else {
           showLoginScreen();
@@ -3220,5 +3223,7 @@
     });
   }
 </script>
+
+
 </body>
 </html>
