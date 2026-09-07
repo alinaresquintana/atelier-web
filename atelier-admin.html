@@ -1019,10 +1019,14 @@
     if (window.netlifyIdentity) {
       netlifyIdentity.on('init', user => {
         const hash = window.location.hash;
+
+        // Si venimos de un enlace de recuperación o invitación de correo
         if (hash && (hash.includes('recovery') || hash.includes('invite') || hash.includes('confirmation'))) {
           netlifyIdentity.open('recovery');
         } else if (user) {
-          netlifyIdentity.close(); // Cierra el modal si se quedó abierto
+          // Si ya hay sesión activa, cerramos cualquier modal flotante del widget y mostramos la app
+          netlifyIdentity.close();
+          if (hash) history.replaceState(null, null, ' ');
           showAdminApp();
         } else {
           showLoginScreen();
@@ -1030,11 +1034,14 @@
       });
 
       netlifyIdentity.on('login', user => {
-        netlifyIdentity.close(); // Cierra el modal al iniciar sesión
+        // Justo al iniciar sesión, cerramos el modal flotante del widget y abrimos el panel
+        netlifyIdentity.close();
+        if (window.location.hash) history.replaceState(null, null, ' ');
         showAdminApp();
       });
 
       netlifyIdentity.on('logout', () => {
+        netlifyIdentity.close();
         showLoginScreen();
       });
     }
