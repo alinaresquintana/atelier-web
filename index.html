@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier Arte Vich | Cours de Peinture et Dessin</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <!-- Widget de Netlify Identity -->
+    <!-- Widget de Netlify Identity[cite: 2] -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Cliente oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root[data-theme="dark"] {
             --bg: #0a0a0c; --sidebar-bg: rgba(10, 10, 12, 0.96); --text: #f5f5f7; --accent: #ff3b00; --muted: #9a9a9f; --border: rgba(255, 255, 255, 0.08); --card-bg: #151518;
@@ -859,6 +861,10 @@
 <script src="sidebar.js"></script>
 
 <script>
+  const SUPABASE_URL = 'https://alfkqkzsurazgrttokso.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_YJ9tk3wlPT5s-RVyTa-t7A_8sW9gfFN';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   // Función para gestionar el acceso seguro al panel de administración sin bucles de popups
   function handleAdminAccess(e) {
     e.preventDefault();
@@ -941,7 +947,7 @@
     document.getElementById('enrollmentModal').classList.remove('active');
   }
 
-  function submitEnrollment(e) {
+  async function submitEnrollment(e) {
     e.preventDefault();
     const classId = document.getElementById('enrollClassId').value;
     const className = document.getElementById('enrollClassName').value;
@@ -951,42 +957,39 @@
     const phone = document.getElementById('enrollPhone').value;
     const comments = document.getElementById('enrollComments').value;
 
-    const dbStr = localStorage.getItem('atelier_db');
-    let db = dbStr ? JSON.parse(dbStr) : { classes: [], preRegistrations: [] };
-    if (!db.preRegistrations) db.preRegistrations = [];
-
-    const newPreReg = {
+    const { error } = await supabaseClient.from('pre_registrations').insert({
       id: 'pre_' + Date.now(),
-      classId: classId,
-      className: className,
+      class_id: classId,
+      class_name: className,
       name: name,
-      childName: childName,
+      child_name: childName,
       email: email,
       phone: phone,
       comments: comments,
-      date: new Date().toISOString(),
       status: 'pending'
-    };
+    });
 
-    db.preRegistrations.push(newPreReg);
-    localStorage.setItem('atelier_db', JSON.stringify(db));
+    if (error) {
+      console.error("Error al enviar pre-inscripción a Supabase:", error);
+      alert("Erreur lors de l'envoi. Veuillez réessayer.");
+      return;
+    }
 
     const alertMsg = (translations && translations[currentLang] && translations[currentLang]['alert_success'])
       ? translations[currentLang]['alert_success']
-      : "¡Pre-inscription envoyée avec succès !";
+      : "¡Pré-inscription envoyée avec succès !";
     alert(alertMsg);
 
     closeEnrollmentModal();
     document.getElementById('enrollmentForm').reset();
   }
 
-  function renderPublicClassesAndWorkshops() {
-    const dbStr = localStorage.getItem('atelier_db');
-    if (!dbStr) return;
-
+  async function renderPublicClassesAndWorkshops() {
     try {
-      const db = JSON.parse(dbStr);
-      const classes = db.classes || [];
+      const { data: classes } = await supabaseClient.from('classes').select('*');
+      const { data: enrollments } = await supabaseClient.from('enrollments').select('*');
+
+      if (!classes) return;
 
       const categoryMapping = {
         'Clase Adultos': 'adultes',
@@ -1005,10 +1008,11 @@
       };
 
       classes.forEach(cl => {
-        const catKey = categoryMapping[cl.classType];
+        const catKey = categoryMapping[cl.class_type];
         if (catKey) {
-          const enrolledCount = (cl.enrolled || []).length;
-          const isFull = enrolledCount >= cl.capacity;
+          const clEnrolled = (enrollments || []).filter(e => e.class_id === cl.id);
+          const enrolledCount = clEnrolled.length;
+          const isFull = cl.capacity > 0 && enrolledCount >= cl.capacity;
 
           const formatPubDate = (iso) => {
             if (!iso) return '';
@@ -1017,10 +1021,10 @@
           };
 
           let scheduleText = '';
-          if (cl.scheduleMode === 'single') {
-            scheduleText = `Atelier unique le ${formatPubDate(cl.singleDate)} à ${cl.singleSchedule || cl.schedule || ''}`;
+          if (cl.schedule_mode === 'single') {
+            scheduleText = `Atelier unique le ${formatPubDate(cl.single_date)} à ${cl.single_schedule || cl.schedule || ''}`;
           } else {
-            const dayName = (cl.dayOfWeek !== undefined && dayNamesFr[cl.dayOfWeek]) ? dayNamesFr[cl.dayOfWeek] : '';
+            const dayName = (cl.day_of_week !== undefined && dayNamesFr[cl.day_of_week]) ? dayNamesFr[cl.day_of_week] : '';
             const timeVal = cl.schedule || '';
             scheduleText = dayName ? `${dayName}s à ${timeVal}` : timeVal;
           }
@@ -1030,8 +1034,8 @@
             name: cl.name,
             schedule: scheduleText || 'Horaire à convenir',
             duration: cl.duration || '2h',
-            startDate: formatPubDate(cl.startDate),
-            endDate: formatPubDate(cl.endDate),
+            startDate: formatPubDate(cl.start_date),
+            endDate: formatPubDate(cl.end_date),
             isFull: isFull
           });
         }
@@ -1073,7 +1077,7 @@
       });
 
     } catch (e) {
-      console.error("Error al sincronizar las clases públicas:", e);
+      console.error("Error al sincronizar las clases públicas desde Supabase:", e);
     }
   }
 
