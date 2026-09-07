@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Widget de Netlify Identity -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Cliente oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Flatpickr CSS & JS para selector de fechas profesional en formato europeo -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -598,13 +600,13 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Día de la Semana</label>
                         <select id="class-dayofweek" class="w-full px-3 py-2 border rounded-lg text-sm">
-                            <option value="1">Lunes</option>
-                            <option value="2">Martes</option>
-                            <option value="3">Miércoles</option>
-                            <option value="4">Jueves</option>
-                            <option value="5">Viernes</option>
-                            <option value="6">Sábado</option>
-                            <option value="0">Domingo</option>
+                            <option value="0">Lunes</option>
+                            <option value="1">Martes</option>
+                            <option value="2">Miércoles</option>
+                            <option value="3">Jueves</option>
+                            <option value="4">Viernes</option>
+                            <option value="5">Sábado</option>
+                            <option value="6">Domingo</option>
                         </select>
                     </div>
                     <div>
@@ -644,7 +646,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Aforo Máximo</label>
-                    <input type="number" id="class-capacity" min="1" value="8" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                    <input type="number" id="class-capacity" min="0" value="0" required class="w-full px-3 py-2 border rounded-lg text-sm">
                 </div>
             </div>
 
@@ -839,8 +841,12 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT DE CONTROL CON NETLIFY IDENTITY -->
+<!-- JAVASCRIPT INTEGRADO CON SUPABASE Y STORAGE BUCKET -->
 <script>
+  const SUPABASE_URL = 'https://alfkqkzsurazgrttokso.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_YJ9tk3wlPT5s-RVyTa-t7A_8sW9gfFN';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   let renewalsPanelOpen = false;
   let pastArchivePanelOpen = false;
   let archivePanelOpen = false;
@@ -853,46 +859,152 @@
 
   let currentCalendarDate = new Date(2026, 8, 1);
 
-  let db = JSON.parse(localStorage.getItem('atelier_db')) || {
-    clients: [
-      { id: '1', name: 'Ana García', email: 'ana@example.com', phone: '+41 79 123 45 67', address: 'Route de Lausanne 10', postal: '1196', city: 'Gland', imageConsent: true, status: 'present', departureDate: '' },
-      { id: '2', name: 'Marc Dubois', email: 'marc@example.com', phone: '+41 78 987 65 43', address: 'Grand Rue 5', postal: '1180', city: 'Rolle', imageConsent: false, status: 'present', departureDate: '' }
-    ],
-    classes: [
-      {
-        id: '1', name: 'Adultos - Mañana', classType: 'Clase Adultos', scheduleMode: 'recurring', dayOfWeek: 2, schedule: '10:00', duration: '2 horas', startDate: '2026-09-01', endDate: '2027-06-30', capacity: 8,
-        enrolled: [
-          { clientId: '1', rateName: 'Trimestral', sessionsLeft: null, attendanceLog: [] },
-          { clientId: '2', rateName: 'Bono 10', sessionsLeft: 8, attendanceLog: [] }
-        ],
-        rates: [
-          { name: 'Anual', type: 'annual', price: 1000 },
-          { name: 'Trimestral', type: 'quarterly', price: 350 },
-          { name: 'Mensual', type: 'monthly', price: 120 },
-          { name: 'Bono 10', type: 'bonus10', price: 300 }
-        ]
-      }
-    ],
-    holidays: [
-      { startDate: '2026-12-23', endDate: '2027-01-06', reason: 'Vacaciones de Navidad', scope: 'all' }
-    ],
-    invoices: [
-      { id: 'FAC-2026-001', clientId: '1', concept: 'Adultos - Mañana - Trimestre 1 (Sep-Nov)', amount: 350, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: true, fileName: 'factura_ana.pdf', isBonus: false },
-      { id: 'FAC-2026-002', clientId: '2', concept: 'Bono 10 Clases', amount: 300, status: 'Pagado', date: '2026-09-01', dueDate: '2026-09-15', emailSent: false, fileName: 'factura_bono_marc.pdf', isBonus: true, sessionsLeft: 8, attendanceLog: ['2026-09-01', '2026-09-03'] }
-    ],
-    materialTypes: [
-      { id: 'MT-1', name: 'Set de pinceles y lienzo', price: 45.00 }
-    ],
-    ledger: [
-      { id: 'LED-001', type: 'income', category: 'Pago de clases', concept: 'Ana García - Trimestre 1 (Sep-Nov) (FAC-2026-001)', amount: 350, date: '2026-09-01', fileName: 'factura_ana.pdf', originId: 'FAC-2026-001' },
-      { id: 'LED-002', type: 'income', category: 'Pago de abonos', concept: 'Marc Dubois - Bono 10 Clases (FAC-2026-002)', amount: 300, date: '2026-09-01', fileName: 'factura_bono_marc.pdf', originId: 'FAC-2026-002' }
-    ],
+  let db = {
+    clients: [],
+    classes: [],
+    holidays: [],
+    invoices: [],
+    materialTypes: [],
+    ledger: [],
     ignoredRenewals: [],
     preRegistrations: []
   };
 
-  function saveDB() {
-    localStorage.setItem('atelier_db', JSON.stringify(db));
+  async function loadDB() {
+    try {
+      const { data: clients } = await supabaseClient.from('clients').select('*');
+      const { data: classes } = await supabaseClient.from('classes').select('*');
+      const { data: enrollments } = await supabaseClient.from('enrollments').select('*');
+      const { data: rates } = await supabaseClient.from('class_rates').select('*');
+      const { data: invoices } = await supabaseClient.from('invoices').select('*');
+      const { data: ledger } = await supabaseClient.from('ledger').select('*');
+      const { data: materials } = await supabaseClient.from('material_catalog').select('*');
+
+      db.clients = (clients || []).map(c => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        address: c.address,
+        postal: c.postal,
+        city: c.city,
+        imageConsent: c.image_consent,
+        status: c.status,
+        departureDate: c.departure_date
+      }));
+
+      db.classes = (classes || []).map(cl => {
+        const clRates = (rates || []).filter(r => r.class_id === cl.id).map(r => ({ name: r.name, type: r.rate_type, price: r.price }));
+        const clEnrolled = (enrollments || []).filter(e => e.class_id === cl.id).map(e => ({
+          clientId: e.client_id,
+          rateName: e.rate_name,
+          sessionsLeft: e.sessions_left,
+          attendanceLog: []
+        }));
+        return {
+          id: cl.id,
+          name: cl.name,
+          classType: cl.class_type,
+          scheduleMode: cl.schedule_mode,
+          dayOfWeek: cl.day_of_week,
+          schedule: cl.schedule,
+          startDate: cl.start_date,
+          endDate: cl.end_date,
+          singleDate: cl.single_date,
+          singleSchedule: cl.single_schedule,
+          duration: cl.duration,
+          capacity: cl.capacity,
+          rates: clRates,
+          enrolled: clEnrolled
+        };
+      });
+
+      db.invoices = (invoices || []).map(i => ({
+        id: i.id,
+        clientId: i.client_id,
+        concept: i.concept,
+        amount: Number(i.amount),
+        status: i.status,
+        date: i.issue_date,
+        dueDate: i.due_date,
+        emailSent: i.email_sent,
+        fileName: i.file_name,
+        filePath: i.file_path,
+        isBonus: i.is_bonus,
+        isMaterial: i.is_material,
+        sessionsLeft: i.sessions_left
+      }));
+
+      db.ledger = (ledger || []).map(l => ({
+        id: l.id,
+        type: l.type,
+        category: l.category,
+        concept: l.concept,
+        amount: Number(l.amount),
+        date: l.transaction_date,
+        fileName: l.file_name,
+        filePath: l.file_path,
+        originId: l.origin_id
+      }));
+
+      db.materialTypes = (materials || []).map(m => ({
+        id: m.id,
+        name: m.name,
+        price: Number(m.price)
+      }));
+
+    } catch (err) {
+      console.error("Error al cargar desde Supabase:", err);
+    }
+  }
+
+  async function saveDB() {
+    for (const c of db.clients) {
+      await supabaseClient.from('clients').upsert({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        address: c.address,
+        postal: c.postal,
+        city: c.city,
+        image_consent: c.imageConsent,
+        status: c.status,
+        departure_date: c.departureDate || null
+      });
+    }
+
+    for (const inv of db.invoices) {
+      await supabaseClient.from('invoices').upsert({
+        id: inv.id,
+        client_id: inv.clientId,
+        concept: inv.concept,
+        amount: inv.amount,
+        status: inv.status,
+        issue_date: inv.date,
+        due_date: inv.dueDate,
+        email_sent: inv.emailSent,
+        file_name: inv.fileName,
+        file_path: inv.filePath,
+        is_bonus: inv.isBonus,
+        is_material: inv.isMaterial,
+        sessions_left: inv.sessionsLeft
+      });
+    }
+
+    for (const l of db.ledger) {
+      await supabaseClient.from('ledger').upsert({
+        id: l.id,
+        type: l.type,
+        category: l.category,
+        concept: l.concept,
+        amount: l.amount,
+        transaction_date: l.date,
+        file_name: l.fileName,
+        file_path: l.filePath,
+        origin_id: l.originId
+      });
+    }
   }
 
   function formatDate(isoStr) {
@@ -924,9 +1036,10 @@
     }
   });
 
-  function showAdminApp() {
+  async function showAdminApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-screen').classList.remove('hidden');
+    await loadDB();
     switchTab('calendar');
     renderAll();
     initDatePickers();
@@ -1623,7 +1736,7 @@
     document.getElementById('client-detail-modal').classList.remove('hidden');
   }
 
-  function saveClient(e) {
+  async function saveClient(e) {
     e.preventDefault();
     const id = document.getElementById('client-id').value;
     const status = document.getElementById('client-status').value;
@@ -1638,15 +1751,21 @@
       status: status,
       departureDate: status === 'past' ? document.getElementById('client-departure-date').value : ''
     };
-    if (id) Object.assign(db.clients.find(c => c.id === id), data);
-    else { data.id = Date.now().toString(); db.clients.push(data); }
-    saveDB(); closeModals(); renderAll();
+    if (id) {
+      const client = db.clients.find(c => c.id === id);
+      Object.assign(client, data);
+    } else {
+      data.id = 'cli_' + Date.now();
+      db.clients.push(data);
+    }
+    await saveDB(); closeModals(); renderAll();
   }
 
-  function deleteClient(id) {
+  async function deleteClient(id) {
     if (confirm('¿Eliminar alumno? Se desvinculará de las clases y sus registros financieros quedarán como histórico.')) {
       db.clients = db.clients.filter(c => c.id !== id);
       db.classes.forEach(cl => { cl.enrolled = cl.enrolled.filter(e => e.clientId !== id); });
+      await supabaseClient.from('clients').delete().eq('id', id);
       saveDB(); renderAll();
     }
   }
@@ -1672,7 +1791,7 @@
 
   function renderClasses() {
     const tbody = document.getElementById('classes-table-body');
-    const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
     const sortedClasses = [...(db.classes || [])].sort((a, b) => {
       const typeA = (a.classType || '').toLowerCase();
@@ -1700,14 +1819,14 @@
 
     tbody.innerHTML = sortedClasses.map(cl => {
       const count = cl.enrolled.length;
-      const isFull = count >= cl.capacity;
+      const isFull = cl.capacity > 0 && count >= cl.capacity;
       const classTypeBadge = getClassTypeBadge(cl.classType);
 
       let scheduleDescription = '';
       if (cl.scheduleMode === 'single') {
         scheduleDescription = `📅 Sesión Única el ${formatDate(cl.singleDate)} a las ${cl.singleSchedule} (${cl.duration})`;
       } else {
-        const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 1];
+        const dayName = dayNames[cl.dayOfWeek !== undefined ? cl.dayOfWeek : 0];
         scheduleDescription = `🗓️ Todos los ${dayName}s a las ${cl.schedule} (${cl.duration})<br><span class="text-[11px] text-gray-400">Del ${formatDate(cl.startDate)} al ${formatDate(cl.endDate)}</span>`;
       }
 
@@ -1740,7 +1859,7 @@
           </div>
       `).join('') || '<span class="text-xs text-gray-400 italic">Sin precios definidos</span>';
 
-      const enrollButton = !isFull
+      const enrollButton = (!isFull || cl.capacity === 0)
         ? `<button onclick="openEnrollModal('${cl.id}')" class="w-full bg-gray-800 text-white text-xs py-1.5 rounded hover:bg-gray-900 transition">+ Inscribir Alumno</button>`
         : '';
 
@@ -1748,6 +1867,8 @@
       const attendanceButton = (count > 0 && hasBonusRate)
         ? `<button onclick="openAttendanceModal('${cl.id}')" class="w-full bg-indigo-600 text-white text-xs py-1.5 rounded hover:bg-indigo-700 transition font-medium">📋 Pasar Lista (Asistencia)</button>`
         : '';
+
+      const capacityText = cl.capacity === 0 ? `Inscritos: ${count} (Sin límite)` : `Aforo: ${count}/${cl.capacity}`;
 
       return `
         <tr class="hover:bg-gray-50 border-b border-gray-200">
@@ -1763,7 +1884,7 @@
             </td>
             <td class="p-4">
                 <div class="flex items-center space-x-2 mb-2">
-                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">Aforo: ${count}/${cl.capacity}</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${isFull ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'}">${capacityText}</span>
                 </div>
                 <div class="space-y-1 max-h-48 overflow-y-auto pr-1 mb-2">${enrolledList || '<span class="text-xs text-gray-400 italic">Sin alumnos inscritos</span>'}</div>
                 <div class="space-y-1.5">
@@ -1813,7 +1934,7 @@
     initDatePickers();
   }
 
-  function saveAttendance(e) {
+  async function saveAttendance(e) {
     e.preventDefault();
     const classId = document.getElementById('attendance-class-id').value;
     const attendanceDate = document.getElementById('attendance-date').value;
@@ -1841,7 +1962,7 @@
       }
     });
 
-    saveDB();
+    await saveDB();
     closeModals();
     renderAll();
     alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.` + (deductedCount > 0 ? ` Se han descontado clases a ${deductedCount} alumno(s) de bono.` : ''));
@@ -1904,7 +2025,7 @@
           inputScheduleMode.value = cls.scheduleMode || 'recurring';
           onClassScheduleModeChange();
         }
-        if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 1;
+        if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 0;
         if (inputSchedule) inputSchedule.value = cls.schedule || '';
 
         if (inputStartDate) inputStartDate.value = cls.startDate || '2026-09-01';
@@ -1913,7 +2034,7 @@
         if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
 
         if (inputDuration) inputDuration.value = cls.duration || '2 horas';
-        if (inputCapacity) inputCapacity.value = cls.capacity || 8;
+        if (inputCapacity) inputCapacity.value = cls.capacity !== undefined ? cls.capacity : 0;
 
         const container = document.getElementById('class-rates-container');
         if (container) {
@@ -1934,14 +2055,14 @@
         inputScheduleMode.value = 'recurring';
         onClassScheduleModeChange();
       }
-      if (inputDayOfWeek) inputDayOfWeek.value = 1;
+      if (inputDayOfWeek) inputDayOfWeek.value = 0;
       if (inputSchedule) inputSchedule.value = '';
       if (inputStartDate) inputStartDate.value = '2026-09-01';
       if (inputEndDate) inputEndDate.value = '2027-06-30';
       if (inputSingleDate) inputSingleDate.value = '';
       if (inputSingleSchedule) inputSingleSchedule.value = '';
       if (inputDuration) inputDuration.value = '2 horas';
-      if (inputCapacity) inputCapacity.value = 8;
+      if (inputCapacity) inputCapacity.value = 0;
 
       onClassTypeChange();
       document.getElementById('class-modal-title').innerText = 'Añadir Grupo / Clase';
@@ -1981,7 +2102,7 @@
     container.appendChild(row);
   }
 
-  function saveClass(e) {
+  async function saveClass(e) {
     e.preventDefault();
     const id = document.getElementById('class-id').value;
     const rates = [];
@@ -2019,22 +2140,74 @@
     }
 
     if (id) {
-      Object.assign(db.classes.find(c => c.id === id), data);
+      const cls = db.classes.find(c => c.id === id);
+      Object.assign(cls, data);
     } else {
-      data.id = Date.now().toString();
+      data.id = 'cls_' + Date.now();
       data.enrolled = [];
       db.classes.push(data);
     }
 
-    saveDB();
+    // Sincronizar en Supabase (clases y tarifas relacionales)
+    if (id) {
+      await supabaseClient.from('classes').update({
+        name: data.name,
+        class_type: data.classType,
+        schedule_mode: data.scheduleMode,
+        day_of_week: data.dayOfWeek,
+        schedule: data.schedule,
+        start_date: data.startDate || null,
+        end_date: data.endDate || null,
+        single_date: data.singleDate || null,
+        single_schedule: data.singleSchedule || null,
+        duration: data.duration,
+        capacity: data.capacity
+      }).eq('id', id);
+
+      // Borramos tarifas anteriores y reinsertamos
+      await supabaseClient.from('class_rates').delete().eq('class_id', id);
+      for (const r of rates) {
+        await supabaseClient.from('class_rates').insert({
+          class_id: id,
+          name: r.name,
+          rate_type: r.type,
+          price: r.price
+        });
+      }
+    } else {
+      await supabaseClient.from('classes').insert({
+        id: data.id,
+        name: data.name,
+        class_type: data.classType,
+        schedule_mode: data.scheduleMode,
+        day_of_week: data.dayOfWeek,
+        schedule: data.schedule,
+        start_date: data.startDate || null,
+        end_date: data.endDate || null,
+        single_date: data.singleDate || null,
+        single_schedule: data.singleSchedule || null,
+        duration: data.duration,
+        capacity: data.capacity
+      });
+
+      for (const r of rates) {
+        await supabaseClient.from('class_rates').insert({
+          class_id: data.id,
+          name: r.name,
+          rate_type: r.type,
+          price: r.price
+        });
+      }
+    }
+
     closeModals();
     renderAll();
   }
 
-  function deleteClass(id) {
+  async function deleteClass(id) {
     if (confirm('¿Eliminar clase? Se eliminarán también las inscripciones asociadas.')) {
       db.classes = db.classes.filter(c => c.id !== id);
-      saveDB();
+      await supabaseClient.from('classes').delete().eq('id', id);
       renderAll();
     }
   }
@@ -2050,26 +2223,37 @@
     document.getElementById('enroll-modal').classList.remove('hidden');
   }
 
-  function confirmEnroll(e) {
+  async function confirmEnroll(e) {
     e.preventDefault();
     const classId = document.getElementById('enroll-class-id').value;
     const clientId = document.getElementById('enroll-client-id').value;
     const rateName = document.getElementById('enroll-rate-name').value;
     const cl = db.classes.find(c => c.id === classId);
 
-    cl.enrolled.push({
+    const enrollmentObj = {
       clientId,
       rateName,
       sessionsLeft: isBonusRate(rateName) ? 10 : null,
       attendanceLog: []
+    };
+    cl.enrolled.push(enrollmentObj);
+
+    await supabaseClient.from('enrollments').insert({
+      client_id: clientId,
+      class_id: classId,
+      rate_name: rateName,
+      sessions_left: enrollmentObj.sessionsLeft
     });
-    saveDB(); closeModals(); renderAll();
+
+    closeModals();
+    renderAll();
   }
 
-  function unenrollClient(classId, clientId) {
+  async function unenrollClient(classId, clientId) {
     const cl = db.classes.find(c => c.id === classId);
     cl.enrolled = cl.enrolled.filter(e => e.clientId !== clientId);
-    saveDB(); renderAll();
+    await supabaseClient.from('enrollments').delete().eq('class_id', classId).eq('client_id', clientId);
+    renderAll();
   }
 
   // --- SECCIÓN: CATÁLOGO DE MATERIAL ---
@@ -2082,7 +2266,7 @@
       : db.materialTypes.map((m, idx) => `
         <div class="flex justify-between items-center bg-gray-50 p-3 rounded border text-xs">
             <div><strong>${m.name}</strong><br><span class="text-indigo-600 font-semibold">${m.price.toFixed(2)} CHF</span></div>
-            <button onclick="deleteMaterialType(${idx})" class="text-red-500 hover:underline">🗑️ Eliminar</button>
+            <button onclick="deleteMaterialType('${m.id}')" class="text-red-500 hover:underline">🗑️ Eliminar</button>
         </div>
       `).join('');
   }
@@ -2093,22 +2277,29 @@
     document.getElementById('material-type-modal').classList.remove('hidden');
   }
 
-  function saveMaterialType(e) {
+  async function saveMaterialType(e) {
     e.preventDefault();
     if (!db.materialTypes) db.materialTypes = [];
-    db.materialTypes.push({
+    const newMaterial = {
       id: 'MT-' + Date.now(),
       name: document.getElementById('mat-type-name').value,
       price: parseFloat(document.getElementById('mat-type-price').value)
+    };
+    db.materialTypes.push(newMaterial);
+
+    await supabaseClient.from('material_catalog').insert({
+      id: newMaterial.id,
+      name: newMaterial.name,
+      price: newMaterial.price
     });
-    saveDB();
+
     closeModals();
     renderAll();
   }
 
-  function deleteMaterialType(index) {
-    db.materialTypes.splice(index, 1);
-    saveDB();
+  async function deleteMaterialType(id) {
+    db.materialTypes = db.materialTypes.filter(m => m.id !== id);
+    await supabaseClient.from('material_catalog').delete().eq('id', id);
     renderAll();
   }
 
@@ -2136,7 +2327,7 @@
     }
   }
 
-  function saveMaterialSale(e) {
+  async function saveMaterialSale(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
 
@@ -2150,7 +2341,7 @@
     futureDueDate.setDate(futureDueDate.getDate() + 15);
     const dueDateStr = futureDueDate.toISOString().split('T')[0];
 
-    db.invoices.push({
+    const newInv = {
       id: invoiceId,
       clientId: clientId,
       concept: concept,
@@ -2160,10 +2351,12 @@
       dueDate: dueDateStr,
       emailSent: false,
       fileName: null,
+      filePath: null,
       isMaterial: true
-    });
+    };
+    db.invoices.push(newInv);
 
-    saveDB();
+    await saveDB();
     closeModals();
     renderAll();
     alert(`¡Factura ${invoiceId} de material generada correctamente!`);
@@ -2323,18 +2516,19 @@
   function ignoreRenewal(clientId, milestoneDate, concept) {
     if (!db.ignoredRenewals) db.ignoredRenewals = [];
     db.ignoredRenewals.push({ clientId, milestoneDate, concept });
-    saveDB();
     renderAll();
   }
 
-  function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
+  async function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
     const d = new Date(issueDate); d.setDate(d.getDate() + 15);
-    db.invoices.push({
+    const newInv = {
       id: `FAC-2026-${Date.now()}`,
       clientId: clientId, concept: concept, amount: amount,
-      status: 'Pendiente', date: issueDate, dueDate: d.toISOString().split('T')[0], emailSent: false, fileName: null
-    });
-    saveDB(); renderAll();
+      status: 'Pendiente', date: issueDate, dueDate: d.toISOString().split('T')[0], emailSent: false, fileName: null, filePath: null
+    };
+    db.invoices.push(newInv);
+    await saveDB();
+    renderAll();
   }
 
   function renderInvoices() {
@@ -2377,7 +2571,7 @@
           : `<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs font-semibold">✉️ Email pendiente</span>`;
 
         const fileBadge = inv.fileName
-          ? `<span class="text-indigo-600 font-medium">📎 ${inv.fileName}</span>`
+          ? `<a href="${inv.filePath || '#'}" target="_blank" class="text-indigo-600 font-medium hover:underline">📎 ${inv.fileName}</a>`
           : `<span class="text-red-500 font-semibold">⚠️ Falta adjuntar fichero</span>`;
 
         const emailBtnDisabled = !inv.fileName;
@@ -2429,41 +2623,53 @@
     renderArchiveTree();
   }
 
-  function deleteInvoice(id) {
+  async function deleteInvoice(id) {
     if (confirm(`¿Estás seguro de que deseas eliminar la factura ${id}?`)) {
       db.invoices = db.invoices.filter(i => i.id !== id);
       if (db.ledger) {
         db.ledger = db.ledger.filter(l => l.originId !== id);
+        await supabaseClient.from('ledger').delete().eq('origin_id', id);
       }
-      saveDB();
+      await supabaseClient.from('invoices').delete().eq('id', id);
       renderAll();
     }
   }
 
-  function uploadInvoiceFile(id, event) {
+  async function uploadInvoiceFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const inv = db.invoices.find(i => i.id === id);
-      if (inv) {
-        inv.fileName = file.name;
-        inv.fileData = e.target.result;
+    const filePath = `invoices/${id}_${file.name}`;
+    const { error } = await supabaseClient.storage
+      .from('atelier-files')
+      .upload(filePath, file, { upsert: true });
 
-        if (db.ledger) {
-          const ledgerItem = db.ledger.find(l => l.originId === inv.id);
-          if (ledgerItem) {
-            ledgerItem.fileName = file.name;
-            ledgerItem.fileData = e.target.result;
-          }
+    if (error) {
+      alert('Error al subir el fichero al bucket: ' + error.message);
+      return;
+    }
+
+    const { data: publicURLData } = supabaseClient.storage
+      .from('atelier-files')
+      .getPublicUrl(filePath);
+
+    const inv = db.invoices.find(i => i.id === id);
+    if (inv) {
+      inv.fileName = file.name;
+      inv.filePath = publicURLData.publicUrl;
+
+      if (db.ledger) {
+        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
+        if (ledgerItem) {
+          ledgerItem.fileName = file.name;
+          ledgerItem.filePath = publicURLData.publicUrl;
         }
-
-        saveDB();
-        renderAll();
       }
-    };
-    reader.readAsDataURL(file);
+
+      await saveDB();
+      renderAll();
+      alert('¡Fichero PDF subido correctamente a Supabase Storage!');
+    }
   }
 
   function simulateInvoiceEmail(id) {
@@ -2483,7 +2689,7 @@
       id: inv.id,
       email: client.email,
       subject: `Facture ${inv.id} - Atelier de Eloísa`,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Fichier joint : ${inv.fileName})\n\nCordialement,\nAtelier de Eloísa`
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Lien du fichier : ${inv.filePath})\n\nCordialement,\nAtelier de Eloísa`
     };
 
     openEmailPreviewModal();
@@ -2526,7 +2732,7 @@
     document.getElementById('email-preview-modal').classList.remove('hidden');
   }
 
-  function confirmAndSendEmail() {
+  async function confirmAndSendEmail() {
     if (!currentEmailContext) return;
 
     const subject = encodeURIComponent(document.getElementById('preview-email-subject').value);
@@ -2535,7 +2741,7 @@
     const inv = db.invoices.find(i => i.id === currentEmailContext.id);
     if (inv) { inv.emailSent = true; }
 
-    saveDB();
+    await saveDB();
     closeModals();
     renderAll();
 
@@ -2633,7 +2839,7 @@
     document.getElementById('bonus-modal').classList.remove('hidden');
   }
 
-  function saveBonusInvoice(e) {
+  async function saveBonusInvoice(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
     const clientId = document.getElementById('bonus-client').value;
@@ -2644,7 +2850,7 @@
 
     const future = new Date(); future.setDate(future.getDate() + 15);
 
-    db.invoices.push({
+    const newInv = {
       id: invoiceId,
       clientId: clientId,
       concept: concept,
@@ -2654,12 +2860,14 @@
       dueDate: future.toISOString().split('T')[0],
       emailSent: false,
       fileName: null,
+      filePath: null,
       isBonus: true,
       sessionsLeft: 10,
       attendanceLog: []
-    });
+    };
+    db.invoices.push(newInv);
 
-    saveDB();
+    await saveDB();
     closeModals();
     renderAll();
     alert(`¡Factura de bono ${invoiceId} generada correctamente!`);
@@ -2685,7 +2893,7 @@
     document.getElementById('invoice-amount').value = price;
   }
 
-  function saveInvoice(e) {
+  async function saveInvoice(e) {
     e.preventDefault();
     const id = document.getElementById('invoice-id').value;
     const data = {
@@ -2696,19 +2904,21 @@
     };
 
     if (id) {
-      Object.assign(db.invoices.find(i => i.id === id), data);
+      const inv = db.invoices.find(i => i.id === id);
+      Object.assign(inv, data);
     } else {
       data.id = `FAC-2026-${Date.now()}`;
       data.status = 'Pendiente';
       data.date = new Date().toISOString().split('T')[0];
       data.emailSent = false;
       data.fileName = null;
+      data.filePath = null;
       db.invoices.push(data);
     }
-    saveDB(); closeModals(); renderAll();
+    await saveDB(); closeModals(); renderAll();
   }
 
-  function toggleInvoiceStatus(id) {
+  async function toggleInvoiceStatus(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv) return;
 
@@ -2721,7 +2931,7 @@
       if (inv.isBonus) category = 'Pago de abonos';
       else if (inv.isMaterial) category = 'Compra de material';
 
-      db.ledger.push({
+      const ledgerItem = {
         id: 'LED-' + inv.id,
         type: 'income',
         category: category,
@@ -2729,16 +2939,18 @@
         amount: inv.amount,
         date: inv.date || new Date().toISOString().split('T')[0],
         fileName: inv.fileName,
-        fileData: inv.fileData,
+        filePath: inv.filePath,
         originId: inv.id
-      });
+      };
+      db.ledger.push(ledgerItem);
     } else {
       inv.status = 'Pendiente';
       if (db.ledger) {
         db.ledger = db.ledger.filter(l => l.originId !== inv.id);
+        await supabaseClient.from('ledger').delete().eq('origin_id', inv.id);
       }
     }
-    saveDB(); renderAll();
+    await saveDB(); renderAll();
   }
 
   // --- INGRESOS Y GASTOS (LEDGER) ---
@@ -2773,78 +2985,85 @@
     }
   }
 
-  function saveLedgerItem(e) {
+  async function saveLedgerItem(e) {
     e.preventDefault();
     if (!db.ledger) db.ledger = [];
     const id = document.getElementById('ledger-id').value;
     const fileInput = document.getElementById('ledger-file-input');
 
+    let fileName = id ? db.ledger.find(l => l.id === id)?.fileName : null;
+    let filePath = id ? db.ledger.find(l => l.id === id)?.filePath : null;
+
     if (fileInput.files.length > 0) {
       const file = fileInput.files[0];
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        const data = {
-          type: document.getElementById('ledger-type').value,
-          category: document.getElementById('ledger-category').value,
-          date: document.getElementById('ledger-date').value,
-          concept: document.getElementById('ledger-concept').value,
-          amount: parseFloat(document.getElementById('ledger-amount').value),
-          fileName: file.name,
-          fileData: evt.target.result
-        };
-        if (id) {
-          Object.assign(db.ledger.find(l => l.id === id), data);
-        } else {
-          data.id = 'LED-' + Date.now();
-          db.ledger.push(data);
-        }
-        saveDB(); closeModals(); renderAll();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      const existingFileName = id ? db.ledger.find(l => l.id === id)?.fileName : null;
-      const existingFileData = id ? db.ledger.find(l => l.id === id)?.fileData : null;
-      const data = {
-        type: document.getElementById('ledger-type').value,
-        category: document.getElementById('ledger-category').value,
-        date: document.getElementById('ledger-date').value,
-        concept: document.getElementById('ledger-concept').value,
-        amount: parseFloat(document.getElementById('ledger-amount').value),
-        fileName: existingFileName,
-        fileData: existingFileData
-      };
-      if (id) {
-        Object.assign(db.ledger.find(l => l.id === id), data);
-      } else {
-        data.id = 'LED-' + Date.now();
-        db.ledger.push(data);
+      const storagePath = `ledger/LED_${Date.now()}_${file.name}`;
+      const { error } = await supabaseClient.storage
+        .from('atelier-files')
+        .upload(storagePath, file, { upsert: true });
+
+      if (!error) {
+        const { data: publicURLData } = supabaseClient.storage
+          .from('atelier-files')
+          .getPublicUrl(storagePath);
+        fileName = file.name;
+        filePath = publicURLData.publicUrl;
       }
-      saveDB(); closeModals(); renderAll();
     }
+
+    const itemData = {
+      type: document.getElementById('ledger-type').value,
+      category: document.getElementById('ledger-category').value,
+      date: document.getElementById('ledger-date').value,
+      concept: document.getElementById('ledger-concept').value,
+      amount: parseFloat(document.getElementById('ledger-amount').value),
+      fileName: fileName,
+      filePath: filePath,
+      originId: null
+    };
+
+    if (id) {
+      const item = db.ledger.find(l => l.id === id);
+      Object.assign(item, itemData);
+    } else {
+      itemData.id = 'LED-' + Date.now();
+      db.ledger.push(itemData);
+    }
+
+    await saveDB();
+    closeModals();
+    renderAll();
   }
 
-  function deleteLedgerItem(id) {
+  async function deleteLedgerItem(id) {
     if (confirm('¿Eliminar este movimiento financiero?')) {
       db.ledger = db.ledger.filter(l => l.id !== id);
-      saveDB(); renderAll();
+      await supabaseClient.from('ledger').delete().eq('id', id);
+      renderAll();
     }
   }
 
-  function uploadLedgerFile(id, event) {
+  async function uploadLedgerFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
+    const storagePath = `ledger/${id}_${file.name}`;
+    const { error } = await supabaseClient.storage
+      .from('atelier-files')
+      .upload(storagePath, file, { upsert: true });
+
+    if (!error) {
+      const { data: publicURLData } = supabaseClient.storage
+        .from('atelier-files')
+        .getPublicUrl(storagePath);
+
       const item = db.ledger.find(l => l.id === id);
       if (item) {
         item.fileName = file.name;
-        item.fileData = e.target.result;
-        saveDB();
+        item.filePath = publicURLData.publicUrl;
+        await saveDB();
         renderLedger();
       }
-    };
-    reader.readAsDataURL(file);
+    }
   }
 
   function changeLedgerPage(direction) {
@@ -2922,7 +3141,7 @@
           : '<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded text-xs font-bold">Gasto</span>';
 
         const fileBadge = item.fileName
-          ? `<span class="text-indigo-600 font-medium text-xs">📎 ${item.fileName}</span>`
+          ? `<a href="${item.filePath || '#'}" target="_blank" class="text-indigo-600 font-medium text-xs hover:underline">📎 ${item.fileName}</a>`
           : `<span class="text-gray-400 italic text-xs">Sin fichero</span>`;
 
         return `
