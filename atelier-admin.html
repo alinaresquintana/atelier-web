@@ -1958,30 +1958,35 @@
     if (!cl) return;
 
     const checkboxes = document.querySelectorAll('input[name="attendance-student"]:checked');
-    const presentClientIds = new Set(Array.from(checkboxes).map(cb => cb.value));
+    const presentClientIds = Array.from(checkboxes).map(cb => cb.value);
 
     let deductedCount = 0;
-    cl.enrolled.forEach(e => {
-      if (presentClientIds.has(e.clientId)) {
-        if (isBonusRate(e.rateName)) {
-          const activeBonusInv = (db.invoices || []).find(inv => inv.clientId === e.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0);
+    for (const eItem of cl.enrolled) {
+      const isPresent = presentClientIds.includes(eItem.clientId);
+      if (isPresent) {
+        if (isBonusRate(eItem.rateName)) {
+          const activeBonusInv = (db.invoices || []).find(inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0);
           if (activeBonusInv) {
             activeBonusInv.sessionsLeft--;
             if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
             activeBonusInv.attendanceLog.push(attendanceDate);
             deductedCount++;
           }
-        } else {
-          if (!e.attendanceLog) e.attendanceLog = [];
-          e.attendanceLog.push(attendanceDate);
         }
+
+        // Guardar registro en Supabase
+        await supabaseClient.from('attendance_logs').insert({
+          class_id: classId,
+          client_id: eItem.clientId,
+          session_date: attendanceDate
+        });
       }
-    });
+    }
 
     await saveDB();
     closeModals();
     renderAll();
-    alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.` + (deductedCount > 0 ? ` Se han descontado clases a ${deductedCount} alumno(s) de bono.` : ''));
+    alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`);
   }
 
   function onClassTypeChange() {
