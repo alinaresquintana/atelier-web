@@ -1028,8 +1028,20 @@
     return isoStr;
   }
 
-  // --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY ---
+// --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY Y BYPASS LOCAL ---
   window.addEventListener('DOMContentLoaded', () => {
+    // 1. DETECTOR DE ENTORNO LOCAL (Bypass de Login)
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1' || 
+                        window.location.protocol === 'file:';
+
+    if (isLocalhost) {
+      console.log('⚡ Entorno local detectado: Saltando pantalla de login.');
+      showAdminApp();
+      return;
+    }
+
+    // 2. ENTORNO EN PRODUCCIÓN (Netlify Identity Normal)
     if (window.netlifyIdentity) {
       netlifyIdentity.on('init', user => {
         const hash = window.location.hash;
@@ -1975,17 +1987,33 @@
     const checkboxes = document.querySelectorAll('input[name="attendance-student"]:checked');
     const presentClientIds = Array.from(checkboxes).map(cb => cb.value);
 
-    let deductedCount = 0;
+    const lowBonusAlerts = [];
+
     for (const eItem of cl.enrolled) {
       const isPresent = presentClientIds.includes(eItem.clientId);
       if (isPresent) {
         if (isBonusRate(eItem.rateName)) {
-          const activeBonusInv = (db.invoices || []).find(inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0);
+          const activeBonusInv = (db.invoices || []).find(
+            inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0
+          );
+          
           if (activeBonusInv) {
             activeBonusInv.sessionsLeft--;
             if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
             activeBonusInv.attendanceLog.push(attendanceDate);
-            deductedCount++;
+
+            // 🔔 DETECTOR AUTOMÁTICO: Quedan exactamente 2 clases
+            if (activeBonusInv.sessionsLeft === 2) {
+              const client = db.clients.find(c => c.id === eItem.clientId);
+              if (client && client.email) {
+                lowBonusAlerts.push({
+                  clientName: client.name,
+                  email: client.email,
+                  invoiceId: activeBonusInv.id,
+                  remaining: 2
+                });
+              }
+            }
           }
         }
 
@@ -2000,7 +2028,33 @@
     await saveDB();
     closeModals();
     renderAll();
-    alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`);
+
+    // ENVÍO AUTOMÁTICO DE RECORDATORIOS SI HAY BONOS A PUNTO DE AGOTARSE
+    if (lowBonusAlerts.length > 0) {
+      for (const alertInfo of lowBonusAlerts) {
+        const subject = `Rappel : Carnet de cours bientôt épuisé - Atelier de Eloísa`;
+        const body = `Bonjour ${alertInfo.clientName},\n\nNous vous informons qu'il ne vous reste plus que 2 cours sur votre carnet (${alertInfo.invoiceId}).\n\nN'hésitez pas à nous contacter pour le renouveler pour les prochaines séances.\n\nCordialement,\nAtelier de Eloísa`;
+
+        try {
+          await fetch('/.netlify/functions/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: alertInfo.email,
+              subject: subject,
+              text: body
+            })
+          });
+          console.log(`Email de aviso de bono enviado a ${alertInfo.email}`);
+        } catch (err) {
+          console.error(`Error enviando email a ${alertInfo.email}:`, err);
+        }
+      }
+      
+      alert(`Asistencia guardada. Se ha enviado automáticamente un email recordatorio a los alumnos con 2 clases restantes.`);
+    } else {
+      alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`);
+    }
   }
 
   function onClassTypeChange() {
@@ -2768,17 +2822,38 @@
   async function confirmAndSendEmail() {
     if (!currentEmailContext) return;
 
-    const subject = encodeURIComponent(document.getElementById('preview-email-subject').value);
-    const body = encodeURIComponent(document.getElementById('preview-email-body').value);
+    const to = document.getElementById('preview-email-to').value;
+    const subject = document.getElementById('preview-email-subject').value;
+    const body = document.getElementById('preview-email-body').value;
 
-    const inv = db.invoices.find(i => i.id === currentEmailContext.id);
-    if (inv) { inv.emailSent = true; }
+    try {
+      // Petición HTTP directa a Netlify Function
+      const response = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: to,
+          subject: subject,
+          text: body
+        })
+      });
 
-    await saveDB();
-    closeModals();
-    renderAll();
+      if (!response.ok) {
+        throw new Error('Error al enviar el correo');
+      }
 
-    window.location.href = `mailto:${currentEmailContext.email}?subject=${subject}&body=${body}`;
+      const inv = db.invoices.find(i => i.id === currentEmailContext.id);
+      if (inv) { inv.emailSent = true; }
+
+      await saveDB();
+      closeModals();
+      renderAll();
+      alert(`✅ Correo enviado correctamente a ${to}`);
+
+    } catch (error) {
+      console.error('Error enviando email:', error);
+      alert('❌ Ocurrió un error al enviar el correo automáticamente.');
+    }
   }
 
   function renderArchiveTree() {
@@ -3253,7 +3328,6 @@
     });
   }
 </script>
-
 
 </body>
 </html>
