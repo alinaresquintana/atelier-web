@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier - Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Widget de Netlify Identity -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <!-- Flatpickr CSS & JS para selector de fechas profesional en formato europeo -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -24,17 +26,12 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans text-sm">
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN SCREEN (NETLIFY IDENTITY) -->
 <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-        <h1 class="text-2xl font-bold mb-6 text-center text-gray-900">Atelier Admin 🔒</h1>
-        <form onsubmit="handleLogin(event)" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña de acceso</label>
-                <input type="password" id="password-input" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">Entrar</button>
-        </form>
+    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm text-center space-y-4">
+        <h1 class="text-2xl font-bold text-gray-900">Atelier Admin 🔒</h1>
+        <p class="text-xs text-gray-500">Acceso seguro mediante Netlify Identity</p>
+        <button onclick="netlifyIdentity.open()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Iniciar Sesión / Administrar</button>
     </div>
 </div>
 
@@ -44,7 +41,7 @@
         <h1 class="text-xl font-bold text-gray-900">Gestión Atelier de Eloísa</h1>
         <div class="flex items-center space-x-4">
             <a href="index.html" class="text-sm text-gray-600 hover:text-indigo-600">← Web pública</a>
-            <button onclick="handleLogout()" class="text-sm text-red-600 hover:underline">Cerrar sesión</button>
+            <button onclick="netlifyIdentity.logout()" class="text-sm text-red-600 hover:underline">Cerrar sesión</button>
         </div>
     </header>
 
@@ -842,9 +839,8 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT DE CONTROL -->
+<!-- JAVASCRIPT DE CONTROL CON NETLIFY IDENTITY -->
 <script>
-  const ADMIN_PASS = "atelier123";
   let renewalsPanelOpen = false;
   let pastArchivePanelOpen = false;
   let archivePanelOpen = false;
@@ -906,23 +902,39 @@
     return isoStr;
   }
 
-  function handleLogin(e) {
-    e.preventDefault();
-    if (document.getElementById('password-input').value === ADMIN_PASS) {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('app-screen').classList.remove('hidden');
-      switchTab('calendar');
-      renderAll();
-      initDatePickers();
-    } else {
-      alert('Contraseña incorrecta (Prueba con: atelier123)');
+  // --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY ---
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.netlifyIdentity) {
+      netlifyIdentity.on('init', user => {
+        if (user) {
+          showAdminApp();
+        } else {
+          showLoginScreen();
+        }
+      });
+
+      netlifyIdentity.on('login', user => {
+        netlifyIdentity.close();
+        showAdminApp();
+      });
+
+      netlifyIdentity.on('logout', () => {
+        showLoginScreen();
+      });
     }
+  });
+
+  function showAdminApp() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-screen').classList.remove('hidden');
+    switchTab('calendar');
+    renderAll();
+    initDatePickers();
   }
 
-  function handleLogout() {
+  function showLoginScreen() {
     document.getElementById('app-screen').classList.add('hidden');
     document.getElementById('login-screen').classList.remove('hidden');
-    document.getElementById('password-input').value = '';
   }
 
   function initDatePickers() {
@@ -1008,7 +1020,7 @@
     saveDB();
     renderAll();
   }
-  
+
   function getGlobalHoliday(dateStr) {
     const targetTime = new Date(dateStr + 'T00:00:00').getTime();
     for (const h of (db.holidays || [])) {
@@ -1024,7 +1036,7 @@
   function getHolidayForClass(dateStr, classType) {
     const typeLower = (classType || '').toLowerCase();
     const isJunior = typeLower.includes('niños') || typeLower.includes('adolescentes') || typeLower.includes('atelier') || typeLower.includes('pintura');
-    
+
     const targetTime = new Date(dateStr + 'T00:00:00').getTime();
 
     for (const h of (db.holidays || [])) {
@@ -1242,8 +1254,8 @@
 
     document.getElementById('convert-prereg-id').value = id;
     const classSelect = document.getElementById('convert-class-id');
-    
-    classSelect.innerHTML = (db.classes || []).map(c => 
+
+    classSelect.innerHTML = (db.classes || []).map(c =>
       `<option value="${c.id}" ${pr.classId === c.id ? 'selected' : ''}>${c.name} (${c.classType})</option>`
     ).join('');
 
@@ -1262,7 +1274,7 @@
       return;
     }
 
-    rateSelect.innerHTML = targetClass.rates.map(r => 
+    rateSelect.innerHTML = targetClass.rates.map(r =>
       `<option value="${r.name}">${r.name} (${r.price} CHF)</option>`
     ).join('');
   }
@@ -1786,7 +1798,7 @@
       if (!client) return '';
       const isBonus = isBonusRate(e.rateName);
       let bonusText = isBonus ? `<span class="text-indigo-600 font-semibold">(Bono)</span>` : `<span class="text-gray-400">(${e.rateName})</span>`;
-      
+
       return `
         <label class="flex items-center justify-between p-2 bg-white rounded border cursor-pointer hover:bg-indigo-50/50">
             <div class="flex items-center space-x-2">
@@ -1883,56 +1895,56 @@
     if (!modal) return;
 
     if (classId) {
-        const cls = (db.classes || []).find(c => c.id == classId);
-        if (cls) {
-            if (inputId) inputId.value = cls.id || '';
-            if (inputName) inputName.value = cls.name || '';
-            if (inputType) inputType.value = cls.classType || 'Clase Adultos';
-            if (inputScheduleMode) {
-              inputScheduleMode.value = cls.scheduleMode || 'recurring';
-              onClassScheduleModeChange();
-            }
-            if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 1;
-            if (inputSchedule) inputSchedule.value = cls.schedule || '';
-            
-            if (inputStartDate) inputStartDate.value = cls.startDate || '2026-09-01';
-            if (inputEndDate) inputEndDate.value = cls.endDate || '2027-06-30';
-            if (inputSingleDate) inputSingleDate.value = cls.singleDate || '';
-            if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
-            
-            if (inputDuration) inputDuration.value = cls.duration || '2 horas';
-            if (inputCapacity) inputCapacity.value = cls.capacity || 8;
-
-            const container = document.getElementById('class-rates-container');
-            if (container) {
-              container.innerHTML = '';
-              if (cls.rates && cls.rates.length > 0) {
-                cls.rates.forEach(r => addClassRateRow(r.name, r.type, r.price));
-              } else {
-                onClassTypeChange();
-              }
-            }
-            document.getElementById('class-modal-title').innerText = 'Editar Grupo / Clase';
-        }
-    } else {
-        if (inputId) inputId.value = '';
-        if (inputName) inputName.value = '';
-        if (inputType) inputType.value = 'Clase Adultos';
+      const cls = (db.classes || []).find(c => c.id == classId);
+      if (cls) {
+        if (inputId) inputId.value = cls.id || '';
+        if (inputName) inputName.value = cls.name || '';
+        if (inputType) inputType.value = cls.classType || 'Clase Adultos';
         if (inputScheduleMode) {
-          inputScheduleMode.value = 'recurring';
+          inputScheduleMode.value = cls.scheduleMode || 'recurring';
           onClassScheduleModeChange();
         }
-        if (inputDayOfWeek) inputDayOfWeek.value = 1;
-        if (inputSchedule) inputSchedule.value = '';
-        if (inputStartDate) inputStartDate.value = '2026-09-01';
-        if (inputEndDate) inputEndDate.value = '2027-06-30';
-        if (inputSingleDate) inputSingleDate.value = '';
-        if (inputSingleSchedule) inputSingleSchedule.value = '';
-        if (inputDuration) inputDuration.value = '2 horas';
-        if (inputCapacity) inputCapacity.value = 8;
-        
-        onClassTypeChange();
-        document.getElementById('class-modal-title').innerText = 'Añadir Grupo / Clase';
+        if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 1;
+        if (inputSchedule) inputSchedule.value = cls.schedule || '';
+
+        if (inputStartDate) inputStartDate.value = cls.startDate || '2026-09-01';
+        if (inputEndDate) inputEndDate.value = cls.endDate || '2027-06-30';
+        if (inputSingleDate) inputSingleDate.value = cls.singleDate || '';
+        if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
+
+        if (inputDuration) inputDuration.value = cls.duration || '2 horas';
+        if (inputCapacity) inputCapacity.value = cls.capacity || 8;
+
+        const container = document.getElementById('class-rates-container');
+        if (container) {
+          container.innerHTML = '';
+          if (cls.rates && cls.rates.length > 0) {
+            cls.rates.forEach(r => addClassRateRow(r.name, r.type, r.price));
+          } else {
+            onClassTypeChange();
+          }
+        }
+        document.getElementById('class-modal-title').innerText = 'Editar Grupo / Clase';
+      }
+    } else {
+      if (inputId) inputId.value = '';
+      if (inputName) inputName.value = '';
+      if (inputType) inputType.value = 'Clase Adultos';
+      if (inputScheduleMode) {
+        inputScheduleMode.value = 'recurring';
+        onClassScheduleModeChange();
+      }
+      if (inputDayOfWeek) inputDayOfWeek.value = 1;
+      if (inputSchedule) inputSchedule.value = '';
+      if (inputStartDate) inputStartDate.value = '2026-09-01';
+      if (inputEndDate) inputEndDate.value = '2027-06-30';
+      if (inputSingleDate) inputSingleDate.value = '';
+      if (inputSingleSchedule) inputSingleSchedule.value = '';
+      if (inputDuration) inputDuration.value = '2 horas';
+      if (inputCapacity) inputCapacity.value = 8;
+
+      onClassTypeChange();
+      document.getElementById('class-modal-title').innerText = 'Añadir Grupo / Clase';
     }
 
     modal.classList.remove('hidden');
@@ -2020,10 +2032,10 @@
   }
 
   function deleteClass(id) {
-    if (confirm('¿Eliminar clase? Se eliminarán también las inscripciones asociadas.')) { 
-      db.classes = db.classes.filter(c => c.id !== id); 
-      saveDB(); 
-      renderAll(); 
+    if (confirm('¿Eliminar clase? Se eliminarán también las inscripciones asociadas.')) {
+      db.classes = db.classes.filter(c => c.id !== id);
+      saveDB();
+      renderAll();
     }
   }
 
@@ -2065,7 +2077,7 @@
     if (!db.materialTypes) db.materialTypes = [];
     const container = document.getElementById('material-types-list');
 
-    container.innerHTML = db.materialTypes.length === 0 
+    container.innerHTML = db.materialTypes.length === 0
       ? `<p class="text-gray-400 italic text-xs">No hay materiales en el catálogo.</p>`
       : db.materialTypes.map((m, idx) => `
         <div class="flex justify-between items-center bg-gray-50 p-3 rounded border text-xs">
@@ -2105,7 +2117,7 @@
     clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
     const typeSelect = document.getElementById('mat-sale-type');
-    typeSelect.innerHTML = `<option value="">-- Seleccionar material --</option>` + 
+    typeSelect.innerHTML = `<option value="">-- Seleccionar material --</option>` +
       (db.materialTypes || []).map(m => `<option value="${m.id}" data-price="${m.price}" data-name="${m.name}">${m.name} (${m.price.toFixed(2)} CHF)</option>`).join('');
 
     document.getElementById('mat-sale-concept').value = '';
@@ -2372,7 +2384,7 @@
         const emailBtnClasses = emailBtnDisabled
           ? 'border border-gray-200 bg-gray-100 text-gray-400 p-2 rounded-lg cursor-not-allowed flex items-center justify-center text-sm'
           : 'border border-gray-300 bg-white text-indigo-700 hover:bg-indigo-50 p-2 rounded-lg flex items-center justify-center text-sm shadow-sm';
-        
+
         let typeBadgeHtml = `<span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-[10px] font-bold">Factura</span>`;
         if (inv.isBonus) typeBadgeHtml = `<span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Bono (${inv.sessionsLeft}/10)</span>`;
         else if (inv.isMaterial) typeBadgeHtml = `<span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">Material</span>`;
@@ -2431,7 +2443,7 @@
   function uploadInvoiceFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = function(e) {
       const inv = db.invoices.find(i => i.id === id);
@@ -2447,7 +2459,7 @@
           }
         }
 
-        saveDB(); 
+        saveDB();
         renderAll();
       }
     };
@@ -2465,7 +2477,7 @@
       alert('El alumno no tiene un correo electrónico válido registrado.');
       return;
     }
-    
+
     currentEmailContext = {
       type: 'invoice',
       id: inv.id,
@@ -2473,7 +2485,7 @@
       subject: `Facture ${inv.id} - Atelier de Eloísa`,
       body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Fichier joint : ${inv.fileName})\n\nCordialement,\nAtelier de Eloísa`
     };
-    
+
     openEmailPreviewModal();
   }
 
@@ -2704,7 +2716,7 @@
       inv.status = 'Pagado';
       if (!db.ledger) db.ledger = [];
       const client = db.clients.find(c => c.id === inv.clientId);
-      
+
       let category = 'Pago de clases';
       if (inv.isBonus) category = 'Pago de abonos';
       else if (inv.isMaterial) category = 'Compra de material';
@@ -2766,7 +2778,7 @@
     if (!db.ledger) db.ledger = [];
     const id = document.getElementById('ledger-id').value;
     const fileInput = document.getElementById('ledger-file-input');
-    
+
     if (fileInput.files.length > 0) {
       const file = fileInput.files[0];
       const reader = new FileReader();
@@ -2821,14 +2833,14 @@
   function uploadLedgerFile(id, event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = function(e) {
       const item = db.ledger.find(l => l.id === id);
       if (item) {
         item.fileName = file.name;
         item.fileData = e.target.result;
-        saveDB(); 
+        saveDB();
         renderLedger();
       }
     };
