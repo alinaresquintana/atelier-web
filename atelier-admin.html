@@ -1541,7 +1541,40 @@
     saveDB();
     closeModals();
     renderAll();
-    alert(`¡Alumno ${pr.name} dado de alta con la tarifa "${rateName}" correctamente!`);
+
+    // ENVÍO DE EMAIL DE CONFIRMACIÓN AL CLIENTE (NUEVO)
+    try {
+      const confirmHtml = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
+        <h2 style="font-size: 22px; color: #111; margin-bottom: 8px;">Atelier Arte Vich</h2>
+        <p style="color: #e63500; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Confirmation d'inscription</p>
+        <p style="font-size: 15px; color: #444; line-height: 1.6;">Bonjour ${pr.name},</p>
+        <p style="font-size: 15px; color: #444; line-height: 1.6;">Nous avons le plaisir de vous confirmer votre inscription aux cours de l'Atelier Arte Vich !</p>
+        <div style="background: #f9f9fb; border-radius: 8px; padding: 20px; margin: 20px 0; font-size: 14px; border: 1px solid #eee;">
+          <h4 style="margin: 0 0 10px 0; color: #e63500;">Détails de votre réservation :</h4>
+          <p style="margin: 4px 0;"><strong>Cours :</strong> ${targetClass ? targetClass.name : 'Atelier'}</p>
+          <p style="margin: 4px 0;"><strong>Formule :</strong> ${rateName}</p>
+          <p style="margin: 4px 0;"><strong>Lieu :</strong> Grand'Rue 6, 1267 Vich</p>
+        </div>
+        <p style="font-size: 14px; color: #666; line-height: 1.6;">Si vous avez la moindre question, vous pouvez contacter Eloísa au <strong>+41 79 913 70 55</strong>.</p>
+        <p style="margin-top: 24px; font-weight: 600; color: #111;">Bien chaleureusement,<br>Eloísa • Atelier Arte Vich</p>
+      </div>
+    `;
+
+      await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: pr.email,
+          subject: `Confirmation de votre inscription – Atelier Arte Vich`,
+          html: confirmHtml
+        })
+      });
+      alert(`¡Alumno ${pr.name} dado de alta! Se ha enviado el correo de confirmación al cliente.`);
+    } catch (mailErr) {
+      console.error("Error enviando confirmación al cliente:", mailErr);
+      alert(`¡Alumno ${pr.name} dado de alta correctamente! (No se pudo enviar el email de confirmación).`);
+    }
   }
 
   async function deletePreReg(id) {
@@ -2831,8 +2864,8 @@
 
   function simulateInvoiceEmail(id) {
     const inv = db.invoices.find(i => i.id === id);
-    if (!inv.fileName) {
-      alert('No se puede enviar el email porque falta adjuntar el fichero o factura.');
+    if (!inv.fileName || !inv.filePath) {
+      alert('No se puede enviar el email porque falta adjuntar el fichero PDF de la factura.');
       return;
     }
     const client = db.clients.find(c => c.id === inv.clientId);
@@ -2841,12 +2874,44 @@
       return;
     }
 
+    const invoiceHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
+      <h2 style="font-size: 22px; color: #111; margin-bottom: 16px;">Facture ${inv.id}</h2>
+      <p style="font-size: 15px; color: #444; line-height: 1.6;">Bonjour ${client.name},</p>
+      <p style="font-size: 15px; color: #444; line-height: 1.6;">Veuillez trouver ci-joint votre facture concernant les cours à l'Atelier Arte Vich.</p>
+
+      <table style="width:100%; background:#f9f9fb; padding:16px; border-radius:8px; margin:20px 0; border:1px solid #eee;">
+        <tr>
+          <td>
+            <span style="font-size:11px; color:#666; text-transform:uppercase;">Concept</span><br>
+            <strong style="font-size:15px; color:#111;">${inv.concept}</strong>
+          </td>
+          <td style="text-align:right;">
+            <span style="font-size:11px; color:#666; text-transform:uppercase;">Montant</span><br>
+            <span style="font-size:22px; font-weight:bold; color:#e63500;">${inv.amount} CHF</span>
+          </td>
+        </tr>
+      </table>
+
+      <p style="font-size: 14px; color: #666;">Le document PDF correspondant est joint à ce message.</p>
+      <p style="margin-top:24px; font-weight:600; color:#111;">Merci pour votre confiance !<br>Atelier Arte Vich</p>
+    </div>
+  `;
+
     currentEmailContext = {
       type: 'invoice',
       id: inv.id,
       email: client.email,
-      subject: `Facture ${inv.id} - Atelier de Eloísa`,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint les détails de votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\n(Lien du fichier : ${inv.filePath})\n\nCordialement,\nAtelier de Eloísa`
+      subject: `Facture ${inv.id} - Atelier Arte Vich`,
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\nCordialement,\nAtelier Arte Vich`,
+      html: invoiceHtml,
+      // 📎 AQUÍ SE ADJUNTA EL FICHERO PDF REAL:
+      attachments: [
+        {
+          filename: inv.fileName || `Facture_${inv.id}.pdf`,
+          path: inv.filePath
+        }
+      ]
     };
 
     openEmailPreviewModal();
@@ -2894,18 +2959,21 @@
 
     const to = document.getElementById('preview-email-to').value;
     const subject = document.getElementById('preview-email-subject').value;
-    const body = document.getElementById('preview-email-body').value;
+    const bodyText = document.getElementById('preview-email-body').value;
 
     try {
-      // Petición HTTP directa a Netlify Function
+      const payload = {
+        to: to,
+        subject: subject,
+        text: bodyText,
+        html: currentEmailContext.html || null,
+        attachments: currentEmailContext.attachments || []
+      };
+
       const response = await fetch('/.netlify/functions/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: to,
-          subject: subject,
-          text: body
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
