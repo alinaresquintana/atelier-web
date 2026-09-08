@@ -1,7 +1,7 @@
 const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_ADDRESS = process.env.FROM_EMAIL || 'Atelier Arte Vich <onboarding@resend.dev>';
+const FROM_ADDRESS = process.env.FROM_EMAIL || 'Atelier Arte Vich <info@atelierartvich.com>';
 const REPLY_TO_ADDRESS = 'atelierartevich@gmail.com';
 
 exports.handler = async (event) => {
