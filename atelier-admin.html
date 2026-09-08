@@ -880,6 +880,7 @@
       const { data: ledger } = await supabaseClient.from('ledger').select('*');
       const { data: materials } = await supabaseClient.from('material_catalog').select('*');
       const { data: preRegs } = await supabaseClient.from('pre_registrations').select('*');
+      const { data: holidays } = await supabaseClient.from('holidays').select('*');
 
       db.clients = (clients || []).map(c => ({
         id: c.id,
@@ -967,6 +968,14 @@
         date: pr.date
       }));
 
+      db.holidays = (holidays || []).map(h => ({
+        id: h.id,
+        startDate: h.start_date,
+        endDate: h.end_date,
+        reason: h.reason,
+        scope: h.scope
+      }));
+
     } catch (err) {
       console.error("Error al cargar desde Supabase:", err);
     }
@@ -1018,6 +1027,18 @@
         file_path: l.filePath,
         origin_id: l.originId
       });
+    }
+
+    if (db.holidays) {
+      for (const h of db.holidays) {
+        await supabaseClient.from('holidays').upsert({
+          id: h.id || ('hol_' + Date.now()),
+          start_date: h.startDate,
+          end_date: h.endDate,
+          reason: h.reason,
+          scope: h.scope || 'all'
+        });
+      }
     }
   }
 
@@ -1138,7 +1159,7 @@
     renderCalendar();
   }
 
-  function addHoliday(e) {
+  async function addHoliday(e) {
     e.preventDefault();
     const startDate = document.getElementById('holiday-start').value;
     const endDate = document.getElementById('holiday-end').value || startDate;
@@ -1150,29 +1171,49 @@
       return;
     }
 
+    const newHoliday = {
+      id: 'hol_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+      startDate: startDate,
+      endDate: endDate,
+      reason: reason,
+      scope: scope
+    };
+
     if (!db.holidays) db.holidays = [];
-    db.holidays.push({ startDate, endDate, reason, scope });
-    saveDB();
+    db.holidays.push(newHoliday);
+
+    // Guardar en Supabase
+    await supabaseClient.from('holidays').insert({
+      id: newHoliday.id,
+      start_date: newHoliday.startDate,
+      end_date: newHoliday.endDate,
+      reason: newHoliday.reason,
+      scope: newHoliday.scope
+    });
 
     document.getElementById('holiday-start').value = '';
     document.getElementById('holiday-end').value = '';
     document.getElementById('holiday-reason').value = '';
     renderAll();
-    alert('Período de vacaciones añadido correctamente.');
+    alert('Período de vacaciones añadido y guardado correctamente.');
   }
 
-  function deleteHoliday(index) {
-    db.holidays.splice(index, 1);
-    saveDB();
-    renderAll();
+  async function deleteHoliday(index) {
+    const h = db.holidays[index];
+    if (!h) return;
+
+    if (confirm(`¿Eliminar las vacaciones "${h.reason}"?`)) {
+      db.holidays.splice(index, 1);
+      if (h.id) {
+        await supabaseClient.from('holidays').delete().eq('id', h.id);
+      }
+      renderAll();
+    }
   }
 
   function getGlobalHoliday(dateStr) {
-    const targetTime = new Date(dateStr + 'T00:00:00').getTime();
     for (const h of (db.holidays || [])) {
-      const startTime = new Date(h.startDate + 'T00:00:00').getTime();
-      const endTime = new Date(h.endDate + 'T00:00:00').getTime();
-      if (targetTime >= startTime && targetTime <= endTime) {
+      if (dateStr >= h.startDate && dateStr <= h.endDate) {
         if (!h.scope || h.scope === 'all') return h;
       }
     }
@@ -1183,13 +1224,8 @@
     const typeLower = (classType || '').toLowerCase();
     const isJunior = typeLower.includes('niños') || typeLower.includes('adolescentes') || typeLower.includes('atelier') || typeLower.includes('pintura');
 
-    const targetTime = new Date(dateStr + 'T00:00:00').getTime();
-
     for (const h of (db.holidays || [])) {
-      const startTime = new Date(h.startDate + 'T00:00:00').getTime();
-      const endTime = new Date(h.endDate + 'T00:00:00').getTime();
-
-      if (targetTime >= startTime && targetTime <= endTime) {
+      if (dateStr >= h.startDate && dateStr <= h.endDate) {
         const scope = h.scope || 'all';
         if (scope === 'all') return h;
         if (scope === 'junior' && isJunior) return h;
