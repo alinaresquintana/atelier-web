@@ -1000,6 +1000,7 @@
         'Workshop Retratos': 'portraits'
       };
 
+      // Estándar JS: 0 = Dimanche, 1 = Lundi, 2 = Mardi, 3 = Mercredi, 4 = Jeudi, 5 = Vendredi, 6 = Samedi
       const dayNamesFr = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
       const grouped = {
@@ -1022,12 +1023,22 @@
 
           let scheduleText = '';
           if (cl.schedule_mode === 'single') {
-            scheduleText = `Atelier unique le ${formatPubDate(cl.single_date)} à ${cl.single_schedule || cl.schedule || ''}`;
+            const singleTime = cl.single_schedule || cl.schedule || '';
+            scheduleText = `Atelier unique le ${formatPubDate(cl.single_date)}${singleTime ? ' à ' + singleTime : ''}`;
           } else {
-            const dayName = (cl.day_of_week !== undefined && dayNamesFr[cl.day_of_week]) ? dayNamesFr[cl.day_of_week] : '';
+            const dayIndex = cl.day_of_week !== undefined && cl.day_of_week !== null ? parseInt(cl.day_of_week) : null;
+            const dayName = (dayIndex !== null && dayNamesFr[dayIndex]) ? dayNamesFr[dayIndex] : '';
             const timeVal = cl.schedule || '';
-            // Mostrar correctamente el día y la hora configurada
-            scheduleText = dayName && timeVal ? `${dayName}s à ${timeVal}` : (timeVal || dayName || 'Horaire à convenir');
+
+            if (dayName && timeVal) {
+              scheduleText = `${dayName}s à ${timeVal}`;
+            } else if (dayName) {
+              scheduleText = `${dayName}s`;
+            } else if (timeVal) {
+              scheduleText = timeVal;
+            } else {
+              scheduleText = 'Horaire à convenir';
+            }
           }
 
           grouped[catKey].push({
@@ -1048,7 +1059,11 @@
 
         const items = grouped[catKey];
         if (items.length === 0) {
-          container.innerHTML = `<p style="font-size: 13.5px; color: var(--muted);">${currentLang === 'fr' ? 'Aucun cours configuré pour le moment.' : currentLang === 'en' ? 'No courses configured at the moment.' : 'Ningún curso configurado por el momento.'}</p>`;
+          container.innerHTML = `<p style="font-size: 13.5px; color: var(--muted);">${
+            currentLang === 'fr' ? 'Aucun cours configuré pour le moment.' :
+              currentLang === 'en' ? 'No courses configured at the moment.' :
+                'Ningún curso configurado por el momento.'
+          }</p>`;
           return;
         }
 
@@ -1065,15 +1080,15 @@
             : '';
 
           return `
-            <div style="background: var(--bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-              <div style="display: flex; flex-direction: column; gap: 5px;">
-                <strong style="color: var(--text); font-size: 15px;">${item.name}</strong>
-                <span style="font-size: 13px; color: var(--text); font-weight: 500;">🕒 ${item.schedule} (${item.duration})</span>
-                ${dateDisplay}
-              </div>
-              <div>${statusBadge}</div>
+          <div style="background: var(--bg); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+              <strong style="color: var(--text); font-size: 15px;">${item.name}</strong>
+              <span style="font-size: 13px; color: var(--text); font-weight: 500;">🕒 ${item.schedule} (${item.duration})</span>
+              ${dateDisplay}
             </div>
-          `;
+            <div>${statusBadge}</div>
+          </div>
+        `;
         }).join('');
       });
 
