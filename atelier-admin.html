@@ -95,11 +95,11 @@
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Desde</label>
-                                    <input type="date" id="holiday-start" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
+                                    <input type="date" id="holiday-start" placeholder="dd/mm/yyyy" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Hasta</label>
-                                    <input type="date" id="holiday-end" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
+                                    <input type="date" id="holiday-end" placeholder="dd/mm/yyyy" required class="w-full px-2.5 py-1.5 border rounded-lg text-xs bg-white text-gray-800">
                                 </div>
                             </div>
                             <div>
@@ -371,7 +371,7 @@
             <input type="hidden" id="attendance-class-id">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de la sesión</label>
-                <input type="date" id="attendance-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 text-gray-800">
+                <input type="date" id="attendance-date" placeholder="dd/mm/yyyy" required class="w-full px-3 py-2 border rounded-lg text-sm bg-gray-50 text-gray-800">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumnos Inscritos (Marca los presentes)</label>
@@ -531,7 +531,7 @@
                 </div>
                 <div id="client-departure-container" class="hidden">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Baja (Dejó de asistir)</label>
-                    <input type="date" id="client-departure-date" class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800">
+                    <input type="date" id="client-departure-date" placeholder="dd/mm/yyyy" class="w-full px-3 py-2 border rounded-lg text-sm text-gray-800">
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
@@ -617,11 +617,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Comienzo</label>
-                        <input type="date" id="class-startdate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
+                        <input type="date" id="class-startdate" placeholder="dd/mm/yyyy" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin</label>
-                        <input type="date" id="class-enddate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
+                        <input type="date" id="class-enddate" placeholder="dd/mm/yyyy" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                 </div>
             </div>
@@ -630,7 +630,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Fecha del Workshop</label>
-                        <input type="date" id="class-singledate" class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
+                        <input type="date" id="class-singledate" placeholder="dd/mm/yyyy" class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Hora de Comienzo</label>
@@ -713,7 +713,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
-                <input type="date" id="invoice-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
+                <input type="date" id="invoice-duedate" placeholder="dd/mm/yyyy" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
@@ -826,7 +826,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-                <input type="date" id="ledger-date" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
+                <input type="date" id="ledger-date" placeholder="dd/mm/yyyy" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
@@ -1052,12 +1052,12 @@
     return isoStr;
   }
 
-// --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY Y BYPASS LOCAL ---
+  // --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY Y BYPASS LOCAL ---
   window.addEventListener('DOMContentLoaded', () => {
     // 1. DETECTOR DE ENTORNO LOCAL (Bypass de Login)
-    const isLocalhost = window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1' || 
-                        window.location.protocol === 'file:';
+    const isLocalhost = window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.protocol === 'file:';
 
     if (isLocalhost) {
       console.log('⚡ Entorno local detectado: Saltando pantalla de login.');
@@ -1225,8 +1225,8 @@
       scope: newHoliday.scope
     });
 
-    document.getElementById('holiday-start').value = '';
-    document.getElementById('holiday-end').value = '';
+    setDatePickerValue('holiday-start', '');
+    setDatePickerValue('holiday-end', '');
     document.getElementById('holiday-reason').value = '';
     renderAll();
     alert('Período de vacaciones añadido y guardado correctamente.');
@@ -1732,7 +1732,7 @@
     if (status === 'past') {
       departureContainer.classList.remove('hidden');
       if (!document.getElementById('client-departure-date').value) {
-        document.getElementById('client-departure-date').value = new Date().toISOString().split('T')[0];
+        setDatePickerValue('client-departure-date', new Date().toISOString().split('T')[0]);
       }
     } else {
       departureContainer.classList.add('hidden');
@@ -1752,7 +1752,7 @@
       document.getElementById('client-city').value = client.city || '';
       document.getElementById('client-image-consent').checked = !!client.imageConsent;
       document.getElementById('client-status').value = client.status || 'present';
-      document.getElementById('client-departure-date').value = client.departureDate || '';
+      setDatePickerValue('client-departure-date', client.departureDate || '');
       onClientStatusChange();
     } else {
       document.getElementById('client-modal-title').innerText = 'Añadir Alumno';
@@ -1764,7 +1764,7 @@
       document.getElementById('client-city').value = '';
       document.getElementById('client-image-consent').checked = false;
       document.getElementById('client-status').value = 'present';
-      document.getElementById('client-departure-date').value = '';
+      setDatePickerValue('client-departure-date', '');
       onClientStatusChange();
     }
     document.getElementById('client-modal').classList.remove('hidden');
@@ -2020,7 +2020,7 @@
 
     document.getElementById('attendance-class-id').value = classId;
     document.getElementById('attendance-modal-title').innerText = `📋 Pasar Lista: ${cl.name}`;
-    document.getElementById('attendance-date').value = new Date().toISOString().split('T')[0];
+    setDatePickerValue('attendance-date', new Date().toISOString().split('T')[0]);
 
     const container = document.getElementById('attendance-students-container');
     if (cl.enrolled.length === 0) {
@@ -2067,7 +2067,7 @@
           const activeBonusInv = (db.invoices || []).find(
             inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0
           );
-          
+
           if (activeBonusInv) {
             activeBonusInv.sessionsLeft--;
             if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
@@ -2121,7 +2121,7 @@
           console.error(`Error enviando email a ${alertInfo.email}:`, err);
         }
       }
-      
+
       alert(`Asistencia guardada. Se ha enviado automáticamente un email recordatorio a los alumnos con 2 clases restantes.`);
     } else {
       alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`);
@@ -2166,9 +2166,6 @@
     const inputScheduleMode = document.getElementById('class-schedule-mode');
     const inputDayOfWeek = document.getElementById('class-dayofweek');
     const inputSchedule = document.getElementById('class-schedule');
-    const inputStartDate = document.getElementById('class-startdate');
-    const inputEndDate = document.getElementById('class-enddate');
-    const inputSingleDate = document.getElementById('class-singledate');
     const inputSingleSchedule = document.getElementById('class-singleschedule');
     const inputDuration = document.getElementById('class-duration');
     const inputCapacity = document.getElementById('class-capacity');
@@ -2188,11 +2185,11 @@
         if (inputDayOfWeek) inputDayOfWeek.value = cls.dayOfWeek !== undefined ? cls.dayOfWeek : 0;
         if (inputSchedule) inputSchedule.value = cls.schedule || '';
 
-        if (inputStartDate) inputStartDate.value = cls.startDate || '2026-09-01';
-        if (inputEndDate) inputEndDate.value = cls.endDate || '2027-06-30';
-        if (inputSingleDate) inputSingleDate.value = cls.singleDate || '';
-        if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
+        setDatePickerValue('class-startdate', cls.startDate || '2026-09-01');
+        setDatePickerValue('class-enddate', cls.endDate || '2027-06-30');
+        setDatePickerValue('class-singledate', cls.singleDate || '');
 
+        if (inputSingleSchedule) inputSingleSchedule.value = cls.singleSchedule || '';
         if (inputDuration) inputDuration.value = cls.duration || '2 horas';
         if (inputCapacity) inputCapacity.value = cls.capacity !== undefined ? cls.capacity : 0;
 
@@ -2217,9 +2214,11 @@
       }
       if (inputDayOfWeek) inputDayOfWeek.value = 0;
       if (inputSchedule) inputSchedule.value = '';
-      if (inputStartDate) inputStartDate.value = '2026-09-01';
-      if (inputEndDate) inputEndDate.value = '2027-06-30';
-      if (inputSingleDate) inputSingleDate.value = '';
+
+      setDatePickerValue('class-startdate', '2026-09-01');
+      setDatePickerValue('class-enddate', '2027-06-30');
+      setDatePickerValue('class-singledate', '');
+
       if (inputSingleSchedule) inputSingleSchedule.value = '';
       if (inputDuration) inputDuration.value = '2 horas';
       if (inputCapacity) inputCapacity.value = 0;
@@ -2998,12 +2997,12 @@
       clientSelect.value = inv.clientId;
       document.getElementById('invoice-concept').value = inv.concept;
       document.getElementById('invoice-amount').value = inv.amount;
-      document.getElementById('invoice-duedate').value = inv.dueDate || new Date().toISOString().split('T')[0];
+      setDatePickerValue('invoice-duedate', inv.dueDate || new Date().toISOString().split('T')[0]);
       document.getElementById('invoice-rate-select').innerHTML = `<option value="">-- Escritura manual libre --</option>`;
     } else {
       document.getElementById('invoice-modal-title').innerText = 'Nueva Factura Manual';
       const future = new Date(); future.setDate(future.getDate() + 15);
-      document.getElementById('invoice-duedate').value = future.toISOString().split('T')[0];
+      setDatePickerValue('invoice-duedate', future.toISOString().split('T')[0]);
       document.getElementById('invoice-concept').value = '';
       document.getElementById('invoice-amount').value = '';
       onInvoiceClientChange();
@@ -3188,7 +3187,7 @@
     document.getElementById('ledger-id').value = '';
     document.getElementById('ledger-type').value = 'income';
     onLedgerTypeChange();
-    document.getElementById('ledger-date').value = new Date().toISOString().split('T')[0];
+    setDatePickerValue('ledger-date', new Date().toISOString().split('T')[0]);
     document.getElementById('ledger-concept').value = '';
     document.getElementById('ledger-amount').value = '';
     document.getElementById('ledger-file-input').value = '';
