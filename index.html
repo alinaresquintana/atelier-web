@@ -1065,21 +1065,21 @@
             <div class="contact-grid">
                 <div class="info-card-lg">
                     <h3 data-i18n="contact_form_title">Envoyez-nous un message</h3>
-                    <form action="mailto:atelierartevich@gmail.com" method="POST" enctype="text/plain" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-                        <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_name">Votre Nom</label>
-                            <input type="text" name="Nom" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
-                        </div>
-                        <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_email">Votre Email</label>
-                            <input type="email" name="Email" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
-                        </div>
-                        <div>
-                            <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_message">Votre Message</label>
-                            <textarea name="Message" rows="4" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: vertical;"></textarea>
-                        </div>
-                        <button type="submit" class="cta-btn" style="border: none; cursor: pointer; text-align: center; margin-top: 5px;" data-i18n="form_send">Envoyer le message</button>
-                    </form>
+                      <form id="contactForm" onsubmit="submitContactForm(event)" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                          <div>
+                              <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_name">Votre Nom</label>
+                              <input type="text" id="contactName" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+                          </div>
+                          <div>
+                              <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_email">Votre Email</label>
+                              <input type="email" id="contactEmail" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text);">
+                          </div>
+                          <div>
+                              <label style="font-size: 13px; color: var(--muted); display: block; margin-bottom: 5px;" data-i18n="form_message">Votre Message</label>
+                              <textarea id="contactMessage" rows="4" required style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); resize: vertical;"></textarea>
+                          </div>
+                          <button type="submit" id="contactSubmitBtn" class="cta-btn" style="border: none; cursor: pointer; text-align: center; margin-top: 5px;" data-i18n="form_send">Envoyer le message</button>
+                      </form>
                 </div>
 
                 <div class="info-card-lg">
@@ -1455,6 +1455,57 @@
 
     updatePrivacyConsentText();
     renderPublicClassesAndWorkshops();
+  }
+  
+  async function submitContactForm(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('contactName').value;
+    const email = document.getElementById('contactEmail').value;
+    const message = document.getElementById('contactMessage').value;
+    const btn = document.getElementById('contactSubmitBtn');
+
+    // Cambiar texto de botón durante el envío
+    const originalBtnText = btn.innerHTML;
+    btn.innerText = 'Envoi en cours...';
+    btn.disabled = true;
+
+    try {
+      const contactHtml = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid #eee;">
+          <span style="background: rgba(230,53,0,0.1); color: #e63500; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;">Nouveau Message de Contact</span>
+          <h2 style="color: #111; font-size: 20px; margin-top: 12px;">Message de ${name}</h2>
+          <div style="background: #f9f9fb; border-left: 3px solid #e63500; padding: 15px; border-radius: 6px; margin: 16px 0; font-size: 14px; line-height: 1.6;">
+            <p style="margin:0 0 8px 0;"><strong>Nom :</strong> ${name}</p>
+            <p style="margin:0 0 8px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #e63500;">${email}</a></p>
+            <p style="margin:0;"><strong>Message :</strong><br>${message.replace(/\n/g, '<br>')}</p>
+          </div>
+        </div>
+      `;
+
+      const res = await fetch('/.netlify/functions/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'info@atelierartvich.com', // Dirección de destino configurada con redirección
+          subject: `[Atelier Arte] Nouveau message de contact : ${name}`,
+          html: contactHtml
+        })
+      });
+
+      if (res.ok) {
+        alert("Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.");
+        document.getElementById('contactForm').reset();
+      } else {
+        throw new Error("Erreur serveur lors de l'envoi");
+      }
+    } catch (err) {
+      console.error("Error al enviar el formulario de contacto:", err);
+      alert("Erreur lors de l'envoi du message. Veuillez réessayer ou nous contacter par téléphone.");
+    } finally {
+      btn.innerHTML = originalBtnText;
+      btn.disabled = false;
+    }
   }
 
   const canvas = document.getElementById('paintCanvas');
