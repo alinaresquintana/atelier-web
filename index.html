@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier Arte Vich | Cours de Peinture et Dessin</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-    <!-- Widget de Netlify Identity[cite: 2] -->
+    <!-- Widget de Netlify Identity -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <!-- Cliente oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -246,8 +246,8 @@
 
             <div style="display: flex; align-items: flex-start; gap: 10px; margin-top: 5px;">
                 <input type="checkbox" id="enrollPrivacyConsent" required style="margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent);">
-                <label for="enrollPrivacyConsent" style="font-size: 12px; color: var(--muted); line-height: 1.5;" data-i18n="field_privacy_consent">
-                    J'accepte la <a href="#privacidad" style="color: var(--accent); text-decoration: underline;" onclick="closeEnrollmentModal()">politique de confidentialité</a> et autorise le traitement de mes données pour la gestion de l'inscription *
+                <label for="enrollPrivacyConsent" id="enrollPrivacyConsentLabel" style="font-size: 12px; color: var(--muted); line-height: 1.5;">
+                    <!-- Se poblará dinámicamente mediante i18n para mantener el link vivo -->
                 </label>
             </div>
 
@@ -374,13 +374,13 @@
             <div class="content-grid">
                 <div class="info-card-lg">
                     <h3 data-i18n="desc_title">Développement & Créativité</h3>
-                    <p data-i18n="desc_p1_enf">Une classe spécialement conçue pour les enfants de 5 à 10 ans où ils peuvent améliorer leur niveau d'observation et accroître leur créativité, leur habileté et leur dextérité à travers des projets artistiques stimulants.</p>
+                    <p data-i18n="desc_p1_enf">Une classe spécialement conçue pour les enfants de 5 à 10 ans où ils peuvent améliorer leur niveau d'observation et accroître leur créativité, leur habilité et leur dextérité à travers des projets artistiques stimulants.</p>
                     <p data-i18n="desc_p2_enf">Les cours se déroulent en petit groupe intime de 8 places maximum pour garantir un accompagnement personnalisé et une attention sur mesure pour chaque enfant.</p>
                 </div>
                 <div class="info-card-lg">
                     <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
                     <div id="dynamic-classes-enfants" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
-                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                        <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement des cours...</p>
                     </div>
                     <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
                         <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_bus"><strong>Option Bus + Goûter :</strong> Prise en charge à 15:20 à l'arrêt de bus après l'école, suivie d'un goûter avant la classe.</span></li>
@@ -426,10 +426,10 @@
                 <div class="info-card-lg">
                     <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
                     <div id="dynamic-classes-ados" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
-                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                        <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement des cours...</p>
                     </div>
                     <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
-                        <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_freq"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
+                        <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_cal_vaud"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
                     </ul>
                 </div>
             </div>
@@ -469,10 +469,10 @@
                 <div class="info-card-lg">
                     <h3 data-i18n="horaires_title">Classes configurées & Disponibilité</h3>
                     <div id="dynamic-classes-adultes" class="details-list" style="display: flex; flex-direction: column; gap: 10px;">
-                        <p style="font-size: 13px; color: var(--muted);">Chargement des cours...</p>
+                        <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement des cours...</p>
                     </div>
                     <ul class="details-list" style="margin-top: 15px; border-top: 1px solid var(--border); pt-15px;">
-                        <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_freq"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
+                        <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span data-i18n="horaire_cal_vaud"><strong>Calendrier :</strong> Aligné sur le système scolaire vaudois.</span></li>
                     </ul>
                 </div>
             </div>
@@ -517,9 +517,9 @@
                     <p data-i18n="p_desc" style="margin-bottom: 20px;">Apprenez à maîtriser la peinture fluide et l'acrylique coulée à travers un workshop intensif de 2 jours à l'atelier de Vich.</p>
 
                     <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
-                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;" data-i18n="workshop_configured_title">Sessions configurées & Disponibilité :</h4>
                         <div id="dynamic-classes-pouring" style="display: flex; flex-direction: column; gap: 8px;">
-                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                            <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement...</p>
                         </div>
                     </div>
 
@@ -555,9 +555,9 @@
                     <p data-i18n="t_desc" style="margin-bottom: 20px;">Apprenez à créer et à travailler avec différentes textures pour donner du relief et de la profondeur à vos œuvres lors de notre workshop spécialisé à Vich.</p>
 
                     <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
-                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;" data-i18n="workshop_configured_title">Sessions configurées & Disponibilité :</h4>
                         <div id="dynamic-classes-textures" style="display: flex; flex-direction: column; gap: 8px;">
-                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                            <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement...</p>
                         </div>
                     </div>
 
@@ -591,9 +591,9 @@
                     <p data-i18n="po_desc" style="margin-bottom: 20px;">Maîtrisez les proportions, les traits du visage et les différentes techniques de crayon pour réaliser des portraits expressifs et fidèles.</p>
 
                     <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
-                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;">Sessions configurées & Disponibilité :</h4>
+                        <h4 style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 10px;" data-i18n="workshop_configured_title">Sessions configurées & Disponibilité :</h4>
                         <div id="dynamic-classes-portraits" style="display: flex; flex-direction: column; gap: 8px;">
-                            <p style="font-size: 13px; color: var(--muted);">Chargement...</p>
+                            <p style="font-size: 13px; color: var(--muted);" data-i18n="no_courses_configured">Chargement...</p>
                         </div>
                     </div>
 
@@ -620,7 +620,7 @@
             <div class="page-header">
                 <div>
                     <span class="tag" data-i18n="apropos_subtitle">Notre Philosophie & Vision</span>
-                    <h1 id="aproposTitle">Derrière la palette, <span>la passion de transmettre</span>.</h1>
+                    <h1 id="aproposTitle" data-i18n="apropos_title">Derrière la palette, <span>la passion de transmettre</span>.</h1>
                 </div>
             </div>
             <div class="two-col-container">
@@ -714,11 +714,11 @@
         <section id="creatives" class="spa-page">
             <div class="page-header">
                 <div>
-                    <span class="tag">Ateliers Créatifs</span>
-                    <h1>Techniques <span>Mixtes & Relax</span></h1>
+                    <span class="tag" data-i18n="nav_creatives">Ateliers Créatifs</span>
+                    <h1 data-i18n="creatives_title">Techniques <span>Mixtes & Relax</span></h1>
                 </div>
             </div>
-            <div class="content-block"><p>Page en cours de création.</p></div>
+            <div class="content-block"><p data-i18n="creatives_wip">Page en cours de création.</p></div>
         </section>
 
         <!-- 12. POLITIQUE DE CONFIDENTIALITÉ (RGPD / nLPD) -->
@@ -768,7 +768,7 @@
             <div class="page-header">
                 <div>
                     <span class="tag" data-i18n="contact_subtitle">Restons en contact</span>
-                    <h1 id="contactTitle">Contactez l'<span>Atelier Arte</span></h1>
+                    <h1 id="contactTitle" data-i18n="contact_title">Contactez l'<span>Atelier Arte</span></h1>
                 </div>
             </div>
 
@@ -820,36 +820,35 @@
                         </div>
                         <div class="footer-col">
                             <span class="serif-font" style="font-size: 21px; font-weight: 600; color: var(--text); display: block; margin-bottom: 8px;">Atelier Arte Vich</span>
-                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 14px;">Cours de peinture, dessin et ateliers d'expression créative pour tous à Vich (Vaud, Suisse).</p>
+                            <p style="font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-bottom: 14px;" data-i18n="footer_desc">Cours de peinture, dessin et ateliers d'expression créative pour tous à Vich (Vaud, Suisse).</p>
                         </div>
                         <div class="footer-col">
-                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;">Navigation</span>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;" data-i18n="footer_nav">Navigation</span>
                             <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
-                                <li><a href="#accueil" style="color: var(--muted); text-decoration: none; font-size: 13px;">Accueil</a></li>
-                                <li><a href="#atelier" style="color: var(--muted); text-decoration: none; font-size: 13px;">L'Atelier</a></li>
-                                <li><a href="#enfants" style="color: var(--muted); text-decoration: none; font-size: 13px;">Enfants & Ados</a></li>
-                                <li><a href="#adultes" style="color: var(--muted); text-decoration: none; font-size: 13px;">Adultes</a></li>
+                                <li><a href="#accueil" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_accueil">Accueil</a></li>
+                                <li><a href="#atelier" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_atelier">L'Atelier</a></li>
+                                <li><a href="#enfants" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_enfants">Enfants & Ados</a></li>
+                                <li><a href="#adultes" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_adultes">Adultes</a></li>
                             </ul>
                         </div>
                         <div class="footer-col">
-                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;">Workshops</span>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;" data-i18n="footer_workshops">Workshops</span>
                             <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
-                                <li><a href="#pouring" style="color: var(--muted); text-decoration: none; font-size: 13px;">Pouring</a></li>
-                                <li><a href="#textures" style="color: var(--muted); text-decoration: none; font-size: 13px;">Textures Picturales</a></li>
-                                <li><a href="#portraits" style="color: var(--muted); text-decoration: none; font-size: 13px;">Portrait</a></li>
+                                <li><a href="#pouring" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_workshops_sub1">Pouring</a></li>
+                                <li><a href="#textures" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_workshops_sub2">Textures Picturales</a></li>
+                                <li><a href="#portraits" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="nav_workshops_sub3">Portrait</a></li>
                             </ul>
                         </div>
                         <div class="footer-col">
-                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;">Administration</span>
+                            <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 700; display: block; margin-bottom: 15px;" data-i18n="footer_admin">Administration</span>
                             <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
-                                <li><a href="#privacidad" style="color: var(--muted); text-decoration: none; font-size: 13px;">Politique de Confidentialité</a></li>
+                                <li><a href="#privacidad" style="color: var(--muted); text-decoration: none; font-size: 13px;" data-i18n="priv_title">Politique de Confidentialité</a></li>
                                 <li><a href="#" onclick="handleAdminAccess(event)" style="color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600;">🔒 Accès Admin</a></li>
                             </ul>
                         </div>
                     </div>
                     <div class="footer-bottom" style="display: flex; justify-content: space-between; align-items: center; padding-top: 25px; flex-wrap: wrap; gap: 15px;">
-                        <p style="font-size: 12px; color: var(--muted);">&copy; 2026 Atelier Arte Vich. Tous droits réservés.</p>
-                        <p style="font-size: 12px; color: var(--muted);"></p>
+                        <p style="font-size: 12px; color: var(--muted);">&copy; 2026 Atelier Arte Vich. <span data-i18n="footer_rights">Tous droits réservés.</span></p>
                     </div>
                 </div>
             </footer>
@@ -865,7 +864,8 @@
   const SUPABASE_KEY = 'sb_publishable_YJ9tk3wlPT5s-RVyTa-t7A_8sW9gfFN';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Función para gestionar el acceso seguro al panel de administración sin bucles de popups
+  let currentLang = 'fr';
+
   function handleAdminAccess(e) {
     e.preventDefault();
     if (window.netlifyIdentity && window.netlifyIdentity.currentUser()) {
@@ -929,9 +929,11 @@
   window.addEventListener('hashchange', navigate);
   window.addEventListener('load', () => {
     navigate();
-    renderPublicClassesAndWorkshops();
-    if (typeof setLanguage === 'function' && window.currentLang) {
-      setLanguage(window.currentLang);
+    if (typeof setLanguage === 'function') {
+      const savedLang = localStorage.getItem('atelier_lang') || 'fr';
+      setLanguage(savedLang);
+    } else {
+      renderPublicClassesAndWorkshops();
     }
   });
 
@@ -977,7 +979,7 @@
 
     const alertMsg = (translations && translations[currentLang] && translations[currentLang]['alert_success'])
       ? translations[currentLang]['alert_success']
-      : "¡Pré-inscription envoyée avec succès !";
+      : "Pré-inscription envoyée avec succès !";
     alert(alertMsg);
 
     closeEnrollmentModal();
@@ -1000,8 +1002,16 @@
         'Workshop Retratos': 'portraits'
       };
 
-      // Estándar JS: 0 = Dimanche, 1 = Lundi, 2 = Mardi, 3 = Mercredi, 4 = Jeudi, 5 = Vendredi, 6 = Samedi
-      const dayNamesFr = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+      // Nombres de días traducidos según el idioma seleccionado
+      const dayNames = {
+        fr: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+        en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        it: ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'],
+        es: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      };
+
+      const langDays = dayNames[currentLang] || dayNames['fr'];
+      const dict = (translations && translations[currentLang]) ? translations[currentLang] : translations['fr'];
 
       const grouped = {
         adultes: [], enfants: [], ados: [],
@@ -1024,20 +1034,21 @@
           let scheduleText = '';
           if (cl.schedule_mode === 'single') {
             const singleTime = cl.single_schedule || cl.schedule || '';
-            scheduleText = `Atelier unique le ${formatPubDate(cl.single_date)}${singleTime ? ' à ' + singleTime : ''}`;
+            const atStr = currentLang === 'en' ? ' at ' : ' à ';
+            scheduleText = `${dict['workshop_configured_title'] || 'Atelier'} ${formatPubDate(cl.single_date)}${singleTime ? atStr + singleTime : ''}`;
           } else {
             const dayIndex = cl.day_of_week !== undefined && cl.day_of_week !== null ? parseInt(cl.day_of_week) : null;
-            const dayName = (dayIndex !== null && dayNamesFr[dayIndex]) ? dayNamesFr[dayIndex] : '';
+            const dayName = (dayIndex !== null && langDays[dayIndex]) ? langDays[dayIndex] : '';
             const timeVal = cl.schedule || '';
 
             if (dayName && timeVal) {
-              scheduleText = `${dayName}s à ${timeVal}`;
+              scheduleText = `${dayName}s ${currentLang === 'en' ? 'at' : 'a'} ${timeVal}`;
             } else if (dayName) {
               scheduleText = `${dayName}s`;
             } else if (timeVal) {
               scheduleText = timeVal;
             } else {
-              scheduleText = 'Horaire à convenir';
+              scheduleText = dict['schedule_to_agree'] || 'Horaire à convenir';
             }
           }
 
@@ -1059,24 +1070,20 @@
 
         const items = grouped[catKey];
         if (items.length === 0) {
-          container.innerHTML = `<p style="font-size: 13.5px; color: var(--muted);">${
-            currentLang === 'fr' ? 'Aucun cours configuré pour le moment.' :
-              currentLang === 'en' ? 'No courses configured at the moment.' :
-                'Ningún curso configurado por el momento.'
-          }</p>`;
+          container.innerHTML = `<p style="font-size: 13.5px; color: var(--muted);">${dict['no_courses_configured'] || 'Aucun cours configuré.'}</p>`;
           return;
         }
 
         container.innerHTML = items.map(item => {
-          const fullText = (translations && translations[currentLang] && translations[currentLang]['status_full']) || 'Complet';
-          const enrollText = (translations && translations[currentLang] && translations[currentLang]['btn_enroll']) || "S'inscrire (Pré-inscription)";
+          const fullText = dict['status_full'] || 'Complet';
+          const enrollText = dict['btn_enroll'] || "S'inscrire";
 
           const statusBadge = item.isFull
             ? `<span style="background: rgba(230,53,0,0.1); color: #e63500; border: 1px solid #e63500; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">${fullText}</span>`
             : `<button onclick="openEnrollmentModal('${item.id}', '${item.name.replace(/'/g, "\\'")}')" class="cta-btn" style="padding: 8px 16px; font-size: 12px; border-radius: 30px;">${enrollText}</button>`;
 
           const dateDisplay = (item.startDate && item.endDate)
-            ? `<span style="font-size: 12px; color: var(--muted);">📅 Période : Du ${item.startDate} au ${item.endDate}</span>`
+            ? `<span style="font-size: 12px; color: var(--muted);">📅 ${dict['period_from'] || 'Du'} ${item.startDate} ${dict['period_to'] || 'au'} ${item.endDate}</span>`
             : '';
 
           return `
@@ -1097,20 +1104,35 @@
     }
   }
 
-  let currentLang = 'fr';
+  function updatePrivacyConsentText() {
+    const label = document.getElementById('enrollPrivacyConsentLabel');
+    if (!label || !translations[currentLang]) return;
+    const dict = translations[currentLang];
+    const linkText = dict['field_privacy_consent_link'] || 'politique de confidentialité';
+    const text1 = dict['field_privacy_consent_text_1'] || "J'accepte la ";
+    const text2 = dict['field_privacy_consent_text_2'] || " *";
+
+    label.innerHTML = `${text1}<a href="#privacidad" style="color: var(--accent); text-decoration: underline;" onclick="closeEnrollmentModal()">${linkText}</a>${text2}`;
+  }
+
   function setLanguage(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
+    localStorage.setItem('atelier_lang', lang);
     document.documentElement.lang = lang;
+
     document.querySelectorAll('.lang-btn').forEach(btn => {
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (translations[lang][key]) {
         el.innerHTML = translations[lang][key];
       }
     });
+
+    updatePrivacyConsentText();
     renderPublicClassesAndWorkshops();
   }
 
