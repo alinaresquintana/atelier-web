@@ -33,7 +33,9 @@
     <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm text-center space-y-4">
         <h1 class="text-2xl font-bold text-gray-900">Atelier Admin 🔒</h1>
         <p class="text-xs text-gray-500">Acceso seguro mediante Netlify Identity</p>
-        <button onclick="netlifyIdentity.open()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Iniciar Sesión / Administrar</button>
+        <button onclick="handleLoginClick()" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">
+            Iniciar Sesión / Administrar
+        </button>
     </div>
 </div>
 
@@ -1073,7 +1075,6 @@
     return isoStr;
   }
 
-  // --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY Y BYPASS LOCAL ---
   window.addEventListener('DOMContentLoaded', () => {
     const isLocalhost = window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
@@ -1086,28 +1087,29 @@
     }
 
     if (window.netlifyIdentity) {
-      netlifyIdentity.on('init', user => {
-        const hash = window.location.hash;
-        if (hash && (hash.includes('recovery') || hash.includes('invite') || hash.includes('confirmation'))) {
-          netlifyIdentity.open('recovery');
-        } else if (user) {
-          netlifyIdentity.close();
-          if (hash) history.replaceState(null, null, ' ');
+      // Evento 1: Cuando el widget se inicializa y lee localStorage
+      window.netlifyIdentity.on('init', user => {
+        if (user) {
+          netlifyIdentity.close(); // Cierra el modal si estuviera abierto
           showAdminApp();
         } else {
           showLoginScreen();
         }
       });
 
-      netlifyIdentity.on('login', user => {
-        netlifyIdentity.close();
-        if (window.location.hash) history.replaceState(null, null, ' ');
+      // Evento 2: Cuando el usuario completa el login manualmente
+      window.netlifyIdentity.on('login', user => {
+        netlifyIdentity.close(); // Cierra el modal de Netlify inmediatamente
         showAdminApp();
       });
 
-      netlifyIdentity.on('logout', () => {
+      // Evento 3: Cuando hace logout
+      window.netlifyIdentity.on('logout', () => {
         showLoginScreen();
       });
+
+      // Inicializar el widget
+      window.netlifyIdentity.init();
     }
   });
 
@@ -1381,6 +1383,18 @@
             <div class="flex-1 mt-1 overflow-y-auto max-h-[70px]">${dayContentHtml}</div>
         </div>
       `;
+    }
+  }
+
+  function handleLoginClick() {
+    const user = netlifyIdentity.currentUser();
+    if (user) {
+      // Si ya está logueado, no abrimos el widget de Netlify (que muestra la ventana de la foto)
+      // Entramos directo a la App
+      showAdminApp();
+    } else {
+      // Si realmente no hay usuario, abrimos el formulario de acceso
+      netlifyIdentity.open();
     }
   }
 
@@ -2547,7 +2561,6 @@
     const invoiceId = `FAC-2026-${Date.now()}`;
     const invoiceNumber = document.getElementById('mat-invoice-number').value;
 
-    // ✅ Lee la fecha elegida por el usuario. Si estuviera vacía, calcula 30 días por defecto.
     const inputDueDate = document.getElementById('mat-duedate').value;
     let finalDueDate = inputDueDate;
     if (!finalDueDate) {
@@ -2564,7 +2577,7 @@
       amount: amount,
       status: 'Pendiente',
       date: date,
-      dueDate: finalDueDate, // 👈 Usa la fecha correcta
+      dueDate: finalDueDate,
       emailSent: false,
       fileName: null,
       filePath: null,
@@ -2760,10 +2773,10 @@
     renderAll();
   }
 
-  // 3. CUOTAS AUTOMÁTICAS (YA ESTÁ CORRECTO EN TU CÓDIGO)
+  // 3. CUOTAS AUTOMÁTICAS
   async function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
     const d = new Date(issueDate);
-    d.setDate(d.getDate() + 30); // 👈 Correcto: 30 días de plazo
+    d.setDate(d.getDate() + 30);
     const newInv = {
       id: `FAC-2026-${Date.now()}`,
       invoiceNumber: generateNextInvoiceNumber(),
@@ -3217,7 +3230,6 @@
     const date = new Date().toISOString().split('T')[0];
     const invoiceId = `FAC-2026-${Date.now()}`;
 
-    // ✅ Lee la fecha elegida por el usuario. Si estuviera vacía, calcula 30 días por defecto.
     const inputDueDate = document.getElementById('bonus-duedate').value;
     let finalDueDate = inputDueDate;
     if (!finalDueDate) {
@@ -3234,7 +3246,7 @@
       amount: amount,
       status: 'Pendiente',
       date: date,
-      dueDate: finalDueDate, // 👈 Usa la fecha correcta
+      dueDate: finalDueDate,
       emailSent: false,
       fileName: null,
       filePath: null,
