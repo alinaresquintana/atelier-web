@@ -891,7 +891,8 @@
     materialTypes: [],
     ledger: [],
     ignoredRenewals: [],
-    preRegistrations: []
+    preRegistrations: [],
+    attendanceLogs: []
   };
 
   async function loadDB() {
@@ -905,6 +906,7 @@
       const { data: materials } = await supabaseClient.from('material_catalog').select('*');
       const { data: preRegs } = await supabaseClient.from('pre_registrations').select('*');
       const { data: holidays } = await supabaseClient.from('holidays').select('*');
+      const { data: attendanceLogs } = await supabaseClient.from('attendance_logs').select('*');
 
       db.clients = (clients || []).map(c => ({
         id: c.id,
@@ -924,8 +926,7 @@
         const clEnrolled = (enrollments || []).filter(e => e.class_id === cl.id).map(e => ({
           clientId: e.client_id,
           rateName: e.rate_name,
-          sessionsLeft: e.sessions_left,
-          attendanceLog: []
+          sessionsLeft: e.sessions_left
         }));
         return {
           id: cl.id,
@@ -944,6 +945,8 @@
           enrolled: clEnrolled
         };
       });
+
+      db.attendanceLogs = attendanceLogs || [];
 
       db.invoices = (invoices || []).map(i => ({
         id: i.id,
@@ -1087,28 +1090,24 @@
     }
 
     if (window.netlifyIdentity) {
-      // Evento 1: Cuando el widget se inicializa y lee localStorage
       window.netlifyIdentity.on('init', user => {
         if (user) {
-          netlifyIdentity.close(); // Cierra el modal si estuviera abierto
+          netlifyIdentity.close();
           showAdminApp();
         } else {
           showLoginScreen();
         }
       });
 
-      // Evento 2: Cuando el usuario completa el login manualmente
       window.netlifyIdentity.on('login', user => {
-        netlifyIdentity.close(); // Cierra el modal de Netlify inmediatamente
+        netlifyIdentity.close();
         showAdminApp();
       });
 
-      // Evento 3: Cuando hace logout
       window.netlifyIdentity.on('logout', () => {
         showLoginScreen();
       });
 
-      // Inicializar el widget
       window.netlifyIdentity.init();
     }
   });
@@ -1389,11 +1388,8 @@
   function handleLoginClick() {
     const user = netlifyIdentity.currentUser();
     if (user) {
-      // Si ya está logueado, no abrimos el widget de Netlify (que muestra la ventana de la foto)
-      // Entramos directo a la App
       showAdminApp();
     } else {
-      // Si realmente no hay usuario, abrimos el formulario de acceso
       netlifyIdentity.open();
     }
   }
@@ -1553,8 +1549,7 @@
       targetClass.enrolled.push({
         clientId: newClient.id,
         rateName: rateName,
-        sessionsLeft: isBonusRate(rateName) ? 10 : null,
-        attendanceLog: []
+        sessionsLeft: isBonusRate(rateName) ? 10 : null
       });
 
       await supabaseClient.from('enrollments').insert({
@@ -1627,7 +1622,9 @@
 
   function getSchoolMilestones(rateType) {
     const milestones = [];
-    if (rateType === 'annual') {
+    if (rateType === 'single_class') {
+      milestones.push({ label: 'Clase Individual / Suelta', date: new Date().toISOString().split('T')[0] });
+    } else if (rateType === 'annual') {
       milestones.push({ label: 'Curso Anual 2026-2027', date: '2026-09-01' });
     } else if (rateType === 'quarterly') {
       milestones.push({ label: 'Trimestre 1 (Sep-Nov)', date: '2026-09-01' });
@@ -1877,10 +1874,29 @@
       historyHtml = `<div class="space-y-2">`;
       clientInvoices.forEach(inv => {
         const fileInfo = inv.fileName ? `<span class="text-indigo-600">📎 ${inv.fileName}</span>` : `<span class="text-gray-400 italic">Sin fichero</span>`;
-        let bonusExtra = '';
-        if (inv.isBonus) {
-          bonusExtra = `<div class="text-indigo-600 font-semibold">Clases restantes: ${inv.sessionsLeft}/10</div>`;
-        }
+          let bonusExtra = '';
+          if (inv.isBonus) {
+            const clientAttendances = (db.attendanceLogs || [])
+              .filter(a => a.client_id === clientId)
+              .sort((a, b) => new Date(a.session_date) - new Date(b.session_date));
+
+            let gridItems = '';
+            for (let i = 0; i < 10; i++) {
+              const att = clientAttendances[i];
+              if (att && att.session_date) {
+                gridItems += `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center text-[10px] font-mono" title="Clase ${i+1}">✓ ${formatDate(att.session_date)}</div>`;
+              } else {
+                gridItems += `<div class="bg-gray-50 border border-dashed border-gray-300 text-gray-400 p-1 rounded text-center text-[10px]" title="Pendiente">${i+1}</div>`;
+              }
+            }
+
+            bonusExtra = `
+              <div class="space-y-1.5 my-2">
+                  <div class="text-xs font-semibold text-gray-700">Carnet de Bono (${inv.sessionsLeft} disponibles):</div>
+                  <div class="grid grid-cols-5 gap-1.5">${gridItems}</div>
+              </div>
+            `;
+          }
         let typeBadgeHtml = `<span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-[10px] font-bold">Factura</span>`;
         if (inv.isBonus) typeBadgeHtml = `<span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Bono</span>`;
         else if (inv.isMaterial) typeBadgeHtml = `<span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">Material</span>`;
@@ -2132,8 +2148,6 @@
 
           if (activeBonusInv) {
             activeBonusInv.sessionsLeft--;
-            if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
-            activeBonusInv.attendanceLog.push(attendanceDate);
 
             if (activeBonusInv.sessionsLeft === 2) {
               const client = db.clients.find(c => c.id === eItem.clientId);
@@ -2149,11 +2163,14 @@
           }
         }
 
-        await supabaseClient.from('attendance_logs').insert({
+        const logItem = {
           class_id: classId,
           client_id: eItem.clientId,
           session_date: attendanceDate
-        });
+        };
+        db.attendanceLogs.push(logItem);
+
+        await supabaseClient.from('attendance_logs').insert(logItem);
       }
     }
 
@@ -2202,9 +2219,10 @@
       addClassRateRow('Trimestral', 'quarterly', 350);
       addClassRateRow('Anual', 'annual', 1000);
       addClassRateRow('Bono 10', 'bonus10', 300);
+      addClassRateRow('Clase Suelta', 'single_class', 35);
     }
   }
-
+  
   function onClassScheduleModeChange() {
     const mode = document.getElementById('class-schedule-mode')?.value || 'recurring';
     const rec = document.getElementById('fields-recurring');
@@ -2313,6 +2331,7 @@
                 <option value="quarterly" ${type==='quarterly'?'selected':''}>Trimestral</option>
                 <option value="monthly" ${type==='monthly'?'selected':''}>Mensual</option>
                 <option value="bonus10" ${type==='bonus10'?'selected':''}>Bono 10</option>
+                <option value="single_class" ${type==='single_class'?'selected':''}>Clase Suelta</option>
             </select>
             <input type="number" step="0.01" placeholder="CHF" value="${price}" class="rate-price w-20 px-3 py-1.5 text-sm border rounded" required>
             <button type="button" onclick="this.parentElement.remove()" class="text-red-500 text-sm px-2">✕</button>
@@ -2450,8 +2469,7 @@
     const enrollmentObj = {
       clientId,
       rateName,
-      sessionsLeft: isBonusRate(rateName) ? 10 : null,
-      attendanceLog: []
+      sessionsLeft: isBonusRate(rateName) ? 10 : null
     };
     cl.enrolled.push(enrollmentObj);
 
@@ -2549,7 +2567,6 @@
     }
   }
 
-  // 2. VENTA DE MATERIAL CORREGIDA
   async function saveMaterialSale(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
@@ -2773,7 +2790,6 @@
     renderAll();
   }
 
-  // 3. CUOTAS AUTOMÁTICAS
   async function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
     const d = new Date(issueDate);
     d.setDate(d.getDate() + 30);
@@ -3219,7 +3235,6 @@
     }
   }
 
-  // 1. EMISIÓN DE BONO CORREGIDA
   async function saveBonusInvoice(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
@@ -3251,8 +3266,7 @@
       fileName: null,
       filePath: null,
       isBonus: true,
-      sessionsLeft: 10,
-      attendanceLog: []
+      sessionsLeft: 10
     };
     db.invoices.push(newInv);
 
