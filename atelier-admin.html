@@ -704,6 +704,10 @@
                 </select>
             </div>
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número de Factura (Suiza)</label>
+                <input type="text" id="invoice-number" placeholder="Ej. 2026-001" required class="w-full px-3 py-2 border rounded-lg text-sm font-mono font-bold text-indigo-900 bg-indigo-50/50">
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Período Cubierto</label>
                 <input type="text" id="invoice-concept" placeholder="Ej. Septiembre 2026" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
@@ -728,12 +732,15 @@
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
         <h3 class="text-lg font-bold text-gray-900">Emitir Bono 10 para Alumno</h3>
         <form onsubmit="saveBonusInvoice(event)" class="space-y-4">
-            <!-- Campp oculto para el concepto automático -->
             <input type="hidden" id="bonus-concept">
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumno</label>
                 <select id="bonus-client" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white"></select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número de Factura Oficial</label>
+                <input type="text" id="bonus-invoice-number" placeholder="Ej. 2026-002" required class="w-full px-3 py-2 border rounded-lg text-sm font-mono font-bold text-indigo-900 bg-indigo-50/50">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Clase o Grupo</label>
@@ -742,6 +749,10 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe (CHF)</label>
                 <input type="number" step="0.01" id="bonus-amount" required class="w-full px-3 py-2 border rounded-lg text-sm font-bold text-indigo-900 bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
+                <input type="date" id="bonus-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
@@ -782,6 +793,10 @@
                 <select id="mat-sale-client" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
             </div>
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número de Factura Oficial</label>
+                <input type="text" id="mat-invoice-number" placeholder="Ej. 2026-002" required class="w-full px-3 py-2 border rounded-lg text-sm font-mono font-bold text-indigo-900 bg-indigo-50/50">
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar del Catálogo</label>
                 <select id="mat-sale-type" onchange="onMaterialTypeSelect()" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
             </div>
@@ -792,6 +807,10 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe Total (CHF)</label>
                 <input type="number" step="0.01" id="mat-sale-amount" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
+                <input type="date" id="mat-duedate" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
@@ -926,6 +945,7 @@
 
       db.invoices = (invoices || []).map(i => ({
         id: i.id,
+        invoiceNumber: i.invoice_number,
         clientId: i.client_id,
         concept: i.concept,
         amount: Number(i.amount),
@@ -1003,6 +1023,7 @@
     for (const inv of db.invoices) {
       await supabaseClient.from('invoices').upsert({
         id: inv.id,
+        invoice_number: inv.invoiceNumber,
         client_id: inv.clientId,
         concept: inv.concept,
         amount: inv.amount,
@@ -1054,7 +1075,6 @@
 
   // --- GESTIÓN DE AUTENTICACIÓN CON NETLIFY IDENTITY Y BYPASS LOCAL ---
   window.addEventListener('DOMContentLoaded', () => {
-    // 1. DETECTOR DE ENTORNO LOCAL (Bypass de Login)
     const isLocalhost = window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
       window.location.protocol === 'file:';
@@ -1065,7 +1085,6 @@
       return;
     }
 
-    // 2. ENTORNO EN PRODUCCIÓN (Netlify Identity Normal)
     if (window.netlifyIdentity) {
       netlifyIdentity.on('init', user => {
         const hash = window.location.hash;
@@ -1110,9 +1129,9 @@
   function initDatePickers() {
     flatpickr("input[type='date']", {
       locale: "es",
-      dateFormat: "Y-m-d",        // Formato interno (YYYY-MM-DD)
-      altInput: true,             // Campo visible
-      altFormat: "d/m/Y",         // Formato europeo visible (DD/MM/YYYY)
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d/m/Y",
       altInputClass: "w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800",
       allowInput: true,
       parseDate: function(dateStr, format) {
@@ -1126,7 +1145,6 @@
         if (instance.altInput) {
           instance.altInput.placeholder = "dd/mm/yyyy";
         }
-        // 👈 Si el input HTML nativo ya traía un valor asignado, forzar a Flatpickr a cargarlo
         if (instance.element.value) {
           instance.setDate(instance.element.value, false);
         }
@@ -1134,7 +1152,6 @@
     });
   }
 
-  // Función auxiliar para asignar fechas programáticamente al editar objetos
   function setDatePickerValue(inputId, dateStr) {
     const el = document.getElementById(inputId);
     if (!el) return;
@@ -1216,7 +1233,6 @@
     if (!db.holidays) db.holidays = [];
     db.holidays.push(newHoliday);
 
-    // Guardar en Supabase
     await supabaseClient.from('holidays').insert({
       id: newHoliday.id,
       start_date: newHoliday.startDate,
@@ -1542,7 +1558,6 @@
     closeModals();
     renderAll();
 
-    // ENVÍO DE EMAIL DE CONFIRMACIÓN AL CLIENTE (NUEVO)
     try {
       const confirmHtml = `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
@@ -1863,7 +1878,7 @@
                   <span class="font-extrabold text-gray-900 text-sm">${inv.concept}</span>
                   <span class="text-gray-400">—</span>
                   <span class="font-bold text-gray-800">${inv.amount} CHF</span>
-                  <span class="font-mono text-gray-400">(${inv.id})</span>
+                  <span class="font-mono text-gray-400">(${inv.invoiceNumber || inv.id})</span>
               </div>
               <div class="text-gray-700 font-medium">${client.name}</div>
               ${bonusExtra}
@@ -2106,14 +2121,13 @@
             if (!activeBonusInv.attendanceLog) activeBonusInv.attendanceLog = [];
             activeBonusInv.attendanceLog.push(attendanceDate);
 
-            // 🔔 DETECTOR AUTOMÁTICO: Quedan exactamente 2 clases
             if (activeBonusInv.sessionsLeft === 2) {
               const client = db.clients.find(c => c.id === eItem.clientId);
               if (client && client.email) {
                 lowBonusAlerts.push({
                   clientName: client.name,
                   email: client.email,
-                  invoiceId: activeBonusInv.id,
+                  invoiceId: activeBonusInv.invoiceNumber || activeBonusInv.id,
                   remaining: 2
                 });
               }
@@ -2133,7 +2147,6 @@
     closeModals();
     renderAll();
 
-    // ENVÍO AUTOMÁTICO DE RECORDATORIOS SI HAY BONOS A PUNTO DE AGOTARSE
     if (lowBonusAlerts.length > 0) {
       for (const alertInfo of lowBonusAlerts) {
         const subject = `Rappel : Carnet de cours bientôt épuisé - Atelier de Eloísa`;
@@ -2501,9 +2514,14 @@
     typeSelect.innerHTML = `<option value="">-- Seleccionar material --</option>` +
       (db.materialTypes || []).map(m => `<option value="${m.id}" data-price="${m.price}" data-name="${m.name}">${m.name} (${m.price.toFixed(2)} CHF)</option>`).join('');
 
+    const future = new Date();
+    future.setDate(future.getDate() + 30);
+    setDatePickerValue('mat-duedate', future.toISOString().split('T')[0]);
+
     document.getElementById('mat-sale-concept').value = '';
     document.getElementById('mat-sale-amount').value = '';
     document.getElementById('material-sale-modal').classList.remove('hidden');
+    document.getElementById('mat-invoice-number').value = generateNextInvoiceNumber();
   }
 
   function onMaterialTypeSelect() {
@@ -2517,6 +2535,7 @@
     }
   }
 
+  // 2. VENTA DE MATERIAL CORREGIDA
   async function saveMaterialSale(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
@@ -2526,19 +2545,26 @@
     const amount = parseFloat(document.getElementById('mat-sale-amount').value);
     const date = new Date().toISOString().split('T')[0];
     const invoiceId = `FAC-2026-${Date.now()}`;
+    const invoiceNumber = document.getElementById('mat-invoice-number').value;
 
-    const futureDueDate = new Date();
-    futureDueDate.setDate(futureDueDate.getDate() + 15);
-    const dueDateStr = futureDueDate.toISOString().split('T')[0];
+    // ✅ Lee la fecha elegida por el usuario. Si estuviera vacía, calcula 30 días por defecto.
+    const inputDueDate = document.getElementById('mat-duedate').value;
+    let finalDueDate = inputDueDate;
+    if (!finalDueDate) {
+      const future = new Date();
+      future.setDate(future.getDate() + 30);
+      finalDueDate = future.toISOString().split('T')[0];
+    }
 
     const newInv = {
       id: invoiceId,
+      invoiceNumber: invoiceNumber,
       clientId: clientId,
       concept: concept,
       amount: amount,
       status: 'Pendiente',
       date: date,
-      dueDate: dueDateStr,
+      dueDate: finalDueDate, // 👈 Usa la fecha correcta
       emailSent: false,
       fileName: null,
       filePath: null,
@@ -2549,7 +2575,7 @@
     await saveDB();
     closeModals();
     renderAll();
-    alert(`¡Factura ${invoiceId} de material generada correctamente!`);
+    alert(`¡Factura ${invoiceNumber} de material generada correctamente!`);
   }
 
   // --- FACTURACIÓN GENERAL, BONOS Y COBROS ---
@@ -2577,6 +2603,31 @@
       icon.style.transform = "rotate(0deg)";
       openRenewalClients.delete(clientId);
     }
+  }
+
+  function generateNextInvoiceNumber() {
+    const currentYear = new Date().getFullYear();
+    const prefix = `${currentYear}-`;
+
+    const currentYearInvoices = (db.invoices || []).filter(inv => {
+      const num = inv.invoiceNumber || inv.id;
+      return num.startsWith(prefix);
+    });
+
+    let maxSeq = 0;
+    currentYearInvoices.forEach(inv => {
+      const numStr = inv.invoiceNumber || inv.id;
+      const parts = numStr.split('-');
+      if (parts.length >= 2) {
+        const seq = parseInt(parts[1], 10);
+        if (!isNaN(seq) && seq > maxSeq) {
+          maxSeq = seq;
+        }
+      }
+    });
+
+    const nextSeq = String(maxSeq + 1).padStart(3, '0');
+    return `${prefix}${nextSeq}`;
   }
 
   function renderRenewals() {
@@ -2709,12 +2760,22 @@
     renderAll();
   }
 
+  // 3. CUOTAS AUTOMÁTICAS (YA ESTÁ CORRECTO EN TU CÓDIGO)
   async function generateAutomaticInvoice(clientId, concept, amount, issueDate) {
-    const d = new Date(issueDate); d.setDate(d.getDate() + 15);
+    const d = new Date(issueDate);
+    d.setDate(d.getDate() + 30); // 👈 Correcto: 30 días de plazo
     const newInv = {
       id: `FAC-2026-${Date.now()}`,
-      clientId: clientId, concept: concept, amount: amount,
-      status: 'Pendiente', date: issueDate, dueDate: d.toISOString().split('T')[0], emailSent: false, fileName: null, filePath: null
+      invoiceNumber: generateNextInvoiceNumber(),
+      clientId: clientId,
+      concept: concept,
+      amount: amount,
+      status: 'Pendiente',
+      date: issueDate,
+      dueDate: d.toISOString().split('T')[0],
+      emailSent: false,
+      fileName: null,
+      filePath: null
     };
     db.invoices.push(newInv);
     await saveDB();
@@ -2735,7 +2796,8 @@
             <span class="font-bold text-red-800">⚠️ Hay ${overdueInvoices.length} factura(s) con fecha vencida:</span>
             ${overdueInvoices.map(inv => {
         const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente' };
-        return `<div class="text-xs text-red-700 flex justify-between"><span><strong>${inv.id}</strong> - ${client.name} (${inv.concept}) - ${inv.amount} CHF</span><span>Venció: ${formatDate(inv.dueDate)}</span></div>`;
+        const displayNum = inv.invoiceNumber || inv.id;
+        return `<div class="text-xs text-red-700 flex justify-between"><span class="font-mono text-xs font-bold text-indigo-900">(${displayNum})</span><span>Venció: ${formatDate(inv.dueDate)}</span></div>`;
       }).join('')}
         </div>`;
     } else { alertContainer.innerHTML = ''; }
@@ -2745,7 +2807,8 @@
       if (i.status !== 'Pendiente') return false;
       if (!searchTerm) return true;
       const client = db.clients.find(c => c.id === i.clientId) || { name: '' };
-      return client.name.toLowerCase().includes(searchTerm) || i.concept.toLowerCase().includes(searchTerm) || i.id.toLowerCase().includes(searchTerm);
+      const displayNum = (i.invoiceNumber || i.id).toLowerCase();
+      return client.name.toLowerCase().includes(searchTerm) || i.concept.toLowerCase().includes(searchTerm) || displayNum.includes(searchTerm);
     });
 
     if (pendingInvoices.length === 0) {
@@ -2755,6 +2818,7 @@
         const client = db.clients.find(c => c.id === inv.clientId) || { name: 'Cliente (Eliminado)' };
         const isOverdue = inv.dueDate < today;
         const isPaid = inv.status === 'Pagado';
+        const displayNum = inv.invoiceNumber || inv.id;
 
         const emailStatus = inv.emailSent
           ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded text-xs font-bold">✅ Email enviado</span>`
@@ -2783,7 +2847,7 @@
                       <span class="text-base font-extrabold text-indigo-950">${inv.concept}</span>
                       <span class="text-gray-400">—</span>
                       <span class="text-gray-900 font-bold">${inv.amount} CHF</span>
-                      <span class="font-mono text-xs text-gray-400">(${inv.id})</span>
+                      <span class="font-mono text-xs font-bold text-indigo-900">(${displayNum})</span>
                   </div>
                   <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                       <span class="text-gray-800 font-semibold">• ${client.name}</span>
@@ -2876,7 +2940,7 @@
 
     const invoiceHtml = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
-      <h2 style="font-size: 22px; color: #111; margin-bottom: 16px;">Facture ${inv.id}</h2>
+      <h2 style="font-size: 22px; color: #111; margin-bottom: 16px;">Facture ${inv.invoiceNumber || inv.id}</h2>
       <p style="font-size: 15px; color: #444; line-height: 1.6;">Bonjour ${client.name},</p>
       <p style="font-size: 15px; color: #444; line-height: 1.6;">Veuillez trouver ci-joint votre facture concernant les cours à l'Atelier Arte Vich.</p>
 
@@ -2902,13 +2966,12 @@
       type: 'invoice',
       id: inv.id,
       email: client.email,
-      subject: `Facture ${inv.id} - Atelier Arte Vich`,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\nCordialement,\nAtelier Arte Vich`,
+      subject: `Facture ${inv.invoiceNumber || inv.id} - Atelier Arte Vich`,
+      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint votre facture ${inv.invoiceNumber || inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\nCordialement,\nAtelier Arte Vich`,
       html: invoiceHtml,
-      // 📎 AQUÍ SE ADJUNTA EL FICHERO PDF REAL:
       attachments: [
         {
-          filename: inv.fileName || `Facture_${inv.id}.pdf`,
+          filename: inv.fileName || `Facture_${inv.invoiceNumber || inv.id}.pdf`,
           path: inv.filePath
         }
       ]
@@ -2928,12 +2991,13 @@
     }
 
     let subject, body;
+    const numDisplay = inv.invoiceNumber || inv.id;
     if (inv.isBonus && inv.sessionsLeft <= 2) {
-      subject = `Rappel : Bientôt épuisé (${inv.id}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous informons qu'il ne vous reste plus que ${inv.sessionsLeft} cours sur votre carnet (${inv.id}). Pensez à le renouveler.\n\nCordialement,\nAtelier de Eloísa`;
+      subject = `Rappel : Bientôt épuisé (${numDisplay}) - Atelier de Eloísa`;
+      body = `Bonjour ${client.name},\n\nNous vous informons qu'il ne vous reste plus que ${inv.sessionsLeft} cours sur votre carnet (${numDisplay}). Pensez à le renouveler.\n\nCordialement,\nAtelier de Eloísa`;
     } else {
-      subject = `Rappel : Facture en attente (${inv.id}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier de Eloísa`;
+      subject = `Rappel : Facture en attente (${numDisplay}) - Atelier de Eloísa`;
+      body = `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${numDisplay} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier de Eloísa`;
     }
 
     currentEmailContext = {
@@ -3028,6 +3092,8 @@
           if (inv.isBonus) typeBadgeHtml = `<span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Bono</span>`;
           else if (inv.isMaterial) typeBadgeHtml = `<span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">Material</span>`;
 
+          const displayNum = inv.invoiceNumber || inv.id;
+
           html += `
             <div class="bg-gray-50 hover:bg-gray-100 p-3 rounded border border-gray-100 space-y-1 text-xs">
                 <div class="flex items-center space-x-2 flex-wrap">
@@ -3035,7 +3101,7 @@
                     <span class="font-extrabold text-gray-900 text-sm">${inv.concept}</span>
                     <span class="text-gray-400">—</span>
                     <span class="font-bold text-green-700">${inv.amount} CHF</span>
-                    <span class="font-mono text-gray-400">(${inv.id})</span>
+                    <span class="font-mono font-bold text-indigo-900">(${displayNum})</span>
                 </div>
                 <div class="flex justify-between items-center pt-1">
                     <span class="font-semibold text-gray-700">${client.name}</span>
@@ -3061,15 +3127,16 @@
 
     if (id) {
       const inv = db.invoices.find(i => i.id === id);
-      document.getElementById('invoice-modal-title').innerText = `Editar Factura (${inv.id})`;
+      document.getElementById('invoice-modal-title').innerText = `Editar Factura (${inv.invoiceNumber || inv.id})`;
+      document.getElementById('invoice-number').value = inv.invoiceNumber || inv.id;
       clientSelect.value = inv.clientId;
       document.getElementById('invoice-concept').value = inv.concept;
       document.getElementById('invoice-amount').value = inv.amount;
       setDatePickerValue('invoice-duedate', inv.dueDate || new Date().toISOString().split('T')[0]);
-      document.getElementById('invoice-rate-select').innerHTML = `<option value="">-- Escritura manual libre --</option>`;
     } else {
       document.getElementById('invoice-modal-title').innerText = 'Nueva Factura Manual';
-      const future = new Date(); future.setDate(future.getDate() + 15);
+      document.getElementById('invoice-number').value = generateNextInvoiceNumber();
+      const future = new Date(); future.setDate(future.getDate() + 30);
       setDatePickerValue('invoice-duedate', future.toISOString().split('T')[0]);
       document.getElementById('invoice-concept').value = '';
       document.getElementById('invoice-amount').value = '';
@@ -3085,13 +3152,15 @@
 
     if (!clientSelect || !classSelect) return;
 
-    // 1. Cargar alumnos activos
     clientSelect.innerHTML = db.clients
       .filter(c => c.status !== 'past')
       .map(c => `<option value="${c.id}">${c.name}</option>`)
       .join('');
 
-    // 2. Cargar clases que tengan configurada tarifa de bono
+    const future = new Date();
+    future.setDate(future.getDate() + 30);
+    setDatePickerValue('bonus-duedate', future.toISOString().split('T')[0]);
+
     const bonusClasses = (db.classes || []).filter(cl =>
       (cl.rates || []).some(r => r.type === 'bonus10' || isBonusRate(r.name))
     );
@@ -3104,8 +3173,10 @@
         .join('');
     }
 
+    document.getElementById('bonus-invoice-number').value = generateNextInvoiceNumber();
     onBonusClassChange();
     document.getElementById('bonus-modal').classList.remove('hidden');
+    initDatePickers();
   }
 
   function onBonusClassChange() {
@@ -3124,7 +3195,6 @@
       return;
     }
 
-    // Buscar la tarifa de bono de esta clase
     const bonusRate = (targetClass.rates || []).find(r => r.type === 'bonus10' || isBonusRate(r.name));
 
     if (bonusRate) {
@@ -3136,25 +3206,35 @@
     }
   }
 
+  // 1. EMISIÓN DE BONO CORREGIDA
   async function saveBonusInvoice(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
     const clientId = document.getElementById('bonus-client').value;
+    const invoiceNumber = document.getElementById('bonus-invoice-number').value;
     const concept = document.getElementById('bonus-concept').value;
     const amount = parseFloat(document.getElementById('bonus-amount').value);
     const date = new Date().toISOString().split('T')[0];
     const invoiceId = `FAC-2026-${Date.now()}`;
 
-    const future = new Date(); future.setDate(future.getDate() + 15);
+    // ✅ Lee la fecha elegida por el usuario. Si estuviera vacía, calcula 30 días por defecto.
+    const inputDueDate = document.getElementById('bonus-duedate').value;
+    let finalDueDate = inputDueDate;
+    if (!finalDueDate) {
+      const future = new Date();
+      future.setDate(future.getDate() + 30);
+      finalDueDate = future.toISOString().split('T')[0];
+    }
 
     const newInv = {
       id: invoiceId,
+      invoiceNumber: invoiceNumber,
       clientId: clientId,
       concept: concept,
       amount: amount,
       status: 'Pendiente',
       date: date,
-      dueDate: future.toISOString().split('T')[0],
+      dueDate: finalDueDate, // 👈 Usa la fecha correcta
       emailSent: false,
       fileName: null,
       filePath: null,
@@ -3167,7 +3247,7 @@
     await saveDB();
     closeModals();
     renderAll();
-    alert(`¡Factura de bono ${invoiceId} generada correctamente!`);
+    alert(`¡Factura de bono ${invoiceNumber} generada correctamente!`);
   }
 
   function onInvoiceClientChange() {
@@ -3193,7 +3273,10 @@
   async function saveInvoice(e) {
     e.preventDefault();
     const id = document.getElementById('invoice-id').value;
+    const invoiceNumber = document.getElementById('invoice-number').value;
+
     const data = {
+      invoiceNumber: invoiceNumber,
       clientId: document.getElementById('invoice-client').value,
       concept: document.getElementById('invoice-concept').value,
       amount: parseFloat(document.getElementById('invoice-amount').value),
@@ -3232,7 +3315,7 @@
         id: 'LED-' + inv.id,
         type: 'income',
         category: category,
-        concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.id})`,
+        concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.invoiceNumber || inv.id})`,
         amount: inv.amount,
         date: inv.date || new Date().toISOString().split('T')[0],
         fileName: inv.fileName,
