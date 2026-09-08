@@ -1110,11 +1110,42 @@
   function initDatePickers() {
     flatpickr("input[type='date']", {
       locale: "es",
-      dateFormat: "Y-m-d",
-      altInput: true,
-      altFormat: "d/m/Y",
-      allowInput: true
+      dateFormat: "Y-m-d",        // Formato interno (YYYY-MM-DD)
+      altInput: true,             // Campo visible
+      altFormat: "d/m/Y",         // Formato europeo visible (DD/MM/YYYY)
+      altInputClass: "w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800",
+      allowInput: true,
+      parseDate: function(dateStr, format) {
+        if (/^\d{1,2}[\/\.-]\d{1,2}[\/\.-]\d{4}$/.test(dateStr)) {
+          const parts = dateStr.split(/[\/\.-]/);
+          return new Date(parts[2], parseInt(parts[1], 10) - 1, parts[0]);
+        }
+        return flatpickr.parseDate(dateStr, format);
+      },
+      onReady: function(selectedDates, dateStr, instance) {
+        if (instance.altInput) {
+          instance.altInput.placeholder = "dd/mm/yyyy";
+        }
+        // 👈 Si el input HTML nativo ya traía un valor asignado, forzar a Flatpickr a cargarlo
+        if (instance.element.value) {
+          instance.setDate(instance.element.value, false);
+        }
+      }
     });
+  }
+
+  // Función auxiliar para asignar fechas programáticamente al editar objetos
+  function setDatePickerValue(inputId, dateStr) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    el.value = dateStr || '';
+    if (el._flatpickr) {
+      if (dateStr) {
+        el._flatpickr.setDate(dateStr, false);
+      } else {
+        el._flatpickr.clear();
+      }
+    }
   }
 
   function switchTab(tab) {
