@@ -54,7 +54,9 @@
     <!-- Navigation Tabs -->
     <nav class="bg-white border-b border-gray-200 px-6 flex justify-between items-center overflow-x-auto">
         <div class="flex space-x-6">
-            <button onclick="switchTab('calendar')" id="nav-calendar" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📅 Calendario</button>
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap">📊 Resumen</button>
+            <button onclick="switchTab('calendar')" id="nav-calendar"
+                    class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📅 Calendario</button>
             <button onclick="switchTab('prereg')" id="nav-prereg" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📥 Pre-inscripciones</button>
             <button onclick="switchTab('clients')" id="nav-clients" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">👥 Alumnos</button>
             <button onclick="switchTab('classes')" id="nav-classes" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📚 Clases y Precios</button>
@@ -69,8 +71,81 @@
 
     <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
 
+        <!-- TAB 0: DASHBOARD / RESUMEN -->
+        <div id="tab-dashboard" class="space-y-6">
+
+            <!-- CABECERA -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-extrabold text-gray-900">👋 ¡Hola Eloísa!</h2>
+                    <p class="text-xs text-gray-500">Resumen operativo del Atelier para hoy.</p>
+                </div>
+                <div class="text-right">
+            <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-100">
+                Curso 2026 - 2027
+            </span>
+                </div>
+            </div>
+
+            <!-- BLOQUE 1: ALERTAS PRIORITARIAS -->
+            <div id="dashboard-alerts-container" class="space-y-3">
+                <!-- Se poblará dinámicamente: Tarjetas en rojo/amarillo si hay tareas pendientes -->
+            </div>
+
+            <!-- BLOQUE 2: METRICAS RÁPIDAS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase">Alumnos Activos</span>
+                    <div id="dash-stat-clients" class="text-2xl font-black text-indigo-600 mt-1">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase">Pre-Inscripciones</span>
+                    <div id="dash-stat-prereg" class="text-2xl font-black text-amber-500 mt-1">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase">Facturas Pendientes</span>
+                    <div id="dash-stat-pending-inv" class="text-2xl font-black text-rose-600 mt-1">0 CHF</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <span class="text-[11px] font-bold text-gray-400 uppercase">Bonos por Renovar</span>
+                    <div id="dash-stat-low-bonus" class="text-2xl font-black text-purple-600 mt-1">0</div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: AGENDA & EVENTOS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Próximas Clases (7 Días) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>📅</span> Próximas Clases y Workshops
+                        </h3>
+                        <button onclick="switchTab('calendar')" class="text-xs text-indigo-600 hover:underline">Ver calendario →</button>
+                    </div>
+                    <div id="dash-upcoming-classes" class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
+                <!-- Próximos Hitos y Vacaciones -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+                            <span>📌</span> Fechas Destacadas / Vacaciones
+                        </h3>
+                        <button onclick="switchTab('calendar')" class="text-xs text-indigo-600 hover:underline">Gestionar festivos →</button>
+                    </div>
+                    <div id="dash-upcoming-events" class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <!-- TAB 0: CALENDARIO DEL CURSO -->
-        <div id="tab-calendar" class="space-y-6">
+        <div id="tab-calendar" class="hidden space-y-6">
             <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-gray-900">📅 Calendario y Horarios del Curso</h2>
@@ -1130,8 +1205,8 @@
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-screen').classList.remove('hidden');
     loadDB().then(() => {
-      switchTab('calendar');
       renderAll();
+      switchTab('dashboard');
       initDatePickers();
     });
   }
@@ -1181,24 +1256,31 @@
   }
 
   function switchTab(tab) {
-    ['calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger'].forEach(t => {
-      document.getElementById(`tab-${t}`).classList.add('hidden');
-      document.getElementById(`nav-${t}`).className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
-    });
-    document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`nav-${tab}`).className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap";
+    const allTabs = ['dashboard', 'calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger'];
 
+    // 1. Ocultar todos los contenedores y resetear todos los botones de navegación
+    allTabs.forEach(t => {
+      const elTab = document.getElementById(`tab-${t}`);
+      const elNav = document.getElementById(`nav-${t}`);
+      if (elTab) elTab.classList.add('hidden');
+      if (elNav) elNav.className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
+    });
+
+    // 2. Activar la pestaña solicitada
+    const targetTab = document.getElementById(`tab-${tab}`);
+    const targetNav = document.getElementById(`nav-${tab}`);
+    if (targetTab) targetTab.classList.remove('hidden');
+    if (targetNav) targetNav.className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap";
+
+    // 3. Ejecutar renderers específicos
+    if (tab === 'dashboard') renderDashboard();
     if (tab === 'calendar') {
       renderCalendar();
       renderHolidaysList();
       renderAnnualList();
     }
-    if (tab === 'prereg') {
-      renderPreRegistrations();
-    }
-    if (tab === 'material') {
-      renderMaterialSection();
-    }
+    if (tab === 'prereg') renderPreRegistrations();
+    if (tab === 'material') renderMaterialSection();
     if (tab === 'ledger') {
       populateLedgerYears();
       renderLedger();
@@ -1207,6 +1289,7 @@
   }
 
   function renderAll() {
+    renderDashboard();
     renderCalendar();
     renderHolidaysList();
     renderAnnualList();
@@ -1223,6 +1306,79 @@
   function changeCalendarMonth(direction) {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
     renderCalendar();
+  }
+
+  function renderDashboard() {
+    const today = new Date().toISOString().split('T')[0];
+
+    // 1. Estadísticas rápidas
+    const activeClients = db.clients.filter(c => c.status !== 'past').length;
+    const pendingPreRegs = (db.preRegistrations || []).length;
+
+    const pendingInvoices = db.invoices.filter(i => i.status === 'Pendiente');
+    const pendingTotalAmount = pendingInvoices.reduce((sum, i) => sum + i.amount, 0);
+
+    // Bonos con 2 o menos clases
+    let lowBonusCount = 0;
+    db.clients.forEach(c => {
+      if (c.status !== 'past' && getClientTotalBonusSessions(c.id) <= 2 && getClientTotalBonusSessions(c.id) > 0) {
+        lowBonusCount++;
+      }
+    });
+
+    document.getElementById('dash-stat-clients').innerText = activeClients;
+    document.getElementById('dash-stat-prereg').innerText = pendingPreRegs;
+    document.getElementById('dash-stat-pending-inv').innerText = `${pendingTotalAmount.toFixed(0)} CHF`;
+    document.getElementById('dash-stat-low-bonus').innerText = lowBonusCount;
+
+    // 2. Generar Alertas Prioritarias
+    const alertsContainer = document.getElementById('dashboard-alerts-container');
+    let alertsHtml = '';
+
+    if (pendingPreRegs > 0) {
+      alertsHtml += `
+      <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex justify-between items-center text-xs text-amber-900">
+        <span>📥 Tienes <strong>${pendingPreRegs}</strong> solicitud(es) de pre-inscripción web pendiente(s).</span>
+        <button onclick="switchTab('prereg')" class="bg-amber-200 hover:bg-amber-300 px-3 py-1 rounded font-bold transition">Atender →</button>
+      </div>`;
+    }
+
+    const overdueInvoices = pendingInvoices.filter(i => i.dueDate < today);
+    if (overdueInvoices.length > 0) {
+      alertsHtml += `
+      <div class="bg-rose-50 border-l-4 border-rose-500 p-3 rounded-r-lg flex justify-between items-center text-xs text-rose-900">
+        <span>⚠️ Hay <strong>${overdueInvoices.length}</strong> factura(s) vencida(s) pendiente(s) de cobro.</span>
+        <button onclick="switchTab('invoices')" class="bg-rose-200 hover:bg-rose-300 px-3 py-1 rounded font-bold transition">Revisar facturas →</button>
+      </div>`;
+    }
+
+    if (lowBonusCount > 0) {
+      alertsHtml += `
+      <div class="bg-purple-50 border-l-4 border-purple-500 p-3 rounded-r-lg flex justify-between items-center text-xs text-purple-900">
+        <span>🪪 Hay <strong>${lowBonusCount}</strong> alumno(s) con el bono a punto de agotarse (2 o menos clases).</span>
+        <button onclick="switchTab('clients')" class="bg-purple-200 hover:bg-purple-300 px-3 py-1 rounded font-bold transition">Ver alumnos →</button>
+      </div>`;
+    }
+
+    alertsContainer.innerHTML = alertsHtml || `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-lg text-xs font-semibold">✨ ¡Todo al día! No hay tareas urgentes pendientes.</div>`;
+
+    // 3. Próximos Eventos y Vacaciones
+    const eventsContainer = document.getElementById('dash-upcoming-events');
+    const holidays = (db.holidays || []).filter(h => h.endDate >= today);
+
+    if (holidays.length === 0) {
+      eventsContainer.innerHTML = `<p class="text-gray-400 italic">No hay períodos de vacaciones programados próximamente.</p>`;
+    } else {
+      eventsContainer.innerHTML = holidays.map(h => `
+      <div class="p-2.5 bg-gray-50 rounded border border-gray-200 flex justify-between items-center">
+        <div>
+          <span class="font-bold text-gray-900">🏖️ ${h.reason}</span>
+          <div class="text-[11px] text-gray-500">Del ${formatDate(h.startDate)} al ${formatDate(h.endDate)}</div>
+        </div>
+        <span class="text-[10px] bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">Vacaciones</span>
+      </div>
+    `).join('');
+    }
   }
 
   async function addHoliday(e) {
