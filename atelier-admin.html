@@ -1080,6 +1080,7 @@
         status: i.status,
         date: i.issue_date,
         dueDate: i.due_date,
+        paidAt: i.paid_at,
         emailSent: i.email_sent,
         fileName: i.file_name,
         filePath: i.file_path,
@@ -1161,6 +1162,7 @@
         status: inv.status,
         issue_date: inv.date,
         due_date: inv.dueDate,
+        paid_at: inv.paidAt || null,
         email_sent: inv.emailSent,
         file_name: inv.fileName,
         file_path: inv.filePath,
@@ -3590,9 +3592,17 @@
   async function toggleInvoiceStatus(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv) return;
+    
+// Declaración y formateo de la fecha actual a DD/MM/YYYY
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    const todayStr = `${day}/${month}/${year}`;
 
     if (inv.status === 'Pendiente') {
       inv.status = 'Pagado';
+      inv.paidAt = todayStr;
       if (!db.ledger) db.ledger = [];
       const client = db.clients.find(c => c.id === inv.clientId);
 
@@ -3607,7 +3617,7 @@
         invoiceRef: inv.invoiceNumber || inv.id,
         concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.invoiceNumber || inv.id})`,
         amount: inv.amount,
-        date: inv.date || new Date().toISOString().split('T')[0],
+        date: todayStr,
         fileName: inv.fileName,
         filePath: inv.filePath,
         originId: inv.id
@@ -3615,6 +3625,7 @@
       db.ledger.push(ledgerItem);
     } else {
       inv.status = 'Pendiente';
+      inv.paidAt = null;
       if (db.ledger) {
         db.ledger = db.ledger.filter(l => l.originId !== inv.id);
         await supabaseClient.from('ledger').delete().eq('origin_id', inv.id);
