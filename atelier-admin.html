@@ -2978,8 +2978,11 @@
       alert('El alumno no tiene un correo electrónico válido registrado.');
       return;
     }
+
+    // Extraer el idioma con normalización de fallback
     const clientLang = client?.lang || 'fr';
 
+    // Generar la plantilla multilingüe
     const invoiceData = EmailTemplates.invoiceEmail({
       name: client.name,
       invoiceNumber: inv.invoiceNumber || inv.id,
@@ -2987,12 +2990,16 @@
       amount: inv.amount
     }, clientLang);
 
+    // Extraer diccionario para generar también el texto plano en el idioma correcto
+    const t = EmailTemplates._getDict(clientLang);
+    const plainTextBody = `${t.greetingClient} ${client.name},\n\n${t.invoiceBody}\n\n${t.invoiceConcept}: ${inv.concept}\n${t.invoiceAmount}: ${inv.amount} CHF\n\n${t.confirmRegards}`;
+
     currentEmailContext = {
       type: 'invoice',
       id: inv.id,
       email: client.email,
       subject: invoiceData.subject,
-      body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint votre facture ${inv.invoiceNumber || inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\nCordialement,\nAtelier Arte Vich`,
+      body: plainTextBody, // <--- AHORA EN EL IDIOMA DEL CLIENTE
       html: invoiceData.html,
       attachments: [
         {
@@ -3009,37 +3016,47 @@
     const inv = db.invoices.find(i => i.id === targetId);
     if (!inv) return;
     const client = db.clients.find(c => c.id === inv.clientId);
-    const clientLang = client?.lang || 'fr';
 
     if (!client || !client.email || !client.email.includes('@')) {
       alert('El alumno no tiene un correo electrónico válido registrado.');
       return;
     }
 
-    let emailData;
+    // 1. Obtener idioma del cliente (por defecto 'fr')
+    const clientLang = client?.lang || 'fr';
     const numDisplay = inv.invoiceNumber || inv.id;
+    const t = EmailTemplates._getDict(clientLang);
 
+    let emailData;
+    let plainTextBody = '';
+
+    // 2. Generar plantilla HTML y texto plano dinámico según el idioma del alumno
     if (inv.isBonus && inv.sessionsLeft <= 2) {
       emailData = EmailTemplates.bonusLowReminder({
         name: client.name,
         invoiceNumber: numDisplay,
         remaining: inv.sessionsLeft
       }, clientLang);
+
+      plainTextBody = `${t.greetingClient} ${client.name},\n\n${t.bonusLowBody1} ${inv.sessionsLeft} ${t.bonusLowBody2} ${numDisplay}.\n\n${t.bonusLowBody3}\n\n${t.confirmRegards}`;
     } else {
       emailData = EmailTemplates.paymentReminder({
         name: client.name,
         invoiceNumber: numDisplay,
         concept: inv.concept,
         amount: inv.amount
-      }, 'fr');
+      }, clientLang);
+
+      plainTextBody = `${t.greetingClient} ${client.name},\n\n${t.paymentReminderBody} ${numDisplay} ${t.paymentReminderPending}\n\n${t.invoiceConcept}: ${inv.concept}\n${t.invoiceAmount}: ${inv.amount} CHF\n\n${t.paymentReminderAction}\n\n${t.confirmRegards}`;
     }
 
+    // 3. Asignar al contexto del modal
     currentEmailContext = {
       type: 'reminder',
       id: inv.id,
       email: client.email,
       subject: emailData.subject,
-      body: `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${numDisplay} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier Arte Vich`,
+      body: plainTextBody,
       html: emailData.html
     };
 

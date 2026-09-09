@@ -27,7 +27,10 @@ const EmailTemplates = {
       contactTitle: "Contact Web",
       contactHeading: "Message de",
       contactNotice: "Vous avez reçu un nouveau message depuis le formulaire de contact :",
+      fieldName: "Nom :",
+      fieldMessage: "Message :",
 
+      greetingClient: "Bonjour",
       confirmSubject: "Confirmation de votre inscription – Atelier Arte Vich",
       confirmTitle: "Inscription Confirmée",
       confirmHeading: "Bienvenue à l'Atelier Arte",
@@ -36,7 +39,7 @@ const EmailTemplates = {
       confirmFormula: "Formule :",
       confirmLocation: "Lieu :",
       confirmQuestions: "Si vous avez la moindre question, vous pouvez contacter Eloísa au",
-      confirmRegards: "Cordialement,<br>Eloísa • Atelier Arte Vich",
+      confirmRegards: "Cordialement,\nEloísa • Atelier Arte Vich",
 
       invoiceSubject: "Facture",
       invoiceTitle: "Facturation",
@@ -45,7 +48,7 @@ const EmailTemplates = {
       invoiceConcept: "Concept",
       invoiceAmount: "Montant",
       invoiceAttachedNote: "Le document PDF correspondant est joint à ce message.",
-      invoiceThanks: "Merci pour votre confiance !<br>Atelier Arte Vich",
+      invoiceThanks: "Merci pour votre confiance !\nAtelier Arte Vich",
 
       bonusLowSubject: "Rappel : Carnet de cours bientôt épuisé - Atelier Arte Vich",
       bonusLowTitle: "Suivi des Cours",
@@ -53,7 +56,7 @@ const EmailTemplates = {
       bonusLowBody1: "Nous vous informons qu'il ne vous reste plus que",
       bonusLowBody2: "séance(s) disponible(s) sur votre carnet de cours",
       bonusLowBody3: "N'hésitez pas à nous contacter ou à passer à l'atelier si vous souhaitez le renouveler.",
-      bonusLowRegards: "Cordialement,<br>Eloísa • Atelier Arte Vich",
+      bonusLowRegards: "Cordialement,\nEloísa • Atelier Arte Vich",
 
       paymentReminderSubject: "Rappel : Facture en attente",
       paymentReminderTitle: "Rappel de Règlement",
@@ -83,7 +86,10 @@ const EmailTemplates = {
       contactTitle: "Web Contact",
       contactHeading: "Message from",
       contactNotice: "You received a new message from the contact form:",
+      fieldName: "Name:",
+      fieldMessage: "Message:",
 
+      greetingClient: "Hello",
       confirmSubject: "Enrollment Confirmation – Atelier Arte Vich",
       confirmTitle: "Enrollment Confirmed",
       confirmHeading: "Welcome to Atelier Arte",
@@ -92,7 +98,7 @@ const EmailTemplates = {
       confirmFormula: "Option:",
       confirmLocation: "Location:",
       confirmQuestions: "If you have any questions, feel free to contact Eloísa at",
-      confirmRegards: "Warm regards,<br>Eloísa • Atelier Arte Vich",
+      confirmRegards: "Warm regards,\nEloísa • Atelier Arte Vich",
 
       invoiceSubject: "Invoice",
       invoiceTitle: "Invoicing",
@@ -101,7 +107,7 @@ const EmailTemplates = {
       invoiceConcept: "Concept",
       invoiceAmount: "Amount",
       invoiceAttachedNote: "The corresponding PDF document is attached to this message.",
-      invoiceThanks: "Thank you for your trust!<br>Atelier Arte Vich",
+      invoiceThanks: "Thank you for your trust!\nAtelier Arte Vich",
 
       bonusLowSubject: "Reminder: Class pass running low - Atelier Arte Vich",
       bonusLowTitle: "Course Tracking",
@@ -109,7 +115,7 @@ const EmailTemplates = {
       bonusLowBody1: "We would like to inform you that you have only",
       bonusLowBody2: "session(s) left on your class pass",
       bonusLowBody3: "Feel free to contact us or visit the studio if you wish to renew it.",
-      bonusLowRegards: "Best regards,<br>Eloísa • Atelier Arte Vich",
+      bonusLowRegards: "Best regards,\nEloísa • Atelier Arte Vich",
 
       paymentReminderSubject: "Reminder: Pending invoice",
       paymentReminderTitle: "Payment Reminder",
@@ -139,7 +145,10 @@ const EmailTemplates = {
       contactTitle: "Contatto Web",
       contactHeading: "Messaggio da",
       contactNotice: "Hai ricevuto un nuovo messaggio dal modulo di contatto:",
+      fieldName: "Nome:",
+      fieldMessage: "Messaggio:",
 
+      greetingClient: "Buongiorno",
       confirmSubject: "Conferma di iscrizione – Atelier Arte Vich",
       confirmTitle: "Iscrizione Confermata",
       confirmHeading: "Benvenuti all'Atelier Arte",
@@ -148,7 +157,7 @@ const EmailTemplates = {
       confirmFormula: "Formula:",
       confirmLocation: "Luogo:",
       confirmQuestions: "Per qualsiasi domanda, puoi contattare Eloísa al numero",
-      confirmRegards: "Cordiali saluti,<br>Eloísa • Atelier Arte Vich",
+      confirmRegards: "Cordiali saluti,\nEloísa • Atelier Arte Vich",
 
       invoiceSubject: "Fattura",
       invoiceTitle: "Fatturazione",
@@ -157,7 +166,7 @@ const EmailTemplates = {
       invoiceConcept: "Concetto",
       invoiceAmount: "Importo",
       invoiceAttachedNote: "Il documento PDF corrispondente è allegato a questo messaggio.",
-      invoiceThanks: "Grazie per la tua fiducia!<br>Atelier Arte Vich",
+      invoiceThanks: "Grazie per la tua fiducia!\nAtelier Arte Vich",
 
       bonusLowSubject: "Rammento: Tessera corsi in esaurimento - Atelier Arte Vich",
       bonusLowTitle: "Monitoraggio Corsi",
@@ -165,7 +174,7 @@ const EmailTemplates = {
       bonusLowBody1: "Ti informiamo che ti rimangono solo",
       bonusLowBody2: "lezione/i disponibile/i sulla tua tessera",
       bonusLowBody3: "Non esitare a contattarci se desideri rinnovarla.",
-      bonusLowRegards: "Cordiali saluti,<br>Eloísa • Atelier Arte Vich",
+      bonusLowRegards: "Cordiali saluti,\nEloísa • Atelier Arte Vich",
 
       paymentReminderSubject: "Rammento: Fattura in attesa",
       paymentReminderTitle: "Rammento di Pagamento",
@@ -195,7 +204,10 @@ const EmailTemplates = {
       contactTitle: "Contacto Web",
       contactHeading: "Mensaje de",
       contactNotice: "Has recibido un nuevo mensaje desde el formulario de contacto:",
+      fieldName: "Nombre:",
+      fieldMessage: "Mensaje:",
 
+      greetingClient: "Hola",
       confirmSubject: "Confirmación de matrícula – Atelier Arte Vich",
       confirmTitle: "Inscripción Confirmada",
       confirmHeading: "Bienvenido/a al Atelier Arte",
@@ -204,7 +216,7 @@ const EmailTemplates = {
       confirmFormula: "Modalidad:",
       confirmLocation: "Lugar:",
       confirmQuestions: "Si tienes cualquier duda, puedes contactar con Eloísa en el",
-      confirmRegards: "Un cordial saludo,<br>Eloísa • Atelier Arte Vich",
+      confirmRegards: "Un cordial saludo,\nEloísa • Atelier Arte Vich",
 
       invoiceSubject: "Factura",
       invoiceTitle: "Facturación",
@@ -213,7 +225,7 @@ const EmailTemplates = {
       invoiceConcept: "Concepto",
       invoiceAmount: "Importe",
       invoiceAttachedNote: "El documento PDF correspondiente está adjunto a este mensaje.",
-      invoiceThanks: "¡Muchas gracias por tu confianza!<br>Atelier Arte Vich",
+      invoiceThanks: "¡Muchas gracias por tu confianza!\nAtelier Arte Vich",
 
       bonusLowSubject: "Recordatorio: Bono de clases a punto de agotarse - Atelier Arte Vich",
       bonusLowTitle: "Seguimiento de Clases",
@@ -221,7 +233,7 @@ const EmailTemplates = {
       bonusLowBody1: "Te informamos de que solo te quedan",
       bonusLowBody2: "clase(s) disponible(s) en tu bono de curso",
       bonusLowBody3: "No dudes en contactarnos o pasarte por el estudio si deseas renovarlo.",
-      bonusLowRegards: "Un saludo,<br>Eloísa • Atelier Arte Vich",
+      bonusLowRegards: "Un saludo,\nEloísa • Atelier Arte Vich",
 
       paymentReminderSubject: "Recordatorio: Factura pendiente de pago",
       paymentReminderTitle: "Recordatorio de Pago",
@@ -232,8 +244,11 @@ const EmailTemplates = {
     }
   },
 
+  // Normalizador de idioma para tolerar códigos tipo 'es-ES', 'FR', etc.
   _getDict(lang) {
-    return this.i18n[lang] || this.i18n['fr'];
+    if (!lang) return this.i18n['fr'];
+    const code = String(lang).toLowerCase().split('-')[0];
+    return this.i18n[code] || this.i18n['fr'];
   },
 
   _brandHeader(titleTag, heading) {
@@ -255,7 +270,7 @@ const EmailTemplates = {
     `;
   },
 
-  // --- 1. Alerta Pre-inscripción (Para Eloísa) ---
+  // --- 1. Alerta Pre-inscripción (Notificación interna para Eloísa, por defecto 'fr') ---
   newPreRegistrationAlert(data, lang = 'fr') {
     const t = this._getDict(lang);
     const { name, className, childName, email, phone, comments } = data;
@@ -281,7 +296,7 @@ const EmailTemplates = {
     };
   },
 
-  // --- 2. Alerta Contacto (Para Eloísa) ---
+  // --- 2. Alerta Contacto (Notificación interna para Eloísa, por defecto 'fr') ---
   newContactMessageAlert(data, lang = 'fr') {
     const t = this._getDict(lang);
     const { name, email, message } = data;
@@ -292,9 +307,9 @@ const EmailTemplates = {
           <p style="margin-top: 0;">${t.preRegGreeting}</p>
           <p>${t.contactNotice}</p>
           <div style="background: #f9f9fb; border-left: 4px solid #e63500; padding: 16px; border-radius: 6px; margin: 20px 0;">
-            <p style="margin: 0 0 8px 0;"><strong>Nom :</strong> ${name}</p>
-            <p style="margin: 0 0 8px 0;"><strong>Email :</strong> <a href="mailto:${email}" style="color: #e63500;">${email}</a></p>
-            <p style="margin: 0;"><strong>Message :</strong><br>${(message || '').replace(/\n/g, '<br>')}</p>
+            <p style="margin: 0 0 8px 0;"><strong>${t.fieldName}</strong> ${name}</p>
+            <p style="margin: 0 0 8px 0;"><strong>${t.fieldEmail}</strong> <a href="mailto:${email}" style="color: #e63500;">${email}</a></p>
+            <p style="margin: 0;"><strong>${t.fieldMessage}</strong><br>${(message || '').replace(/\n/g, '<br>')}</p>
           </div>
         ${this._brandFooter()}
       `
@@ -309,7 +324,7 @@ const EmailTemplates = {
       subject: t.confirmSubject,
       html: `
         ${this._brandHeader(t.confirmTitle, t.confirmHeading)}
-          <p style="margin-top: 0;">Bonjour ${name},</p>
+          <p style="margin-top: 0;">${t.greetingClient} ${name},</p>
           <p>${t.confirmBody}</p>
           <div style="background: #f9f9fb; border: 1px solid #e8e8ed; border-radius: 10px; padding: 20px; margin: 20px 0;">
             <h4 style="margin: 0 0 12px 0; color: #e63500; font-size: 15px;">${t.confirmDetailsTitle}</h4>
@@ -332,7 +347,7 @@ const EmailTemplates = {
       subject: `${t.invoiceSubject} ${invoiceNumber} - Atelier Arte Vich`,
       html: `
         ${this._brandHeader(t.invoiceTitle, `${t.invoiceHeading} ${invoiceNumber}`)}
-          <p style="margin-top: 0;">Bonjour ${name},</p>
+          <p style="margin-top: 0;">${t.greetingClient} ${name},</p>
           <p>${t.invoiceBody}</p>
           <table style="width: 100%; background: #f9f9fb; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e8e8ed;">
             <tr>
@@ -361,7 +376,7 @@ const EmailTemplates = {
       subject: t.bonusLowSubject,
       html: `
         ${this._brandHeader(t.bonusLowTitle, t.bonusLowHeading)}
-          <p style="margin-top: 0;">Bonjour ${name},</p>
+          <p style="margin-top: 0;">${t.greetingClient} ${name},</p>
           <p>${t.bonusLowBody1} <strong>${remaining}</strong> ${t.bonusLowBody2} <strong>${invoiceNumber}</strong>.</p>
           <p>${t.bonusLowBody3}</p>
           <p style="margin-top: 24px; font-weight: 600;">${t.bonusLowRegards}</p>
@@ -378,11 +393,11 @@ const EmailTemplates = {
       subject: `${t.paymentReminderSubject} (${invoiceNumber}) - Atelier Arte Vich`,
       html: `
         ${this._brandHeader(t.paymentReminderTitle, t.paymentReminderHeading)}
-          <p style="margin-top: 0;">Bonjour ${name},</p>
+          <p style="margin-top: 0;">${t.greetingClient} ${name},</p>
           <p>${t.paymentReminderBody} <strong>${invoiceNumber}</strong> ${t.paymentReminderPending}</p>
           <div style="background: #f9f9fb; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e8e8ed;">
-            <p style="margin: 0 0 6px 0;"><strong>Concept :</strong> ${concept}</p>
-            <p style="margin: 0;"><strong>Montant :</strong> ${amount} CHF</p>
+            <p style="margin: 0 0 6px 0;"><strong>${t.invoiceConcept} :</strong> ${concept}</p>
+            <p style="margin: 0;"><strong>${t.invoiceAmount} :</strong> ${amount} CHF</p>
           </div>
           <p>${t.paymentReminderAction}</p>
           <p style="margin-top: 24px; font-weight: 600;">${t.bonusLowRegards}</p>
