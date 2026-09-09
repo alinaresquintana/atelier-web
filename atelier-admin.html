@@ -89,7 +89,7 @@
 
             <!-- BLOQUE 1: ALERTAS PRIORITARIAS -->
             <div id="dashboard-alerts-container" class="space-y-3">
-                <!-- Se poblará dinámicamente: Tarjetas en rojo/amarillo si hay tareas pendientes -->
+                <!-- Se poblará dinámicamente -->
             </div>
 
             <!-- BLOQUE 2: METRICAS RÁPIDAS -->
@@ -331,7 +331,7 @@
                 <div id="renewals-content" class="hidden p-6 space-y-6 border-t border-indigo-50"></div>
             </div>
 
-            <!-- BLOQUE PRINCIPAL DE FACTURACIÓN CON ACCESOS A EMITIR BONO O MATERIAL -->
+            <!-- BLOQUE PRINCIPAL DE FACTURACIÓN -->
             <div class="space-y-4">
                 <div class="flex justify-between items-center flex-wrap gap-4">
                     <h2 class="text-lg font-bold text-gray-900">⚠️ Facturas y Cobros Pendientes</h2>
@@ -374,7 +374,6 @@
                 <button onclick="openMaterialTypeModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Añadir Artículo al Catálogo</button>
             </div>
 
-            <!-- BUSCADOR / FILTRO AGREGADO -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center gap-4">
                 <div class="w-full sm:w-80">
                     <input type="text" id="material-search" oninput="renderMaterialSection()" placeholder="🔍 Buscar material por descripción..." class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -396,7 +395,7 @@
                 </div>
                 <div class="flex items-center space-x-2 flex-wrap gap-2">
                     <select id="ledger-year-filter" onchange="renderLedger()" class="px-3 py-1.5 border rounded-lg text-xs bg-white font-medium">
-                        <!-- Se poblará dinámicamente ordenado -->
+                        <!-- Dinámico -->
                     </select>
                     <button onclick="openLedgerReportModal()" class="bg-gray-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-gray-900">📥 Extraer Informe Anual PDF</button>
                     <button onclick="openLedgerModal()" class="bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700">+ Nuevo Movimiento</button>
@@ -419,12 +418,29 @@
                 </div>
             </div>
 
-            <!-- Listado de Movimientos Paginado -->
+            <!-- BARRA DE FILTROS Y BÚSQUEDA -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto flex-1">
+                    <div class="w-full sm:w-80">
+                        <input type="text" id="ledger-search" oninput="ledgerCurrentPage = 1; renderLedger()" placeholder="🔍 Buscar por fecha (dd/mm/aaaa), N° factura, concepto..." class="w-full px-3 py-2 border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <select id="ledger-type-filter" onchange="ledgerCurrentPage = 1; renderLedger()" class="w-full sm:w-auto px-3 py-2 border rounded-lg text-xs bg-white font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">🌐 Todos los tipos (Ingresos y Gastos)</option>
+                            <option value="income">💚 Solo Ingresos</option>
+                            <option value="expense">🔻 Solo Gastos</option>
+                        </select>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-500 whitespace-nowrap" id="ledger-count-badge">0 movimientos</span>
+            </div>
+
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <table class="w-full text-left border-collapse">
                     <thead>
                     <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
                         <th class="p-4">Fecha</th>
+                        <th class="p-4">N° Factura / Ref.</th>
                         <th class="p-4">Tipo</th>
                         <th class="p-4">Categoría / Concepto</th>
                         <th class="p-4">Fichero / Prueba</th>
@@ -447,7 +463,7 @@
     </main>
 </div>
 
-<!-- MODAL PASAR LISTA (ASISTENCIA DIARIA) -->
+<!-- MODAL PASAR LISTA -->
 <div id="attendance-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
@@ -880,29 +896,37 @@
 </div>
 
 <!-- MODAL: REGISTRAR VENTA DE MATERIAL A ALUMNO -->
-<div id="material-sale-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
+<div id="material-sale-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-xl max-w-md w-full p-6 space-y-4">
-        <h3 class="text-lg font-bold">Vender Material a Alumno</h3>
+        <h3 class="text-lg font-bold text-gray-900">Vender Material a Alumno</h3>
         <form onsubmit="saveMaterialSale(event)" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Alumno</label>
-                <select id="mat-sale-client" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+                <select id="mat-sale-client" required class="w-full px-3 py-2 border rounded-lg text-sm bg-white"></select>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Número de Factura Oficial</label>
                 <input type="text" id="mat-invoice-number" placeholder="Ej. 2026-002" required class="w-full px-3 py-2 border rounded-lg text-sm font-mono font-bold text-indigo-900 bg-indigo-50/50">
             </div>
-            <div>
+
+            <!-- BUSCADOR CON AUTOCOMPLETADO -->
+            <div class="relative">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar del Catálogo</label>
-                <select id="mat-sale-type" onchange="onMaterialTypeSelect()" required class="w-full px-3 py-2 border rounded-lg text-sm"></select>
+                <input type="hidden" id="mat-sale-type-id" required>
+                <input type="text" id="mat-sale-search" oninput="filterMaterialDropdown()" onfocus="filterMaterialDropdown()" placeholder="🔍 Escribe para buscar material..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                
+                <!-- Contenedor desplegable dinámico -->
+                <div id="mat-sale-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50 divide-y divide-gray-100">
+                </div>
             </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Detalle</label>
                 <input type="text" id="mat-sale-concept" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Importe Total (CHF)</label>
-                <input type="number" step="0.01" id="mat-sale-amount" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <input type="number" step="0.01" id="mat-sale-amount" required class="w-full px-3 py-2 border rounded-lg text-sm font-bold text-indigo-900">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Pago</label>
@@ -910,7 +934,7 @@
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-sm">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">Generar Factura</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Generar Factura</button>
             </div>
         </form>
     </div>
@@ -936,8 +960,12 @@
                 </select>
             </div>
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">N° Factura / Ref. (Opcional)</label>
+                <input type="text" id="ledger-invoice-ref" placeholder="Ej. 2026-015 o REF-99" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Descripción adicional</label>
-                <input type="text" id="ledger-concept" placeholder="Ej. Alquiler local mes de Septiembre" required class="w-full px-3 py-2 border rounded-lg text-sm">
+                <input type="text" id="ledger-concept" placeholder="Ej. Impresión de flyers o AVS Q3" required class="w-full px-3 py-2 border rounded-lg text-sm">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
@@ -1064,6 +1092,7 @@
         id: l.id,
         type: l.type,
         category: l.category,
+        invoiceRef: l.invoice_ref || l.invoiceRef || '',
         concept: l.concept,
         amount: Number(l.amount),
         date: l.transaction_date,
@@ -1146,6 +1175,7 @@
         id: l.id,
         type: l.type,
         category: l.category,
+        invoice_ref: l.invoiceRef || null,
         concept: l.concept,
         amount: l.amount,
         transaction_date: l.date,
@@ -1266,7 +1296,6 @@
   function switchTab(tab) {
     const allTabs = ['dashboard', 'calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger'];
 
-    // 1. Ocultar todos los contenedores y resetear todos los botones de navegación
     allTabs.forEach(t => {
       const elTab = document.getElementById(`tab-${t}`);
       const elNav = document.getElementById(`nav-${t}`);
@@ -1274,13 +1303,11 @@
       if (elNav) elNav.className = "py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap";
     });
 
-    // 2. Activar la pestaña solicitada
     const targetTab = document.getElementById(`tab-${tab}`);
     const targetNav = document.getElementById(`nav-${tab}`);
     if (targetTab) targetTab.classList.remove('hidden');
     if (targetNav) targetNav.className = "py-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm whitespace-nowrap";
 
-    // 3. Ejecutar renderers específicos
     if (tab === 'dashboard') renderDashboard();
     if (tab === 'calendar') {
       renderCalendar();
@@ -1319,14 +1346,12 @@
   function renderDashboard() {
     const today = new Date().toISOString().split('T')[0];
 
-    // 1. Estadísticas rápidas
     const activeClients = db.clients.filter(c => c.status !== 'past').length;
     const pendingPreRegs = (db.preRegistrations || []).length;
 
     const pendingInvoices = db.invoices.filter(i => i.status === 'Pendiente');
     const pendingTotalAmount = pendingInvoices.reduce((sum, i) => sum + i.amount, 0);
 
-    // Bonos con 2 o menos clases
     let lowBonusCount = 0;
     db.clients.forEach(c => {
       if (c.status !== 'past' && getClientTotalBonusSessions(c.id) <= 2 && getClientTotalBonusSessions(c.id) > 0) {
@@ -1339,7 +1364,6 @@
     document.getElementById('dash-stat-pending-inv').innerText = `${pendingTotalAmount.toFixed(0)} CHF`;
     document.getElementById('dash-stat-low-bonus').innerText = lowBonusCount;
 
-    // 2. Generar Alertas Prioritarias
     const alertsContainer = document.getElementById('dashboard-alerts-container');
     let alertsHtml = '';
 
@@ -1370,7 +1394,6 @@
 
     alertsContainer.innerHTML = alertsHtml || `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-lg text-xs font-semibold">✨ ¡Todo al día! No hay tareas urgentes pendientes.</div>`;
 
-    // 3. Próximos Eventos y Vacaciones
     const eventsContainer = document.getElementById('dash-upcoming-events');
     const holidays = (db.holidays || []).filter(h => h.endDate >= today);
 
@@ -2349,10 +2372,11 @@
     closeModals();
     renderAll();
 
-    const clientLang = client?.lang || 'fr';
-
     if (lowBonusAlerts.length > 0) {
       for (const alertInfo of lowBonusAlerts) {
+        const client = db.clients.find(c => c.email === alertInfo.email);
+        const clientLang = client?.lang || 'fr';
+        
         const bonusData = EmailTemplates.bonusLowReminder({
           name: alertInfo.clientName,
           invoiceNumber: alertInfo.invoiceId,
@@ -2667,7 +2691,7 @@
     renderAll();
   }
 
-  // --- SECCIÓN: CATÁLOGO DE MATERIAL CON FILTRADO EN TIEMPO REAL ---
+  // --- SECCIÓN: CATÁLOGO DE MATERIAL ---
   function renderMaterialSection() {
     if (!db.materialTypes) db.materialTypes = [];
     
@@ -2676,17 +2700,14 @@
     const searchInput = document.getElementById('material-search');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-    // Filtrar artículos según la descripción/nombre
     const filteredMaterials = db.materialTypes.filter(m => 
       m.name.toLowerCase().includes(searchTerm)
     );
 
-    // Actualizar el contador
     if (countBadge) {
       countBadge.innerText = `${filteredMaterials.length} de ${db.materialTypes.length} artículos`;
     }
 
-    // Renderizar resultados
     if (filteredMaterials.length === 0) {
       container.innerHTML = db.materialTypes.length === 0
         ? `<p class="text-gray-400 italic text-xs text-center py-4">No hay materiales en el catálogo.</p>`
@@ -2741,34 +2762,72 @@
     const clientSelect = document.getElementById('mat-sale-client');
     clientSelect.innerHTML = db.clients.filter(c => c.status !== 'past').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
-    const typeSelect = document.getElementById('mat-sale-type');
-    typeSelect.innerHTML = `<option value="">-- Seleccionar material --</option>` +
-      (db.materialTypes || []).map(m => `<option value="${m.id}" data-price="${m.price}" data-name="${m.name}">${m.name} (${m.price.toFixed(2)} CHF)</option>`).join('');
-
     const future = new Date();
     future.setDate(future.getDate() + 30);
     setDatePickerValue('mat-duedate', future.toISOString().split('T')[0]);
 
+    document.getElementById('mat-sale-type-id').value = '';
+    document.getElementById('mat-sale-search').value = '';
     document.getElementById('mat-sale-concept').value = '';
     document.getElementById('mat-sale-amount').value = '';
+    document.getElementById('mat-sale-dropdown').classList.add('hidden');
+
     document.getElementById('material-sale-modal').classList.remove('hidden');
     document.getElementById('mat-invoice-number').value = generateNextInvoiceNumber();
   }
+  
+  function filterMaterialDropdown() {
+    const searchInput = document.getElementById('mat-sale-search');
+    const dropdown = document.getElementById('mat-sale-dropdown');
+    const term = searchInput.value.toLowerCase().trim();
 
-  function onMaterialTypeSelect() {
-    const select = document.getElementById('mat-sale-type');
-    const opt = select.options[select.selectedIndex];
-    if (opt && opt.value) {
-      const price = opt.getAttribute('data-price');
-      const name = opt.getAttribute('data-name');
-      document.getElementById('mat-sale-concept').value = `Material: ${name}`;
-      document.getElementById('mat-sale-amount').value = price;
+    if (!db.materialTypes || db.materialTypes.length === 0) {
+      dropdown.innerHTML = `<div class="p-3 text-xs text-gray-400 italic">No hay materiales cargados en el catálogo.</div>`;
+      dropdown.classList.remove('hidden');
+      return;
     }
+
+    const matches = db.materialTypes.filter(m => m.name.toLowerCase().includes(term));
+
+    if (matches.length === 0) {
+      dropdown.innerHTML = `<div class="p-3 text-xs text-gray-400 italic">No se encontraron coincidencias para "${term}"</div>`;
+    } else {
+      dropdown.innerHTML = matches.map(m => `
+        <div onclick="selectMaterialFromDropdown('${m.id}', '${m.name.replace(/'/g, "\\'")}', ${m.price})" class="p-2.5 hover:bg-indigo-50 cursor-pointer flex justify-between items-center text-xs transition">
+            <span class="font-medium text-gray-800">${m.name}</span>
+            <span class="font-bold text-indigo-600">${m.price.toFixed(2)} CHF</span>
+        </div>
+      `).join('');
+    }
+
+    dropdown.classList.remove('hidden');
   }
+  
+  function selectMaterialFromDropdown(id, name, price) {
+    document.getElementById('mat-sale-type-id').value = id;
+    document.getElementById('mat-sale-search').value = `${name} (${price.toFixed(2)} CHF)`;
+    document.getElementById('mat-sale-concept').value = `Material: ${name}`;
+    document.getElementById('mat-sale-amount').value = price;
+    document.getElementById('mat-sale-dropdown').classList.add('hidden');
+  }
+
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('mat-sale-dropdown');
+    const searchInput = document.getElementById('mat-sale-search');
+    if (dropdown && searchInput && !searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
 
   async function saveMaterialSale(e) {
     e.preventDefault();
     if (!db.invoices) db.invoices = [];
+
+    const materialTypeId = document.getElementById('mat-sale-type-id').value;
+    if (!materialTypeId) {
+      alert('Por favor, selecciona un artículo válido del catálogo.');
+      return;
+    }
 
     const clientId = document.getElementById('mat-sale-client').value;
     const concept = document.getElementById('mat-sale-concept').value;
@@ -3166,10 +3225,8 @@
       return;
     }
 
-    // Extraer el idioma con normalización de fallback
     const clientLang = client?.lang || 'fr';
 
-    // Generar la plantilla multilingüe
     const invoiceData = EmailTemplates.invoiceEmail({
       name: client.name,
       invoiceNumber: inv.invoiceNumber || inv.id,
@@ -3177,7 +3234,6 @@
       amount: inv.amount
     }, clientLang);
 
-    // Extraer diccionario para generar también el texto plano en el idioma correcto
     const t = EmailTemplates._getDict(clientLang);
     const plainTextBody = `${t.greetingClient} ${client.name},\n\n${t.invoiceBody}\n\n${t.invoiceConcept}: ${inv.concept}\n${t.invoiceAmount}: ${inv.amount} CHF\n\n${t.confirmRegards}`;
 
@@ -3186,7 +3242,7 @@
       id: inv.id,
       email: client.email,
       subject: invoiceData.subject,
-      body: plainTextBody, // <--- AHORA EN EL IDIOMA DEL CLIENTE
+      body: plainTextBody,
       html: invoiceData.html,
       attachments: [
         {
@@ -3209,7 +3265,6 @@
       return;
     }
 
-    // 1. Obtener idioma del cliente (por defecto 'fr')
     const clientLang = client?.lang || 'fr';
     const numDisplay = inv.invoiceNumber || inv.id;
     const t = EmailTemplates._getDict(clientLang);
@@ -3217,7 +3272,6 @@
     let emailData;
     let plainTextBody = '';
 
-    // 2. Generar plantilla HTML y texto plano dinámico según el idioma del alumno
     if (inv.isBonus && inv.sessionsLeft <= 2) {
       emailData = EmailTemplates.bonusLowReminder({
         name: client.name,
@@ -3237,7 +3291,6 @@
       plainTextBody = `${t.greetingClient} ${client.name},\n\n${t.paymentReminderBody} ${numDisplay} ${t.paymentReminderPending}\n\n${t.invoiceConcept}: ${inv.concept}\n${t.invoiceAmount}: ${inv.amount} CHF\n\n${t.paymentReminderAction}\n\n${t.confirmRegards}`;
     }
 
-    // 3. Asignar al contexto del modal
     currentEmailContext = {
       type: 'reminder',
       id: inv.id,
@@ -3551,6 +3604,7 @@
         id: 'LED-' + inv.id,
         type: 'income',
         category: category,
+        invoiceRef: inv.invoiceNumber || inv.id,
         concept: `${client ? client.name : 'Cliente'} - ${inv.concept} (${inv.invoiceNumber || inv.id})`,
         amount: inv.amount,
         date: inv.date || new Date().toISOString().split('T')[0],
@@ -3569,14 +3623,29 @@
     await saveDB(); renderAll();
   }
 
-  // --- INGRESOS Y GASTOS (LEDGER) ---
-  function openLedgerModal() {
-    document.getElementById('ledger-id').value = '';
-    document.getElementById('ledger-type').value = 'income';
-    onLedgerTypeChange();
-    setDatePickerValue('ledger-date', new Date().toISOString().split('T')[0]);
-    document.getElementById('ledger-concept').value = '';
-    document.getElementById('ledger-amount').value = '';
+  function openLedgerModal(id = null) {
+    document.getElementById('ledger-id').value = id || '';
+    
+    if (id) {
+      const item = db.ledger.find(l => l.id === id);
+      if (item) {
+        document.getElementById('ledger-type').value = item.type || 'income';
+        onLedgerTypeChange();
+        document.getElementById('ledger-category').value = item.category || '';
+        document.getElementById('ledger-invoice-ref').value = item.invoiceRef || '';
+        document.getElementById('ledger-concept').value = item.concept || '';
+        document.getElementById('ledger-amount').value = item.amount || '';
+        setDatePickerValue('ledger-date', item.date || new Date().toISOString().split('T')[0]);
+      }
+    } else {
+      document.getElementById('ledger-type').value = 'income';
+      onLedgerTypeChange();
+      setDatePickerValue('ledger-date', new Date().toISOString().split('T')[0]);
+      document.getElementById('ledger-invoice-ref').value = '';
+      document.getElementById('ledger-concept').value = '';
+      document.getElementById('ledger-amount').value = '';
+    }
+    
     document.getElementById('ledger-file-input').value = '';
     document.getElementById('ledger-modal').classList.remove('hidden');
     initDatePickers();
@@ -3595,6 +3664,9 @@
     } else {
       catSelect.innerHTML = `
         <option value="Pago de alquiler">Pago de alquiler</option>
+        <option value="Pagos a AVS">Pagos a AVS</option>
+        <option value="Gastos de impresión">Gastos de impresión</option>
+        <option value="Gastos de publicidad">Gastos de publicidad</option>
         <option value="Compra de material">Compra de material</option>
         <option value="Otros">Otros</option>
       `;
@@ -3629,6 +3701,7 @@
     const itemData = {
       type: document.getElementById('ledger-type').value,
       category: document.getElementById('ledger-category').value,
+      invoiceRef: document.getElementById('ledger-invoice-ref').value.trim(),
       date: document.getElementById('ledger-date').value,
       concept: document.getElementById('ledger-concept').value,
       amount: parseFloat(document.getElementById('ledger-amount').value),
@@ -3708,14 +3781,33 @@
 
     select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
   }
-
+  
   function renderLedger() {
     if (!db.ledger) db.ledger = [];
     const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
+    const typeFilter = document.getElementById('ledger-type-filter')?.value || 'all';
+    const searchTerm = (document.getElementById('ledger-search')?.value || '').toLowerCase().trim();
 
-    const filteredItems = db.ledger.filter(item => {
-      const itemYear = item.date ? item.date.substring(0, 4) : '';
-      return itemYear === selectedYear;
+    let itemsYear = db.ledger.filter(item => (item.date ? item.date.substring(0, 4) : '') === selectedYear);
+
+    if (typeFilter !== 'all') {
+      itemsYear = itemsYear.filter(item => item.type === typeFilter);
+    }
+
+    const filteredItems = itemsYear.filter(item => {
+      if (!searchTerm) return true;
+
+      const dateISO = item.date || '';
+      const dateFormatted = formatDate(dateISO);
+      const invRef = (item.invoiceRef || item.originId || '').toLowerCase();
+      const concept = (item.concept || '').toLowerCase();
+      const category = (item.category || '').toLowerCase();
+
+      return dateISO.includes(searchTerm) || 
+             dateFormatted.includes(searchTerm) || 
+             invRef.includes(searchTerm) || 
+             concept.includes(searchTerm) || 
+             category.includes(searchTerm);
     });
 
     filteredItems.sort((a, b) => {
@@ -3728,10 +3820,13 @@
     let totalIncome = 0;
     let totalExpense = 0;
 
-    filteredItems.forEach(item => {
+    db.ledger.filter(item => (item.date ? item.date.substring(0, 4) : '') === selectedYear).forEach(item => {
       if (item.type === 'income') totalIncome += item.amount;
       else totalExpense += item.amount;
     });
+
+    const countBadge = document.getElementById('ledger-count-badge');
+    if (countBadge) countBadge.innerText = `${filteredItems.length} de ${itemsYear.length} movimientos`;
 
     const totalPages = Math.ceil(filteredItems.length / ledgerPageSize) || 1;
     if (ledgerCurrentPage > totalPages) ledgerCurrentPage = totalPages;
@@ -3748,7 +3843,7 @@
     document.getElementById('ledger-next-btn').disabled = ledgerCurrentPage >= totalPages;
 
     if (paginatedItems.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400 italic">No hay movimientos financieros registrados para el año ${selectedYear}.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-400 italic">No se encontraron movimientos financieros con ese criterio.</td></tr>`;
     } else {
       tbody.innerHTML = paginatedItems.map(item => {
         const isIncome = item.type === 'income';
@@ -3760,9 +3855,14 @@
           ? `<a href="${item.filePath || '#'}" target="_blank" class="text-indigo-600 font-medium text-xs hover:underline">📎 ${item.fileName}</a>`
           : `<span class="text-gray-400 italic text-xs">Sin fichero</span>`;
 
+        const invoiceDisplay = item.invoiceRef 
+          ? `<span class="font-mono text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">${item.invoiceRef}</span>`
+          : (item.originId ? `<span class="font-mono text-xs text-gray-500">${item.originId}</span>` : '<span class="text-gray-400 italic text-xs">—</span>');
+
         return `
           <tr class="hover:bg-gray-50">
-              <td class="p-4 text-gray-600 text-xs">${formatDate(item.date)}</td>
+              <td class="p-4 text-gray-600 text-xs font-medium">${formatDate(item.date)}</td>
+              <td class="p-4">${invoiceDisplay}</td>
               <td class="p-4">${badge}</td>
               <td class="p-4">
                   <div class="font-bold text-gray-900">${item.category}</div>
