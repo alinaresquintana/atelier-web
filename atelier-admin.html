@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atelier - Panel de Administración</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Módulo de Plantillas de Correo -->
+    <script src="email-templates.js"></script>
     <!-- Widget de Netlify Identity -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <!-- Cliente oficial de Supabase -->
@@ -519,6 +521,15 @@
                     <input type="text" id="client-city" placeholder="Ej. Gland" class="w-full px-3 py-2 border rounded-lg text-sm">
                 </div>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Idioma de comunicación</label>
+                <select id="client-lang" class="w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                    <option value="fr">Français (FR)</option>
+                    <option value="en">English (EN)</option>
+                    <option value="it">Italiano (IT)</option>
+                    <option value="es">Español (ES)</option>
+                </select>
+            </div>
             <div class="flex items-center space-x-2 pt-1">
                 <input type="checkbox" id="client-image-consent" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                 <label for="client-image-consent" class="text-sm font-medium text-gray-700">Consentimiento tratamiento de imágenes</label>
@@ -918,7 +929,8 @@
         city: c.city,
         imageConsent: c.image_consent,
         status: c.status,
-        departureDate: c.departure_date
+        departureDate: c.departure_date,
+        lang: c.lang || 'fr'
       }));
 
       db.classes = (classes || []).map(cl => {
@@ -993,7 +1005,8 @@
         phone: pr.phone,
         comments: pr.comments,
         status: pr.status,
-        date: pr.date
+        date: pr.date,
+        lang: pr.lang || 'fr'
       }));
 
       db.holidays = (holidays || []).map(h => ({
@@ -1021,7 +1034,8 @@
         city: c.city,
         image_consent: c.imageConsent,
         status: c.status,
-        departure_date: c.departureDate || null
+        departure_date: c.departureDate || null,
+        lang: c.lang || 'fr'
       });
     }
 
@@ -1538,6 +1552,7 @@
       address: '',
       postal: '',
       city: '',
+      lang: pr.lang || 'fr',
       imageConsent: false,
       status: 'present',
       departureDate: ''
@@ -1568,30 +1583,19 @@
     renderAll();
 
     try {
-      const confirmHtml = `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
-        <h2 style="font-size: 22px; color: #111; margin-bottom: 8px;">Atelier Arte Vich</h2>
-        <p style="color: #e63500; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Confirmation d'inscription</p>
-        <p style="font-size: 15px; color: #444; line-height: 1.6;">Bonjour ${pr.name},</p>
-        <p style="font-size: 15px; color: #444; line-height: 1.6;">Nous avons le plaisir de vous confirmer votre inscription aux cours de l'Atelier Arte Vich !</p>
-        <div style="background: #f9f9fb; border-radius: 8px; padding: 20px; margin: 20px 0; font-size: 14px; border: 1px solid #eee;">
-          <h4 style="margin: 0 0 10px 0; color: #e63500;">Détails de votre réservation :</h4>
-          <p style="margin: 4px 0;"><strong>Cours :</strong> ${targetClass ? targetClass.name : 'Atelier'}</p>
-          <p style="margin: 4px 0;"><strong>Formule :</strong> ${rateName}</p>
-          <p style="margin: 4px 0;"><strong>Lieu :</strong> Grand'Rue 6, 1267 Vich</p>
-        </div>
-        <p style="font-size: 14px; color: #666; line-height: 1.6;">Si vous avez la moindre question, vous pouvez contacter Eloísa au <strong>+41 79 913 70 55</strong>.</p>
-        <p style="margin-top: 24px; font-weight: 600; color: #111;">Bien chaleureusement,<br>Eloísa • Atelier Arte Vich</p>
-      </div>
-    `;
+      const emailData = EmailTemplates.registrationConfirmationClient({
+        name: pr.name,
+        className: targetClass ? targetClass.name : 'Atelier',
+        rateName: rateName
+      }, pr.lang || 'fr');
 
       await fetch('/.netlify/functions/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: pr.email,
-          subject: `Confirmation de votre inscription – Atelier Arte Vich`,
-          html: confirmHtml
+          subject: emailData.subject,
+          html: emailData.html
         })
       });
       alert(`¡Alumno ${pr.name} dado de alta! Se ha enviado el correo de confirmación al cliente.`);
@@ -1809,6 +1813,7 @@
       document.getElementById('client-address').value = client.address || '';
       document.getElementById('client-postal').value = client.postal || '';
       document.getElementById('client-city').value = client.city || '';
+      document.getElementById('client-lang').value = client ? (client.lang || 'fr') : 'fr';
       document.getElementById('client-image-consent').checked = !!client.imageConsent;
       document.getElementById('client-status').value = client.status || 'present';
       setDatePickerValue('client-departure-date', client.departureDate || '');
@@ -1821,6 +1826,7 @@
       document.getElementById('client-address').value = '';
       document.getElementById('client-postal').value = '';
       document.getElementById('client-city').value = '';
+      document.getElementById('client-lang').value = 'fr';
       document.getElementById('client-image-consent').checked = false;
       document.getElementById('client-status').value = 'present';
       setDatePickerValue('client-departure-date', '');
@@ -1874,29 +1880,29 @@
       historyHtml = `<div class="space-y-2">`;
       clientInvoices.forEach(inv => {
         const fileInfo = inv.fileName ? `<span class="text-indigo-600">📎 ${inv.fileName}</span>` : `<span class="text-gray-400 italic">Sin fichero</span>`;
-          let bonusExtra = '';
-          if (inv.isBonus) {
-            const clientAttendances = (db.attendanceLogs || [])
-              .filter(a => a.client_id === clientId)
-              .sort((a, b) => new Date(a.session_date) - new Date(b.session_date));
+        let bonusExtra = '';
+        if (inv.isBonus) {
+          const clientAttendances = (db.attendanceLogs || [])
+            .filter(a => a.client_id === clientId)
+            .sort((a, b) => new Date(a.session_date) - new Date(b.session_date));
 
-            let gridItems = '';
-            for (let i = 0; i < 10; i++) {
-              const att = clientAttendances[i];
-              if (att && att.session_date) {
-                gridItems += `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center text-[10px] font-mono" title="Clase ${i+1}">✓ ${formatDate(att.session_date)}</div>`;
-              } else {
-                gridItems += `<div class="bg-gray-50 border border-dashed border-gray-300 text-gray-400 p-1 rounded text-center text-[10px]" title="Pendiente">${i+1}</div>`;
-              }
+          let gridItems = '';
+          for (let i = 0; i < 10; i++) {
+            const att = clientAttendances[i];
+            if (att && att.session_date) {
+              gridItems += `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-1 rounded text-center text-[10px] font-mono" title="Clase ${i+1}">✓ ${formatDate(att.session_date)}</div>`;
+            } else {
+              gridItems += `<div class="bg-gray-50 border border-dashed border-gray-300 text-gray-400 p-1 rounded text-center text-[10px]" title="Pendiente">${i+1}</div>`;
             }
+          }
 
-            bonusExtra = `
+          bonusExtra = `
               <div class="space-y-1.5 my-2">
                   <div class="text-xs font-semibold text-gray-700">Carnet de Bono (${inv.sessionsLeft} disponibles):</div>
                   <div class="grid grid-cols-5 gap-1.5">${gridItems}</div>
               </div>
             `;
-          }
+        }
         let typeBadgeHtml = `<span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-[10px] font-bold">Factura</span>`;
         if (inv.isBonus) typeBadgeHtml = `<span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-[10px] font-bold">Bono</span>`;
         else if (inv.isMaterial) typeBadgeHtml = `<span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">Material</span>`;
@@ -1938,6 +1944,7 @@
       address: document.getElementById('client-address').value,
       postal: document.getElementById('client-postal').value,
       city: document.getElementById('client-city').value,
+      lang: document.getElementById('client-lang').value,
       imageConsent: document.getElementById('client-image-consent').checked,
       status: status,
       departureDate: status === 'past' ? document.getElementById('client-departure-date').value : ''
@@ -2178,10 +2185,15 @@
     closeModals();
     renderAll();
 
+    const clientLang = client?.lang || 'fr';
+
     if (lowBonusAlerts.length > 0) {
       for (const alertInfo of lowBonusAlerts) {
-        const subject = `Rappel : Carnet de cours bientôt épuisé - Atelier de Eloísa`;
-        const body = `Bonjour ${alertInfo.clientName},\n\nNous vous informons qu'il ne vous reste plus que 2 cours sur votre carnet (${alertInfo.invoiceId}).\n\nN'hésitez pas à nous contacter pour le renouveler pour les prochaines séances.\n\nCordialement,\nAtelier de Eloísa`;
+        const bonusData = EmailTemplates.bonusLowReminder({
+          name: alertInfo.clientName,
+          invoiceNumber: alertInfo.invoiceId,
+          remaining: 2
+        }, clientLang);
 
         try {
           await fetch('/.netlify/functions/send-email', {
@@ -2189,8 +2201,8 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               to: alertInfo.email,
-              subject: subject,
-              text: body
+              subject: bonusData.subject,
+              html: bonusData.html
             })
           });
           console.log(`Email de aviso de bono enviado a ${alertInfo.email}`);
@@ -2222,7 +2234,7 @@
       addClassRateRow('Clase Suelta', 'single_class', 35);
     }
   }
-  
+
   function onClassScheduleModeChange() {
     const mode = document.getElementById('class-schedule-mode')?.value || 'recurring';
     const rec = document.getElementById('fields-recurring');
@@ -2966,38 +2978,22 @@
       alert('El alumno no tiene un correo electrónico válido registrado.');
       return;
     }
+    const clientLang = client?.lang || 'fr';
 
-    const invoiceHtml = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 32px; border-radius: 12px; border: 1px solid #eee;">
-      <h2 style="font-size: 22px; color: #111; margin-bottom: 16px;">Facture ${inv.invoiceNumber || inv.id}</h2>
-      <p style="font-size: 15px; color: #444; line-height: 1.6;">Bonjour ${client.name},</p>
-      <p style="font-size: 15px; color: #444; line-height: 1.6;">Veuillez trouver ci-joint votre facture concernant les cours à l'Atelier Arte Vich.</p>
-
-      <table style="width:100%; background:#f9f9fb; padding:16px; border-radius:8px; margin:20px 0; border:1px solid #eee;">
-        <tr>
-          <td>
-            <span style="font-size:11px; color:#666; text-transform:uppercase;">Concept</span><br>
-            <strong style="font-size:15px; color:#111;">${inv.concept}</strong>
-          </td>
-          <td style="text-align:right;">
-            <span style="font-size:11px; color:#666; text-transform:uppercase;">Montant</span><br>
-            <span style="font-size:22px; font-weight:bold; color:#e63500;">${inv.amount} CHF</span>
-          </td>
-        </tr>
-      </table>
-
-      <p style="font-size: 14px; color: #666;">Le document PDF correspondant est joint à ce message.</p>
-      <p style="margin-top:24px; font-weight:600; color:#111;">Merci pour votre confiance !<br>Atelier Arte Vich</p>
-    </div>
-  `;
+    const invoiceData = EmailTemplates.invoiceEmail({
+      name: client.name,
+      invoiceNumber: inv.invoiceNumber || inv.id,
+      concept: inv.concept,
+      amount: inv.amount
+    }, clientLang);
 
     currentEmailContext = {
       type: 'invoice',
       id: inv.id,
       email: client.email,
-      subject: `Facture ${inv.invoiceNumber || inv.id} - Atelier Arte Vich`,
+      subject: invoiceData.subject,
       body: `Bonjour ${client.name},\n\nVeuillez trouver ci-joint votre facture ${inv.invoiceNumber || inv.id} pour "${inv.concept}" d'un montant de ${inv.amount} CHF.\n\nCordialement,\nAtelier Arte Vich`,
-      html: invoiceHtml,
+      html: invoiceData.html,
       attachments: [
         {
           filename: inv.fileName || `Facture_${inv.invoiceNumber || inv.id}.pdf`,
@@ -3013,28 +3009,38 @@
     const inv = db.invoices.find(i => i.id === targetId);
     if (!inv) return;
     const client = db.clients.find(c => c.id === inv.clientId);
+    const clientLang = client?.lang || 'fr';
 
     if (!client || !client.email || !client.email.includes('@')) {
       alert('El alumno no tiene un correo electrónico válido registrado.');
       return;
     }
 
-    let subject, body;
+    let emailData;
     const numDisplay = inv.invoiceNumber || inv.id;
+
     if (inv.isBonus && inv.sessionsLeft <= 2) {
-      subject = `Rappel : Bientôt épuisé (${numDisplay}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous informons qu'il ne vous reste plus que ${inv.sessionsLeft} cours sur votre carnet (${numDisplay}). Pensez à le renouveler.\n\nCordialement,\nAtelier de Eloísa`;
+      emailData = EmailTemplates.bonusLowReminder({
+        name: client.name,
+        invoiceNumber: numDisplay,
+        remaining: inv.sessionsLeft
+      }, clientLang);
     } else {
-      subject = `Rappel : Facture en attente (${numDisplay}) - Atelier de Eloísa`;
-      body = `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${numDisplay} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier de Eloísa`;
+      emailData = EmailTemplates.paymentReminder({
+        name: client.name,
+        invoiceNumber: numDisplay,
+        concept: inv.concept,
+        amount: inv.amount
+      }, 'fr');
     }
 
     currentEmailContext = {
       type: 'reminder',
       id: inv.id,
       email: client.email,
-      subject: subject,
-      body: body
+      subject: emailData.subject,
+      body: `Bonjour ${client.name},\n\nNous vous rappelons que votre facture ${numDisplay} pour "${inv.concept}" d'un montant de ${inv.amount} CHF est en attente de règlement.\n\nCordialement,\nAtelier Arte Vich`,
+      html: emailData.html
     };
 
     openEmailPreviewModal();
