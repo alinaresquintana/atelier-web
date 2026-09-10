@@ -7,18 +7,8 @@ const supabaseAdmin = createClient(
 );
 
 exports.handler = async (event, context) => {
-  // 1. Capturar el token de la cabecera HTTP enviada por el frontend
-  const authHeader = event.headers.authorization || event.headers.Authorization || '';
-  if (authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
-    // Inyectamos el token en el contexto para que Netlify Identity lo reconozca
-    if (context.clientContext) {
-      context.clientContext.custom = { ...(context.clientContext.custom || {}), token };
-    }
-  }
-
-  // 2. Verificar que el usuario esté autenticado en Netlify Identity
-  const { user } = context.clientContext || {};
+  // 1. Verificar que el usuario esté autenticado en Netlify Identity
+  const { user } = context.clientContext;
   if (!user) {
     return {
       statusCode: 401,
@@ -31,7 +21,7 @@ exports.handler = async (event, context) => {
 
     let response;
 
-    // 3. Ejecutar la operación solicitada en Supabase de forma segura
+    // 2. Ejecutar la operación solicitada en Supabase de forma segura
     if (action === 'select') {
       let q = supabaseAdmin.from(table).select(query || '*');
       response = await q;
@@ -47,13 +37,11 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data: response.data }),
     };
   } catch (error) {
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: error.message }),
     };
   }
