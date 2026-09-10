@@ -63,6 +63,7 @@
             <button onclick="switchTab('invoices')" id="nav-invoices" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📄 Facturación y Cobros</button>
             <button onclick="switchTab('material')" id="nav-material" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">🎨 Catálogo Material</button>
             <button onclick="switchTab('ledger')" id="nav-ledger" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">💰 Ingresos/Gastos</button>
+            <button onclick="switchTab('notifications')" id="nav-notifications" class="py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm whitespace-nowrap">📢 Avisos Web</button>
         </div>
         <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 whitespace-nowrap">
             <span>🔒 Admin Privada</span>
@@ -460,7 +461,124 @@
             </div>
         </div>
 
+        <!-- TAB NOTIFICATIONS: AVISOS WEB -->
+        <div id="tab-notifications" class="hidden space-y-6">
+            <div class="flex justify-between items-center flex-wrap gap-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">📢 Gestión de Avisos y Notificaciones Web</h2>
+                    <p class="text-xs text-gray-500">Crea banners informativos para los visitantes de la web pública (con soporte multilingüe).</p>
+                </div>
+                <button onclick="openNotificationModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">+ Nuevo Aviso Web</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                        <th class="p-4">ID / Fechas Vigencia</th>
+                        <th class="p-4">Texto (FR)</th>
+                        <th class="p-4">Enlace (Deeplink)</th>
+                        <th class="p-4 text-center">Estado</th>
+                        <th class="p-4 text-right">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="notifications-table-body" class="divide-y divide-gray-200 text-sm"></tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
+</div>
+
+<!-- MODAL CREAR / EDITAR AVISO WEB -->
+<div id="notification-modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="text-lg font-bold text-gray-900" id="notification-modal-title">Crear Aviso Web</h3>
+            <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600 font-bold">✕</button>
+        </div>
+        <form onsubmit="saveNotification(event)" class="space-y-4 text-xs">
+            <input type="hidden" id="notif-id-original">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">ID Único (Ej. notif-verano)</label>
+                    <input type="text" id="notif-id" required class="w-full px-3 py-2 border rounded-lg text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                    <input type="date" id="notif-start-date" class="w-full px-3 py-2 border rounded-lg text-xs bg-white text-gray-800">
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Fecha Fin</label>
+                    <input type="date" id="notif-end-date" class="w-full px-3 py-2 border rounded-lg text-xs bg-white text-gray-800">
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-medium text-gray-700 mb-1">Enlace / Destino (Opcional, ej. #collection o #artwork-art-01)</label>
+                <input type="text" id="notif-link" placeholder="#collection" class="w-full px-3 py-2 border rounded-lg text-xs">
+            </div>
+
+            <div class="border-t pt-3 space-y-3">
+                <h4 class="font-bold text-indigo-900 uppercase">Textos del Aviso por Idioma</h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto (Français - FR)</label>
+                        <textarea id="notif-text-fr" rows="2" required class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto Botón (FR)</label>
+                        <input type="text" id="notif-link-text-fr" placeholder="Découvrir →" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto (English - EN)</label>
+                        <textarea id="notif-text-en" rows="2" class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto Botón (EN)</label>
+                        <input type="text" id="notif-link-text-en" placeholder="View Artwork →" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto (Italiano - IT)</label>
+                        <textarea id="notif-text-it" rows="2" class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto Botón (IT)</label>
+                        <input type="text" id="notif-link-text-it" placeholder="Scopri →" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto (Español - ES)</label>
+                        <textarea id="notif-text-es" rows="2" class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Texto Botón (ES)</label>
+                        <input type="text" id="notif-link-text-es" placeholder="Descubrir →" class="w-full px-3 py-2 border rounded-lg text-xs">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 pt-2">
+                <input type="checkbox" id="notif-active" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                <label for="notif-active" class="font-medium text-gray-700">Activar aviso inmediatamente en la web pública</label>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-3 border-t">
+                <button type="button" onclick="closeModals()" class="px-4 py-2 border rounded-lg text-gray-600 text-xs">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-medium hover:bg-indigo-700">Guardar Aviso</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- MODAL PASAR LISTA -->
@@ -1058,14 +1176,14 @@
     ledger: [],
     ignoredRenewals: [],
     preRegistrations: [],
-    attendanceLogs: []
+    attendanceLogs: [],
+    notifications: []
   };
 
   function setButtonLoading(buttonElement, isLoading, originalText = 'Guardar') {
     if (!buttonElement) return;
     if (isLoading) {
       buttonElement.disabled = true;
-      // Fijamos el ancho actual para evitar que el botón se contraiga al vaciar el texto
       const currentWidth = buttonElement.getBoundingClientRect().width;
       buttonElement.dataset.originalWidth = buttonElement.style.width;
       buttonElement.style.width = `${currentWidth}px`;
@@ -1098,6 +1216,7 @@
       const { data: preRegs } = await supabaseClient.from('pre_registrations').select('*');
       const { data: holidays } = await supabaseClient.from('holidays').select('*');
       const { data: attendanceLogs } = await supabaseClient.from('attendance_logs').select('*');
+      const { data: notifications } = await supabaseClient.from('notifications').select('*');
 
       db.clients = (clients || []).map(c => ({
         id: c.id,
@@ -1199,6 +1318,22 @@
         scope: h.scope
       }));
 
+      db.notifications = (notifications || []).map(n => ({
+        id: n.id,
+        active: n.active,
+        startDate: n.start_date,
+        endDate: n.end_date,
+        link: n.link,
+        textFr: n.text_fr,
+        textEn: n.text_en,
+        textIt: n.text_it,
+        textEs: n.text_es,
+        linkTextFr: n.link_text_fr,
+        linkTextEn: n.link_text_en,
+        linkTextIt: n.link_text_it,
+        linkTextEs: n.link_text_es
+      }));
+
     } catch (err) {
       console.error("Error al cargar desde Supabase:", err);
     }
@@ -1264,6 +1399,26 @@
           end_date: h.endDate,
           reason: h.reason,
           scope: h.scope || 'all'
+        });
+      }
+    }
+
+    if (db.notifications) {
+      for (const n of db.notifications) {
+        await supabaseClient.from('notifications').upsert({
+          id: n.id,
+          active: n.active,
+          start_date: n.startDate || null,
+          end_date: n.endDate || null,
+          link: n.link || null,
+          text_fr: n.textFr || null,
+          text_en: n.textEn || null,
+          text_it: n.textIt || null,
+          text_es: n.textEs || null,
+          link_text_fr: n.linkTextFr || null,
+          link_text_en: n.linkTextEn || null,
+          link_text_it: n.linkTextIt || null,
+          link_text_es: n.linkTextEs || null
         });
       }
     }
@@ -1365,7 +1520,7 @@
   }
 
   function switchTab(tab) {
-    const allTabs = ['dashboard', 'calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger'];
+    const allTabs = ['dashboard', 'calendar', 'prereg', 'clients', 'classes', 'invoices', 'material', 'ledger', 'notifications'];
 
     allTabs.forEach(t => {
       const elTab = document.getElementById(`tab-${t}`);
@@ -1391,6 +1546,7 @@
       populateLedgerYears();
       renderLedger();
     }
+    if (tab === 'notifications') renderNotifications();
     initDatePickers();
   }
 
@@ -1406,9 +1562,173 @@
     renderMaterialSection();
     populateLedgerYears();
     renderLedger();
+    renderNotifications();
     initDatePickers();
   }
 
+  // --- GESTIÓN DE AVISOS WEB (NOTIFICACIONES) ---
+  function renderNotifications() {
+    const tbody = document.getElementById('notifications-table-body');
+    if (!tbody) return;
+    const notifs = db.notifications || [];
+
+    if (notifs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-400 italic">No hay avisos web registrados.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = notifs.map(n => `
+      <tr class="hover:bg-gray-50 align-top">
+          <td class="p-4">
+              <div class="font-mono font-bold text-indigo-900">${n.id}</div>
+              <div class="text-[11px] text-gray-500">Del ${formatDate(n.startDate) || '∞'} al ${formatDate(n.endDate) || '∞'}</div>
+          </td>
+          <td class="p-4 max-w-xs">
+              <div class="text-xs text-gray-800 line-clamp-2">${n.textFr || '(Sin texto FR)'}</div>
+          </td>
+          <td class="p-4 text-xs font-mono text-indigo-600">${n.link || 'Sin enlace'}</td>
+          <td class="p-4 text-center">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${n.active ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}">
+                  ${n.active ? 'Activo' : 'Inactivo'}
+              </span>
+          </td>
+          <td class="p-4 text-right space-x-2">
+              <button onclick="toggleNotificationStatus('${n.id}')" class="text-xs bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded font-medium">
+                  ${n.active ? 'Desactivar' : 'Activar'}
+              </button>
+              <button onclick="openNotificationModal('${n.id}')" class="text-indigo-600 hover:underline text-xs font-medium">✏️</button>
+              <button onclick="deleteNotification('${n.id}')" class="text-red-600 hover:underline text-xs">🗑️</button>
+          </td>
+      </tr>
+    `).join('');
+  }
+
+  function openNotificationModal(id = null) {
+    document.getElementById('notif-id-original').value = id || '';
+    const modalTitle = document.getElementById('notification-modal-title');
+
+    if (id) {
+      const n = (db.notifications || []).find(item => item.id === id);
+      if (!n) return;
+      modalTitle.innerText = `Editar Aviso: ${n.id}`;
+      document.getElementById('notif-id').value = n.id;
+      document.getElementById('notif-id').readOnly = true;
+      setDatePickerValue('notif-start-date', n.startDate || '');
+      setDatePickerValue('notif-end-date', n.endDate || '');
+      document.getElementById('notif-link').value = n.link || '';
+      document.getElementById('notif-text-fr').value = n.textFr || '';
+      document.getElementById('notif-text-en').value = n.textEn || '';
+      document.getElementById('notif-text-it').value = n.textIt || '';
+      document.getElementById('notif-text-es').value = n.textEs || '';
+      document.getElementById('notif-link-text-fr').value = n.linkTextFr || '';
+      document.getElementById('notif-link-text-en').value = n.linkTextEn || '';
+      document.getElementById('notif-link-text-it').value = n.linkTextIt || '';
+      document.getElementById('notif-link-text-es').value = n.linkTextEs || '';
+      document.getElementById('notif-active').checked = !!n.active;
+    } else {
+      modalTitle.innerText = 'Crear Nuevo Aviso Web';
+      document.getElementById('notif-id').value = 'notif-' + Date.now();
+      document.getElementById('notif-id').readOnly = false;
+      setDatePickerValue('notif-start-date', '');
+      setDatePickerValue('notif-end-date', '');
+      document.getElementById('notif-link').value = '';
+      document.getElementById('notif-text-fr').value = '';
+      document.getElementById('notif-text-en').value = '';
+      document.getElementById('notif-text-it').value = '';
+      document.getElementById('notif-text-es').value = '';
+      document.getElementById('notif-link-text-fr').value = '';
+      document.getElementById('notif-link-text-en').value = '';
+      document.getElementById('notif-link-text-it').value = '';
+      document.getElementById('notif-link-text-es').value = '';
+      document.getElementById('notif-active').checked = true;
+    }
+
+    document.getElementById('notification-modal').classList.remove('hidden');
+    initDatePickers();
+  }
+
+  async function saveNotification(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar Aviso');
+
+    try {
+      const originalId = document.getElementById('notif-id-original').value;
+      const newId = document.getElementById('notif-id').value.trim();
+
+      const notificationData = {
+        id: newId,
+        active: document.getElementById('notif-active').checked,
+        startDate: document.getElementById('notif-start-date').value || null,
+        endDate: document.getElementById('notif-end-date').value || null,
+        link: document.getElementById('notif-link').value.trim() || null,
+        textFr: document.getElementById('notif-text-fr').value.trim() || null,
+        textEn: document.getElementById('notif-text-en').value.trim() || null,
+        textIt: document.getElementById('notif-text-it').value.trim() || null,
+        textEs: document.getElementById('notif-text-es').value.trim() || null,
+        linkTextFr: document.getElementById('notif-link-text-fr').value.trim() || null,
+        linkTextEn: document.getElementById('notif-link-text-en').value.trim() || null,
+        linkTextIt: document.getElementById('notif-link-text-it').value.trim() || null,
+        linkTextEs: document.getElementById('notif-link-text-es').value.trim() || null
+      };
+
+      if (!db.notifications) db.notifications = [];
+
+      if (originalId && originalId !== newId) {
+        db.notifications = db.notifications.filter(n => n.id !== originalId);
+        await supabaseClient.from('notifications').delete().eq('id', originalId);
+      }
+
+      const existingIndex = db.notifications.findIndex(n => n.id === newId);
+      if (existingIndex > -1) {
+        db.notifications[existingIndex] = notificationData;
+      } else {
+        db.notifications.push(notificationData);
+      }
+
+      await supabaseClient.from('notifications').upsert({
+        id: notificationData.id,
+        active: notificationData.active,
+        start_date: notificationData.startDate,
+        end_date: notificationData.endDate,
+        link: notificationData.link,
+        text_fr: notificationData.textFr,
+        text_en: notificationData.textEn,
+        text_it: notificationData.textIt,
+        text_es: notificationData.textEs,
+        link_text_fr: notificationData.linkTextFr,
+        link_text_en: notificationData.linkTextEn,
+        link_text_it: notificationData.linkTextIt,
+        link_text_es: notificationData.linkTextEs
+      });
+
+      closeModals();
+      renderNotifications();
+      showToast('Aviso web guardado correctamente.', 'success');
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar Aviso');
+    }
+  }
+
+  async function toggleNotificationStatus(id) {
+    const n = (db.notifications || []).find(item => item.id === id);
+    if (!n) return;
+    n.active = !n.active;
+    await supabaseClient.from('notifications').update({ active: n.active }).eq('id', id);
+    renderNotifications();
+    showToast(`Aviso ${n.id} ${n.active ? 'activado' : 'desactivado'}.`, 'info');
+  }
+
+  async function deleteNotification(id) {
+    if (confirm(`¿Estás seguro de eliminar el aviso web ${id}?`)) {
+      db.notifications = (db.notifications || []).filter(n => n.id !== id);
+      await supabaseClient.from('notifications').delete().eq('id', id);
+      renderNotifications();
+      showToast('Aviso web eliminado.', 'success');
+    }
+  }
+
+  // Resto de funciones auxiliares y modales...
   function changeCalendarMonth(direction) {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
     renderCalendar();
@@ -1465,7 +1785,6 @@
 
     alertsContainer.innerHTML = alertsHtml || `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-lg text-xs font-semibold">✨ ¡Todo al día! No hay tareas urgentes pendientes.</div>`;
 
-    // --- CÁLCULO REAL DE PRÓXIMAS CLASES (PRÓXIMOS 7 DÍAS) ---
     const upcomingClassesContainer = document.getElementById('dash-upcoming-classes');
     const upcomingSessions = [];
 
@@ -1532,7 +1851,6 @@
       }).join('');
     }
 
-    // --- PRÓXIMOS HITOS Y VACACIONES ---
     const eventsContainer = document.getElementById('dash-upcoming-events');
     const holidays = (db.holidays || []).filter(h => h.endDate >= today);
 
@@ -3800,7 +4118,6 @@
     const inv = db.invoices.find(i => i.id === id);
     if (!inv) return;
 
-    // Declaración y formateo de la fecha actual a DD/MM/YYYY
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -4155,7 +4472,7 @@
   }
 
   function closeModals() {
-    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal', 'convert-prereg-modal', 'email-preview-modal', 'attendance-modal'].forEach(m => {
+    ['client-modal', 'client-detail-modal', 'class-modal', 'enroll-modal', 'invoice-modal', 'bonus-modal', 'ledger-modal', 'ledger-report-modal', 'material-type-modal', 'material-sale-modal', 'convert-prereg-modal', 'email-preview-modal', 'attendance-modal', 'notification-modal'].forEach(m => {
       const el = document.getElementById(m);
       if (el) el.classList.add('hidden');
     });
