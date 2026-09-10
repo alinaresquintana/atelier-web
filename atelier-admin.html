@@ -914,7 +914,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar del Catálogo</label>
                 <input type="hidden" id="mat-sale-type-id" required>
                 <input type="text" id="mat-sale-search" oninput="filterMaterialDropdown()" onfocus="filterMaterialDropdown()" placeholder="🔍 Escribe para buscar material..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                
+
                 <!-- Contenedor desplegable dinámico -->
                 <div id="mat-sale-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50 divide-y divide-gray-100">
                 </div>
@@ -987,11 +987,55 @@
     </div>
 </div>
 
+<!-- CONTENEDOR DE NOTIFICACIONES TOAST (Esquina inferior derecha) -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
 <!-- JAVASCRIPT INTEGRADO CON SUPABASE Y STORAGE BUCKET -->
 <script>
   const SUPABASE_URL = 'https://alfkqkzsurazgrttokso.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_YJ9tk3wlPT5s-RVyTa-t7A_8sW9gfFN';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // NUEVA FUNCIÓN PARA TOASTS NO INTRUSIVOS
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+
+    const typeStyles = {
+      success: { bg: 'bg-emerald-600', icon: '✅' },
+      error: { bg: 'bg-rose-600', icon: '❌' },
+      warning: { bg: 'bg-amber-500', icon: '⚠️' },
+      info: { bg: 'bg-indigo-600', icon: 'ℹ️' }
+    };
+    const style = typeStyles[type] || typeStyles.info;
+
+    toast.className = `max-w-sm w-full px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white flex items-center justify-between gap-3 pointer-events-auto transform transition-all duration-300 translate-y-10 opacity-0 ${style.bg}`;
+
+    toast.innerHTML = `
+          <div class="flex items-center gap-2">
+              <span>${style.icon}</span>
+              <span>${message}</span>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white font-bold focus:outline-none">&times;</button>
+      `;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+      });
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-10', 'opacity-0');
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
 
   let renewalsPanelOpen = false;
   let pastArchivePanelOpen = false;
@@ -1016,6 +1060,31 @@
     preRegistrations: [],
     attendanceLogs: []
   };
+
+  function setButtonLoading(buttonElement, isLoading, originalText = 'Guardar') {
+    if (!buttonElement) return;
+    if (isLoading) {
+      buttonElement.disabled = true;
+      // Fijamos el ancho actual para evitar que el botón se contraiga al vaciar el texto
+      const currentWidth = buttonElement.getBoundingClientRect().width;
+      buttonElement.dataset.originalWidth = buttonElement.style.width;
+      buttonElement.style.width = `${currentWidth}px`;
+
+      buttonElement.dataset.originalText = buttonElement.innerHTML;
+      buttonElement.innerHTML = `
+            <span class="inline-flex items-center justify-center w-full h-full">
+                <svg class="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </span>
+        `;
+    } else {
+      buttonElement.disabled = false;
+      buttonElement.style.width = buttonElement.dataset.originalWidth || '';
+      buttonElement.innerHTML = buttonElement.dataset.originalText || originalText;
+    }
+  }
 
   async function loadDB() {
     try {
@@ -1484,40 +1553,47 @@
 
   async function addHoliday(e) {
     e.preventDefault();
-    const startDate = document.getElementById('holiday-start').value;
-    const endDate = document.getElementById('holiday-end').value || startDate;
-    const reason = document.getElementById('holiday-reason').value;
-    const scope = document.getElementById('holiday-scope').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, '+ Añadir Vacaciones');
 
-    if (startDate > endDate) {
-      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
-      return;
+    try {
+      const startDate = document.getElementById('holiday-start').value;
+      const endDate = document.getElementById('holiday-end').value || startDate;
+      const reason = document.getElementById('holiday-reason').value;
+      const scope = document.getElementById('holiday-scope').value;
+
+      if (startDate > endDate) {
+        showToast('La fecha de inicio no puede ser posterior a la fecha de fin.', 'error');
+        return;
+      }
+
+      const newHoliday = {
+        id: 'hol_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        startDate: startDate,
+        endDate: endDate,
+        reason: reason,
+        scope: scope
+      };
+
+      if (!db.holidays) db.holidays = [];
+      db.holidays.push(newHoliday);
+
+      await supabaseClient.from('holidays').insert({
+        id: newHoliday.id,
+        start_date: newHoliday.startDate,
+        end_date: newHoliday.endDate,
+        reason: newHoliday.reason,
+        scope: newHoliday.scope
+      });
+
+      setDatePickerValue('holiday-start', '');
+      setDatePickerValue('holiday-end', '');
+      document.getElementById('holiday-reason').value = '';
+      renderAll();
+      showToast('Período de vacaciones añadido y guardado correctamente.', 'success');
+    } finally {
+      setButtonLoading(submitBtn, false, '+ Añadir Vacaciones');
     }
-
-    const newHoliday = {
-      id: 'hol_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-      startDate: startDate,
-      endDate: endDate,
-      reason: reason,
-      scope: scope
-    };
-
-    if (!db.holidays) db.holidays = [];
-    db.holidays.push(newHoliday);
-
-    await supabaseClient.from('holidays').insert({
-      id: newHoliday.id,
-      start_date: newHoliday.startDate,
-      end_date: newHoliday.endDate,
-      reason: newHoliday.reason,
-      scope: newHoliday.scope
-    });
-
-    setDatePickerValue('holiday-start', '');
-    setDatePickerValue('holiday-end', '');
-    document.getElementById('holiday-reason').value = '';
-    renderAll();
-    alert('Período de vacaciones añadido y guardado correctamente.');
   }
 
   async function deleteHoliday(index) {
@@ -1794,71 +1870,78 @@
 
   async function confirmConvertPreReg(e) {
     e.preventDefault();
-    const id = document.getElementById('convert-prereg-id').value;
-    const classId = document.getElementById('convert-class-id').value;
-    const rateName = document.getElementById('convert-rate-name').value;
-
-    const pr = (db.preRegistrations || []).find(p => p.id === id);
-    if (!pr) return;
-
-    const newClient = {
-      id: 'cli_' + Date.now(),
-      name: pr.name,
-      email: pr.email,
-      phone: pr.phone,
-      address: '',
-      postal: '',
-      city: '',
-      lang: pr.lang || 'fr',
-      imageConsent: false,
-      status: 'present',
-      departureDate: ''
-    };
-    db.clients.push(newClient);
-
-    const targetClass = db.classes.find(c => c.id === classId);
-    if (targetClass) {
-      targetClass.enrolled.push({
-        clientId: newClient.id,
-        rateName: rateName,
-        sessionsLeft: isBonusRate(rateName) ? 10 : null
-      });
-
-      await supabaseClient.from('enrollments').insert({
-        client_id: newClient.id,
-        class_id: classId,
-        rate_name: rateName,
-        sessions_left: isBonusRate(rateName) ? 10 : null
-      });
-    }
-
-    db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
-    await supabaseClient.from('pre_registrations').delete().eq('id', id);
-
-    saveDB();
-    closeModals();
-    renderAll();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Confirmar Alta');
 
     try {
-      const emailData = EmailTemplates.registrationConfirmationClient({
-        name: pr.name,
-        className: targetClass ? targetClass.name : 'Atelier',
-        rateName: rateName
-      }, pr.lang || 'fr');
+      const id = document.getElementById('convert-prereg-id').value;
+      const classId = document.getElementById('convert-class-id').value;
+      const rateName = document.getElementById('convert-rate-name').value;
 
-      await fetch('/.netlify/functions/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: pr.email,
-          subject: emailData.subject,
-          html: emailData.html
-        })
-      });
-      alert(`¡Alumno ${pr.name} dado de alta! Se ha enviado el correo de confirmación al cliente.`);
-    } catch (mailErr) {
-      console.error("Error enviando confirmación al cliente:", mailErr);
-      alert(`¡Alumno ${pr.name} dado de alta correctamente! (No se pudo enviar el email de confirmación).`);
+      const pr = (db.preRegistrations || []).find(p => p.id === id);
+      if (!pr) return;
+
+      const newClient = {
+        id: 'cli_' + Date.now(),
+        name: pr.name,
+        email: pr.email,
+        phone: pr.phone,
+        address: '',
+        postal: '',
+        city: '',
+        lang: pr.lang || 'fr',
+        imageConsent: false,
+        status: 'present',
+        departureDate: ''
+      };
+      db.clients.push(newClient);
+
+      const targetClass = db.classes.find(c => c.id === classId);
+      if (targetClass) {
+        targetClass.enrolled.push({
+          clientId: newClient.id,
+          rateName: rateName,
+          sessionsLeft: isBonusRate(rateName) ? 10 : null
+        });
+
+        await supabaseClient.from('enrollments').insert({
+          client_id: newClient.id,
+          class_id: classId,
+          rate_name: rateName,
+          sessions_left: isBonusRate(rateName) ? 10 : null
+        });
+      }
+
+      db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
+      await supabaseClient.from('pre_registrations').delete().eq('id', id);
+
+      saveDB();
+      closeModals();
+      renderAll();
+
+      try {
+        const emailData = EmailTemplates.registrationConfirmationClient({
+          name: pr.name,
+          className: targetClass ? targetClass.name : 'Atelier',
+          rateName: rateName
+        }, pr.lang || 'fr');
+
+        await fetch('/.netlify/functions/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: pr.email,
+            subject: emailData.subject,
+            html: emailData.html
+          })
+        });
+        showToast(`¡Alumno ${pr.name} dado de alta! Se ha enviado el correo de confirmación.`, 'success');
+      } catch (mailErr) {
+        console.error("Error enviando confirmación al cliente:", mailErr);
+        showToast(`¡Alumno ${pr.name} dado de alta correctamente! (Fallo email)`, 'warning');
+      }
+    } finally {
+      setButtonLoading(submitBtn, false, 'Confirmar Alta');
     }
   }
 
@@ -2192,28 +2275,35 @@
 
   async function saveClient(e) {
     e.preventDefault();
-    const id = document.getElementById('client-id').value;
-    const status = document.getElementById('client-status').value;
-    const data = {
-      name: document.getElementById('client-name').value,
-      email: document.getElementById('client-email').value,
-      phone: document.getElementById('client-phone').value,
-      address: document.getElementById('client-address').value,
-      postal: document.getElementById('client-postal').value,
-      city: document.getElementById('client-city').value,
-      lang: document.getElementById('client-lang').value,
-      imageConsent: document.getElementById('client-image-consent').checked,
-      status: status,
-      departureDate: status === 'past' ? document.getElementById('client-departure-date').value : ''
-    };
-    if (id) {
-      const client = db.clients.find(c => c.id === id);
-      Object.assign(client, data);
-    } else {
-      data.id = 'cli_' + Date.now();
-      db.clients.push(data);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar');
+
+    try {
+      const id = document.getElementById('client-id').value;
+      const status = document.getElementById('client-status').value;
+      const data = {
+        name: document.getElementById('client-name').value,
+        email: document.getElementById('client-email').value,
+        phone: document.getElementById('client-phone').value,
+        address: document.getElementById('client-address').value,
+        postal: document.getElementById('client-postal').value,
+        city: document.getElementById('client-city').value,
+        lang: document.getElementById('client-lang').value,
+        imageConsent: document.getElementById('client-image-consent').checked,
+        status: status,
+        departureDate: status === 'past' ? document.getElementById('client-departure-date').value : ''
+      };
+      if (id) {
+        const client = db.clients.find(c => c.id === id);
+        Object.assign(client, data);
+      } else {
+        data.id = 'cli_' + Date.now();
+        db.clients.push(data);
+      }
+      await saveDB(); closeModals(); renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar');
     }
-    await saveDB(); closeModals(); renderAll();
   }
 
   async function deleteClient(id) {
@@ -2392,86 +2482,93 @@
 
   async function saveAttendance(e) {
     e.preventDefault();
-    const classId = document.getElementById('attendance-class-id').value;
-    const attendanceDate = document.getElementById('attendance-date').value;
-    const cl = db.classes.find(c => c.id === classId);
-    if (!cl) return;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar Asistencia');
 
-    const checkboxes = document.querySelectorAll('input[name="attendance-student"]:checked');
-    const presentClientIds = Array.from(checkboxes).map(cb => cb.value);
+    try {
+      const classId = document.getElementById('attendance-class-id').value;
+      const attendanceDate = document.getElementById('attendance-date').value;
+      const cl = db.classes.find(c => c.id === classId);
+      if (!cl) return;
 
-    const lowBonusAlerts = [];
+      const checkboxes = document.querySelectorAll('input[name="attendance-student"]:checked');
+      const presentClientIds = Array.from(checkboxes).map(cb => cb.value);
 
-    for (const eItem of cl.enrolled) {
-      const isPresent = presentClientIds.includes(eItem.clientId);
-      if (isPresent) {
-        if (isBonusRate(eItem.rateName)) {
-          const activeBonusInv = (db.invoices || []).find(
-            inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0
-          );
+      const lowBonusAlerts = [];
 
-          if (activeBonusInv) {
-            activeBonusInv.sessionsLeft--;
+      for (const eItem of cl.enrolled) {
+        const isPresent = presentClientIds.includes(eItem.clientId);
+        if (isPresent) {
+          if (isBonusRate(eItem.rateName)) {
+            const activeBonusInv = (db.invoices || []).find(
+              inv => inv.clientId === eItem.clientId && inv.isBonus && inv.status === 'Pagado' && inv.sessionsLeft > 0
+            );
 
-            if (activeBonusInv.sessionsLeft === 2) {
-              const client = db.clients.find(c => c.id === eItem.clientId);
-              if (client && client.email) {
-                lowBonusAlerts.push({
-                  clientName: client.name,
-                  email: client.email,
-                  invoiceId: activeBonusInv.invoiceNumber || activeBonusInv.id,
-                  remaining: 2
-                });
+            if (activeBonusInv) {
+              activeBonusInv.sessionsLeft--;
+
+              if (activeBonusInv.sessionsLeft === 2) {
+                const client = db.clients.find(c => c.id === eItem.clientId);
+                if (client && client.email) {
+                  lowBonusAlerts.push({
+                    clientName: client.name,
+                    email: client.email,
+                    invoiceId: activeBonusInv.invoiceNumber || activeBonusInv.id,
+                    remaining: 2
+                  });
+                }
               }
             }
           }
-        }
 
-        const logItem = {
-          class_id: classId,
-          client_id: eItem.clientId,
-          session_date: attendanceDate
-        };
-        db.attendanceLogs.push(logItem);
+          const logItem = {
+            class_id: classId,
+            client_id: eItem.clientId,
+            session_date: attendanceDate
+          };
+          db.attendanceLogs.push(logItem);
 
-        await supabaseClient.from('attendance_logs').insert(logItem);
-      }
-    }
-
-    await saveDB();
-    closeModals();
-    renderAll();
-
-    if (lowBonusAlerts.length > 0) {
-      for (const alertInfo of lowBonusAlerts) {
-        const client = db.clients.find(c => c.email === alertInfo.email);
-        const clientLang = client?.lang || 'fr';
-        
-        const bonusData = EmailTemplates.bonusLowReminder({
-          name: alertInfo.clientName,
-          invoiceNumber: alertInfo.invoiceId,
-          remaining: 2
-        }, clientLang);
-
-        try {
-          await fetch('/.netlify/functions/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: alertInfo.email,
-              subject: bonusData.subject,
-              html: bonusData.html
-            })
-          });
-          console.log(`Email de aviso de bono enviado a ${alertInfo.email}`);
-        } catch (err) {
-          console.error(`Error enviando email a ${alertInfo.email}:`, err);
+          await supabaseClient.from('attendance_logs').insert(logItem);
         }
       }
 
-      alert(`Asistencia guardada. Se ha enviado automáticamente un email recordatorio a los alumnos con 2 clases restantes.`);
-    } else {
-      alert(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`);
+      await saveDB();
+      closeModals();
+      renderAll();
+
+      if (lowBonusAlerts.length > 0) {
+        for (const alertInfo of lowBonusAlerts) {
+          const client = db.clients.find(c => c.email === alertInfo.email);
+          const clientLang = client?.lang || 'fr';
+
+          const bonusData = EmailTemplates.bonusLowReminder({
+            name: alertInfo.clientName,
+            invoiceNumber: alertInfo.invoiceId,
+            remaining: 2
+          }, clientLang);
+
+          try {
+            await fetch('/.netlify/functions/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: alertInfo.email,
+                subject: bonusData.subject,
+                html: bonusData.html
+              })
+            });
+            console.log(`Email de aviso de bono enviado a ${alertInfo.email}`);
+          } catch (err) {
+            console.error(`Error enviando email a ${alertInfo.email}:`, err);
+          }
+        }
+
+        showToast(`Asistencia guardada. Email recordatorio enviado.`, 'success');
+      } else {
+        showToast(`Asistencia guardada correctamente para el ${formatDate(attendanceDate)}.`, 'success');
+      }
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar Asistencia');
     }
   }
 
@@ -2612,102 +2709,109 @@
 
   async function saveClass(e) {
     e.preventDefault();
-    const id = document.getElementById('class-id').value;
-    const rates = [];
-    document.querySelectorAll('.rate-row').forEach(row => {
-      rates.push({
-        name: row.querySelector('.rate-name').value,
-        type: row.querySelector('.rate-type').value,
-        price: parseFloat(row.querySelector('.rate-price').value)
-      });
-    });
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar');
 
-    const scheduleMode = document.getElementById('class-schedule-mode').value;
-    const data = {
-      name: document.getElementById('class-name').value,
-      classType: document.getElementById('class-type').value,
-      scheduleMode: scheduleMode,
-      duration: document.getElementById('class-duration').value,
-      capacity: parseInt(document.getElementById('class-capacity').value),
-      rates: rates
-    };
-
-    if (scheduleMode === 'single') {
-      data.singleDate = document.getElementById('class-singledate').value;
-      data.singleSchedule = document.getElementById('class-singleschedule').value;
-      data.dayOfWeek = undefined;
-      data.startDate = undefined;
-      data.endDate = undefined;
-    } else {
-      data.dayOfWeek = parseInt(document.getElementById('class-dayofweek').value);
-      data.schedule = document.getElementById('class-schedule').value;
-      data.startDate = document.getElementById('class-startdate').value;
-      data.endDate = document.getElementById('class-enddate').value;
-      data.singleDate = undefined;
-      data.singleSchedule = undefined;
-    }
-
-    if (id) {
-      const cls = db.classes.find(c => c.id === id);
-      Object.assign(cls, data);
-    } else {
-      data.id = 'cls_' + Date.now();
-      data.enrolled = [];
-      db.classes.push(data);
-    }
-
-    if (id) {
-      await supabaseClient.from('classes').update({
-        name: data.name,
-        class_type: data.classType,
-        schedule_mode: data.scheduleMode,
-        day_of_week: data.dayOfWeek,
-        schedule: data.schedule,
-        start_date: data.startDate || null,
-        end_date: data.endDate || null,
-        single_date: data.singleDate || null,
-        single_schedule: data.singleSchedule || null,
-        duration: data.duration,
-        capacity: data.capacity
-      }).eq('id', id);
-
-      await supabaseClient.from('class_rates').delete().eq('class_id', id);
-      for (const r of rates) {
-        await supabaseClient.from('class_rates').insert({
-          class_id: id,
-          name: r.name,
-          rate_type: r.type,
-          price: r.price
+    try {
+      const id = document.getElementById('class-id').value;
+      const rates = [];
+      document.querySelectorAll('.rate-row').forEach(row => {
+        rates.push({
+          name: row.querySelector('.rate-name').value,
+          type: row.querySelector('.rate-type').value,
+          price: parseFloat(row.querySelector('.rate-price').value)
         });
-      }
-    } else {
-      await supabaseClient.from('classes').insert({
-        id: data.id,
-        name: data.name,
-        class_type: data.classType,
-        schedule_mode: data.scheduleMode,
-        day_of_week: data.dayOfWeek,
-        schedule: data.schedule,
-        start_date: data.startDate || null,
-        end_date: data.endDate || null,
-        single_date: data.singleDate || null,
-        single_schedule: data.singleSchedule || null,
-        duration: data.duration,
-        capacity: data.capacity
       });
 
-      for (const r of rates) {
-        await supabaseClient.from('class_rates').insert({
-          class_id: data.id,
-          name: r.name,
-          rate_type: r.type,
-          price: r.price
-        });
-      }
-    }
+      const scheduleMode = document.getElementById('class-schedule-mode').value;
+      const data = {
+        name: document.getElementById('class-name').value,
+        classType: document.getElementById('class-type').value,
+        scheduleMode: scheduleMode,
+        duration: document.getElementById('class-duration').value,
+        capacity: parseInt(document.getElementById('class-capacity').value),
+        rates: rates
+      };
 
-    closeModals();
-    renderAll();
+      if (scheduleMode === 'single') {
+        data.singleDate = document.getElementById('class-singledate').value;
+        data.singleSchedule = document.getElementById('class-singleschedule').value;
+        data.dayOfWeek = undefined;
+        data.startDate = undefined;
+        data.endDate = undefined;
+      } else {
+        data.dayOfWeek = parseInt(document.getElementById('class-dayofweek').value);
+        data.schedule = document.getElementById('class-schedule').value;
+        data.startDate = document.getElementById('class-startdate').value;
+        data.endDate = document.getElementById('class-enddate').value;
+        data.singleDate = undefined;
+        data.singleSchedule = undefined;
+      }
+
+      if (id) {
+        const cls = db.classes.find(c => c.id === id);
+        Object.assign(cls, data);
+      } else {
+        data.id = 'cls_' + Date.now();
+        data.enrolled = [];
+        db.classes.push(data);
+      }
+
+      if (id) {
+        await supabaseClient.from('classes').update({
+          name: data.name,
+          class_type: data.classType,
+          schedule_mode: data.scheduleMode,
+          day_of_week: data.dayOfWeek,
+          schedule: data.schedule,
+          start_date: data.startDate || null,
+          end_date: data.endDate || null,
+          single_date: data.singleDate || null,
+          single_schedule: data.singleSchedule || null,
+          duration: data.duration,
+          capacity: data.capacity
+        }).eq('id', id);
+
+        await supabaseClient.from('class_rates').delete().eq('class_id', id);
+        for (const r of rates) {
+          await supabaseClient.from('class_rates').insert({
+            class_id: id,
+            name: r.name,
+            rate_type: r.type,
+            price: r.price
+          });
+        }
+      } else {
+        await supabaseClient.from('classes').insert({
+          id: data.id,
+          name: data.name,
+          class_type: data.classType,
+          schedule_mode: data.scheduleMode,
+          day_of_week: data.dayOfWeek,
+          schedule: data.schedule,
+          start_date: data.startDate || null,
+          end_date: data.endDate || null,
+          single_date: data.singleDate || null,
+          single_schedule: data.singleSchedule || null,
+          duration: data.duration,
+          capacity: data.capacity
+        });
+
+        for (const r of rates) {
+          await supabaseClient.from('class_rates').insert({
+            class_id: data.id,
+            name: r.name,
+            rate_type: r.type,
+            price: r.price
+          });
+        }
+      }
+
+      closeModals();
+      renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar');
+    }
   }
 
   async function deleteClass(id) {
@@ -2731,27 +2835,34 @@
 
   async function confirmEnroll(e) {
     e.preventDefault();
-    const classId = document.getElementById('enroll-class-id').value;
-    const clientId = document.getElementById('enroll-client-id').value;
-    const rateName = document.getElementById('enroll-rate-name').value;
-    const cl = db.classes.find(c => c.id === classId);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Inscribir');
 
-    const enrollmentObj = {
-      clientId,
-      rateName,
-      sessionsLeft: isBonusRate(rateName) ? 10 : null
-    };
-    cl.enrolled.push(enrollmentObj);
+    try {
+      const classId = document.getElementById('enroll-class-id').value;
+      const clientId = document.getElementById('enroll-client-id').value;
+      const rateName = document.getElementById('enroll-rate-name').value;
+      const cl = db.classes.find(c => c.id === classId);
 
-    await supabaseClient.from('enrollments').insert({
-      client_id: clientId,
-      class_id: classId,
-      rate_name: rateName,
-      sessions_left: enrollmentObj.sessionsLeft
-    });
+      const enrollmentObj = {
+        clientId,
+        rateName,
+        sessionsLeft: isBonusRate(rateName) ? 10 : null
+      };
+      cl.enrolled.push(enrollmentObj);
 
-    closeModals();
-    renderAll();
+      await supabaseClient.from('enrollments').insert({
+        client_id: clientId,
+        class_id: classId,
+        rate_name: rateName,
+        sessions_left: enrollmentObj.sessionsLeft
+      });
+
+      closeModals();
+      renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Inscribir');
+    }
   }
 
   async function unenrollClient(classId, clientId) {
@@ -2764,13 +2875,13 @@
   // --- SECCIÓN: CATÁLOGO DE MATERIAL ---
   function renderMaterialSection() {
     if (!db.materialTypes) db.materialTypes = [];
-    
+
     const container = document.getElementById('material-types-list');
     const countBadge = document.getElementById('material-count-badge');
     const searchInput = document.getElementById('material-search');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-    const filteredMaterials = db.materialTypes.filter(m => 
+    const filteredMaterials = db.materialTypes.filter(m =>
       m.name.toLowerCase().includes(searchTerm)
     );
 
@@ -2804,22 +2915,29 @@
 
   async function saveMaterialType(e) {
     e.preventDefault();
-    if (!db.materialTypes) db.materialTypes = [];
-    const newMaterial = {
-      id: 'MT-' + Date.now(),
-      name: document.getElementById('mat-type-name').value,
-      price: parseFloat(document.getElementById('mat-type-price').value)
-    };
-    db.materialTypes.push(newMaterial);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar');
 
-    await supabaseClient.from('material_catalog').insert({
-      id: newMaterial.id,
-      name: newMaterial.name,
-      price: newMaterial.price
-    });
+    try {
+      if (!db.materialTypes) db.materialTypes = [];
+      const newMaterial = {
+        id: 'MT-' + Date.now(),
+        name: document.getElementById('mat-type-name').value,
+        price: parseFloat(document.getElementById('mat-type-price').value)
+      };
+      db.materialTypes.push(newMaterial);
 
-    closeModals();
-    renderAll();
+      await supabaseClient.from('material_catalog').insert({
+        id: newMaterial.id,
+        name: newMaterial.name,
+        price: newMaterial.price
+      });
+
+      closeModals();
+      renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar');
+    }
   }
 
   async function deleteMaterialType(id) {
@@ -2845,7 +2963,7 @@
     document.getElementById('material-sale-modal').classList.remove('hidden');
     document.getElementById('mat-invoice-number').value = generateNextInvoiceNumber();
   }
-  
+
   function filterMaterialDropdown() {
     const searchInput = document.getElementById('mat-sale-search');
     const dropdown = document.getElementById('mat-sale-dropdown');
@@ -2872,7 +2990,7 @@
 
     dropdown.classList.remove('hidden');
   }
-  
+
   function selectMaterialFromDropdown(id, name, price) {
     document.getElementById('mat-sale-type-id').value = id;
     document.getElementById('mat-sale-search').value = `${name} (${price.toFixed(2)} CHF)`;
@@ -2891,49 +3009,56 @@
 
   async function saveMaterialSale(e) {
     e.preventDefault();
-    if (!db.invoices) db.invoices = [];
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Generar Factura');
 
-    const materialTypeId = document.getElementById('mat-sale-type-id').value;
-    if (!materialTypeId) {
-      alert('Por favor, selecciona un artículo válido del catálogo.');
-      return;
+    try {
+      if (!db.invoices) db.invoices = [];
+
+      const materialTypeId = document.getElementById('mat-sale-type-id').value;
+      if (!materialTypeId) {
+        showToast('Por favor, selecciona un artículo válido del catálogo.', 'warning');
+        return;
+      }
+
+      const clientId = document.getElementById('mat-sale-client').value;
+      const concept = document.getElementById('mat-sale-concept').value;
+      const amount = parseFloat(document.getElementById('mat-sale-amount').value);
+      const date = new Date().toISOString().split('T')[0];
+      const invoiceId = `FAC-2026-${Date.now()}`;
+      const invoiceNumber = document.getElementById('mat-invoice-number').value;
+
+      const inputDueDate = document.getElementById('mat-duedate').value;
+      let finalDueDate = inputDueDate;
+      if (!finalDueDate) {
+        const future = new Date();
+        future.setDate(future.getDate() + 30);
+        finalDueDate = future.toISOString().split('T')[0];
+      }
+
+      const newInv = {
+        id: invoiceId,
+        invoiceNumber: invoiceNumber,
+        clientId: clientId,
+        concept: concept,
+        amount: amount,
+        status: 'Pendiente',
+        date: date,
+        dueDate: finalDueDate,
+        emailSent: false,
+        fileName: null,
+        filePath: null,
+        isMaterial: true
+      };
+      db.invoices.push(newInv);
+
+      await saveDB();
+      closeModals();
+      renderAll();
+      showToast(`¡Factura ${invoiceNumber} de material generada!`, 'success');
+    } finally {
+      setButtonLoading(submitBtn, false, 'Generar Factura');
     }
-
-    const clientId = document.getElementById('mat-sale-client').value;
-    const concept = document.getElementById('mat-sale-concept').value;
-    const amount = parseFloat(document.getElementById('mat-sale-amount').value);
-    const date = new Date().toISOString().split('T')[0];
-    const invoiceId = `FAC-2026-${Date.now()}`;
-    const invoiceNumber = document.getElementById('mat-invoice-number').value;
-
-    const inputDueDate = document.getElementById('mat-duedate').value;
-    let finalDueDate = inputDueDate;
-    if (!finalDueDate) {
-      const future = new Date();
-      future.setDate(future.getDate() + 30);
-      finalDueDate = future.toISOString().split('T')[0];
-    }
-
-    const newInv = {
-      id: invoiceId,
-      invoiceNumber: invoiceNumber,
-      clientId: clientId,
-      concept: concept,
-      amount: amount,
-      status: 'Pendiente',
-      date: date,
-      dueDate: finalDueDate,
-      emailSent: false,
-      fileName: null,
-      filePath: null,
-      isMaterial: true
-    };
-    db.invoices.push(newInv);
-
-    await saveDB();
-    closeModals();
-    renderAll();
-    alert(`¡Factura ${invoiceNumber} de material generada correctamente!`);
   }
 
   // --- FACTURACIÓN GENERAL, BONOS Y COBROS ---
@@ -3256,7 +3381,7 @@
       .upload(filePath, file, { upsert: true });
 
     if (error) {
-      alert('Error al subir el fichero al bucket: ' + error.message);
+      showToast('Error al subir el fichero: ' + error.message, 'error');
       return;
     }
 
@@ -3279,19 +3404,19 @@
 
       await saveDB();
       renderAll();
-      alert('¡Fichero PDF subido correctamente a Supabase Storage!');
+      showToast('¡Fichero PDF subido a Supabase Storage!', 'success');
     }
   }
 
   function simulateInvoiceEmail(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv.fileName || !inv.filePath) {
-      alert('No se puede enviar el email porque falta adjuntar el fichero PDF de la factura.');
+      showToast('Falta el PDF de la factura para enviar el email.', 'warning');
       return;
     }
     const client = db.clients.find(c => c.id === inv.clientId);
     if (!client || !client.email || !client.email.includes('@')) {
-      alert('El alumno no tiene un correo electrónico válido registrado.');
+      showToast('El alumno no tiene un correo electrónico válido.', 'warning');
       return;
     }
 
@@ -3331,7 +3456,7 @@
     const client = db.clients.find(c => c.id === inv.clientId);
 
     if (!client || !client.email || !client.email.includes('@')) {
-      alert('El alumno no tiene un correo electrónico válido registrado.');
+      showToast('El alumno no tiene un correo electrónico válido.', 'warning');
       return;
     }
 
@@ -3412,11 +3537,11 @@
       await saveDB();
       closeModals();
       renderAll();
-      alert(`✅ Correo enviado correctamente a ${to}`);
+      showToast(`Correo enviado correctamente a ${to}`, 'success');
 
     } catch (error) {
       console.error('Error enviando email:', error);
-      alert('❌ Ocurrió un error al enviar el correo automáticamente.');
+      showToast('Error al enviar el correo automáticamente.', 'error');
     }
   }
 
@@ -3570,43 +3695,50 @@
 
   async function saveBonusInvoice(e) {
     e.preventDefault();
-    if (!db.invoices) db.invoices = [];
-    const clientId = document.getElementById('bonus-client').value;
-    const invoiceNumber = document.getElementById('bonus-invoice-number').value;
-    const concept = document.getElementById('bonus-concept').value;
-    const amount = parseFloat(document.getElementById('bonus-amount').value);
-    const date = new Date().toISOString().split('T')[0];
-    const invoiceId = `FAC-2026-${Date.now()}`;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Generar Factura de Bono');
 
-    const inputDueDate = document.getElementById('bonus-duedate').value;
-    let finalDueDate = inputDueDate;
-    if (!finalDueDate) {
-      const future = new Date();
-      future.setDate(future.getDate() + 30);
-      finalDueDate = future.toISOString().split('T')[0];
+    try {
+      if (!db.invoices) db.invoices = [];
+      const clientId = document.getElementById('bonus-client').value;
+      const invoiceNumber = document.getElementById('bonus-invoice-number').value;
+      const concept = document.getElementById('bonus-concept').value;
+      const amount = parseFloat(document.getElementById('bonus-amount').value);
+      const date = new Date().toISOString().split('T')[0];
+      const invoiceId = `FAC-2026-${Date.now()}`;
+
+      const inputDueDate = document.getElementById('bonus-duedate').value;
+      let finalDueDate = inputDueDate;
+      if (!finalDueDate) {
+        const future = new Date();
+        future.setDate(future.getDate() + 30);
+        finalDueDate = future.toISOString().split('T')[0];
+      }
+
+      const newInv = {
+        id: invoiceId,
+        invoiceNumber: invoiceNumber,
+        clientId: clientId,
+        concept: concept,
+        amount: amount,
+        status: 'Pendiente',
+        date: date,
+        dueDate: finalDueDate,
+        emailSent: false,
+        fileName: null,
+        filePath: null,
+        isBonus: true,
+        sessionsLeft: 10
+      };
+      db.invoices.push(newInv);
+
+      await saveDB();
+      closeModals();
+      renderAll();
+      showToast(`¡Factura de bono ${invoiceNumber} generada!`, 'success');
+    } finally {
+      setButtonLoading(submitBtn, false, 'Generar Factura de Bono');
     }
-
-    const newInv = {
-      id: invoiceId,
-      invoiceNumber: invoiceNumber,
-      clientId: clientId,
-      concept: concept,
-      amount: amount,
-      status: 'Pendiente',
-      date: date,
-      dueDate: finalDueDate,
-      emailSent: false,
-      fileName: null,
-      filePath: null,
-      isBonus: true,
-      sessionsLeft: 10
-    };
-    db.invoices.push(newInv);
-
-    await saveDB();
-    closeModals();
-    renderAll();
-    alert(`¡Factura de bono ${invoiceNumber} generada correctamente!`);
   }
 
   function onInvoiceClientChange() {
@@ -3631,36 +3763,43 @@
 
   async function saveInvoice(e) {
     e.preventDefault();
-    const id = document.getElementById('invoice-id').value;
-    const invoiceNumber = document.getElementById('invoice-number').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar');
 
-    const data = {
-      invoiceNumber: invoiceNumber,
-      clientId: document.getElementById('invoice-client').value,
-      concept: document.getElementById('invoice-concept').value,
-      amount: parseFloat(document.getElementById('invoice-amount').value),
-      dueDate: document.getElementById('invoice-duedate').value
-    };
+    try {
+      const id = document.getElementById('invoice-id').value;
+      const invoiceNumber = document.getElementById('invoice-number').value;
 
-    if (id) {
-      const inv = db.invoices.find(i => i.id === id);
-      Object.assign(inv, data);
-    } else {
-      data.id = `FAC-2026-${Date.now()}`;
-      data.status = 'Pendiente';
-      data.date = new Date().toISOString().split('T')[0];
-      data.emailSent = false;
-      data.fileName = null;
-      data.filePath = null;
-      db.invoices.push(data);
+      const data = {
+        invoiceNumber: invoiceNumber,
+        clientId: document.getElementById('invoice-client').value,
+        concept: document.getElementById('invoice-concept').value,
+        amount: parseFloat(document.getElementById('invoice-amount').value),
+        dueDate: document.getElementById('invoice-duedate').value
+      };
+
+      if (id) {
+        const inv = db.invoices.find(i => i.id === id);
+        Object.assign(inv, data);
+      } else {
+        data.id = `FAC-2026-${Date.now()}`;
+        data.status = 'Pendiente';
+        data.date = new Date().toISOString().split('T')[0];
+        data.emailSent = false;
+        data.fileName = null;
+        data.filePath = null;
+        db.invoices.push(data);
+      }
+      await saveDB(); closeModals(); renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar');
     }
-    await saveDB(); closeModals(); renderAll();
   }
 
   async function toggleInvoiceStatus(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv) return;
-    
+
     // Declaración y formateo de la fecha actual a DD/MM/YYYY
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
@@ -3704,7 +3843,7 @@
 
   function openLedgerModal(id = null) {
     document.getElementById('ledger-id').value = id || '';
-    
+
     if (id) {
       const item = db.ledger.find(l => l.id === id);
       if (item) {
@@ -3724,7 +3863,7 @@
       document.getElementById('ledger-concept').value = '';
       document.getElementById('ledger-amount').value = '';
     }
-    
+
     document.getElementById('ledger-file-input').value = '';
     document.getElementById('ledger-modal').classList.remove('hidden');
     initDatePickers();
@@ -3754,52 +3893,59 @@
 
   async function saveLedgerItem(e) {
     e.preventDefault();
-    if (!db.ledger) db.ledger = [];
-    const id = document.getElementById('ledger-id').value;
-    const fileInput = document.getElementById('ledger-file-input');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    setButtonLoading(submitBtn, true, 'Guardar Movimiento');
 
-    let fileName = id ? db.ledger.find(l => l.id === id)?.fileName : null;
-    let filePath = id ? db.ledger.find(l => l.id === id)?.filePath : null;
+    try {
+      if (!db.ledger) db.ledger = [];
+      const id = document.getElementById('ledger-id').value;
+      const fileInput = document.getElementById('ledger-file-input');
 
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-      const storagePath = `ledger/LED_${Date.now()}_${file.name}`;
-      const { error } = await supabaseClient.storage
-        .from('atelier-files')
-        .upload(storagePath, file, { upsert: true });
+      let fileName = id ? db.ledger.find(l => l.id === id)?.fileName : null;
+      let filePath = id ? db.ledger.find(l => l.id === id)?.filePath : null;
 
-      if (!error) {
-        const { data: publicURLData } = supabaseClient.storage
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const storagePath = `ledger/LED_${Date.now()}_${file.name}`;
+        const { error } = await supabaseClient.storage
           .from('atelier-files')
-          .getPublicUrl(storagePath);
-        fileName = file.name;
-        filePath = publicURLData.publicUrl;
+          .upload(storagePath, file, { upsert: true });
+
+        if (!error) {
+          const { data: publicURLData } = supabaseClient.storage
+            .from('atelier-files')
+            .getPublicUrl(storagePath);
+          fileName = file.name;
+          filePath = publicURLData.publicUrl;
+        }
       }
+
+      const itemData = {
+        type: document.getElementById('ledger-type').value,
+        category: document.getElementById('ledger-category').value,
+        invoiceRef: document.getElementById('ledger-invoice-ref').value.trim(),
+        date: document.getElementById('ledger-date').value,
+        concept: document.getElementById('ledger-concept').value,
+        amount: parseFloat(document.getElementById('ledger-amount').value),
+        fileName: fileName,
+        filePath: filePath,
+        originId: null
+      };
+
+      if (id) {
+        const item = db.ledger.find(l => l.id === id);
+        Object.assign(item, itemData);
+      } else {
+        itemData.id = 'LED-' + Date.now();
+        db.ledger.push(itemData);
+      }
+
+      await saveDB();
+      closeModals();
+      renderAll();
+    } finally {
+      setButtonLoading(submitBtn, false, 'Guardar Movimiento');
     }
-
-    const itemData = {
-      type: document.getElementById('ledger-type').value,
-      category: document.getElementById('ledger-category').value,
-      invoiceRef: document.getElementById('ledger-invoice-ref').value.trim(),
-      date: document.getElementById('ledger-date').value,
-      concept: document.getElementById('ledger-concept').value,
-      amount: parseFloat(document.getElementById('ledger-amount').value),
-      fileName: fileName,
-      filePath: filePath,
-      originId: null
-    };
-
-    if (id) {
-      const item = db.ledger.find(l => l.id === id);
-      Object.assign(item, itemData);
-    } else {
-      itemData.id = 'LED-' + Date.now();
-      db.ledger.push(itemData);
-    }
-
-    await saveDB();
-    closeModals();
-    renderAll();
   }
 
   async function deleteLedgerItem(id) {
@@ -3860,7 +4006,7 @@
 
     select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
   }
-  
+
   function renderLedger() {
     if (!db.ledger) db.ledger = [];
     const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
@@ -3882,11 +4028,11 @@
       const concept = (item.concept || '').toLowerCase();
       const category = (item.category || '').toLowerCase();
 
-      return dateISO.includes(searchTerm) || 
-             dateFormatted.includes(searchTerm) || 
-             invRef.includes(searchTerm) || 
-             concept.includes(searchTerm) || 
-             category.includes(searchTerm);
+      return dateISO.includes(searchTerm) ||
+        dateFormatted.includes(searchTerm) ||
+        invRef.includes(searchTerm) ||
+        concept.includes(searchTerm) ||
+        category.includes(searchTerm);
     });
 
     filteredItems.sort((a, b) => {
@@ -3934,7 +4080,7 @@
           ? `<a href="${item.filePath || '#'}" target="_blank" class="text-indigo-600 font-medium text-xs hover:underline">📎 ${item.fileName}</a>`
           : `<span class="text-gray-400 italic text-xs">Sin fichero</span>`;
 
-        const invoiceDisplay = item.invoiceRef 
+        const invoiceDisplay = item.invoiceRef
           ? `<span class="font-mono text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">${item.invoiceRef}</span>`
           : (item.originId ? `<span class="font-mono text-xs text-gray-500">${item.originId}</span>` : '<span class="text-gray-400 italic text-xs">—</span>');
 
