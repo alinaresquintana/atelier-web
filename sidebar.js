@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <!-- CONTACTO -->
         <a href="#contact" class="nav-link" style="text-decoration: none; color: var(--text); font-size: 15px; font-weight: 500; transition: color 0.2s;" data-i18n="nav_contact">Contact</a>
         
-        <a href="atelier-admin.html" style="text-decoration: none !important; color: inherit !important; font-family: inherit !important;" class="flex items-center space-x-2 py-1 hover:text-indigo-600 transition">
+        <a href="#" onclick="handleAdminAccess(event)" style="text-decoration: none !important; color: inherit !important; font-family: inherit !important;" class="flex items-center space-x-2 py-1 hover:text-indigo-600 transition">
             <span>🔒</span>
             <span>Admin</span>
         </a>

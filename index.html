@@ -1160,11 +1160,11 @@
   function handleAdminAccess(e) {
     e.preventDefault();
     if (window.netlifyIdentity && window.netlifyIdentity.currentUser()) {
-      window.location.href = 'admin.html';
+      window.location.href = 'atelier-admin.html';
     } else {
       netlifyIdentity.open();
       netlifyIdentity.on('login', () => {
-        window.location.href = 'admin.html';
+        window.location.href = 'atelier-admin.html';
       });
     }
   }

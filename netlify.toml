@@ -1,0 +1,14 @@
+# 1. Regla para usuarios autorizados: Si tienen el rol "admin", se les sirve la página.
+[[redirects]]
+  from = "/atelier-admin.html"
+  to = "/atelier-admin.html"
+  status = 200
+  force = true
+  conditions = {Role = ["admin"]}
+
+# 2. Regla para usuarios NO autorizados: Si alguien sin login o sin rol admin intenta entrar, se le expulsa a la web pública.
+[[redirects]]
+  from = "/atelier-admin.html"
+  to = "/"
+  status = 302
+  force = true
