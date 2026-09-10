@@ -9,7 +9,8 @@
     <script src="email-templates.js"></script>
     <!-- Widget de Netlify Identity -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
+    <!-- Cliente oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Flatpickr CSS & JS para selector de fechas profesional en formato europeo -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -913,7 +914,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Seleccionar del Catálogo</label>
                 <input type="hidden" id="mat-sale-type-id" required>
                 <input type="text" id="mat-sale-search" oninput="filterMaterialDropdown()" onfocus="filterMaterialDropdown()" placeholder="🔍 Escribe para buscar material..." autocomplete="off" class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-
+                
                 <!-- Contenedor desplegable dinámico -->
                 <div id="mat-sale-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto z-50 divide-y divide-gray-100">
                 </div>
@@ -986,7 +987,12 @@
     </div>
 </div>
 
+<!-- JAVASCRIPT INTEGRADO CON SUPABASE Y STORAGE BUCKET -->
 <script>
+  const SUPABASE_URL = 'https://alfkqkzsurazgrttokso.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_YJ9tk3wlPT5s-RVyTa-t7A_8sW9gfFN';
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   let renewalsPanelOpen = false;
   let pastArchivePanelOpen = false;
   let archivePanelOpen = false;
@@ -1011,57 +1017,18 @@
     attendanceLogs: []
   };
 
-  async function callApi(action, table, data = null, query = null) {
-    const res = await fetch('/.netlify/functions/api', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, table, data, query })
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.error || 'Error en la API');
-    return json.data;
-  }
-
-  // --- Secure File Upload Wrapper replacing direct Supabase calls ---
-  // Sends file as base64 to your secure Netlify backend endpoint
-  async function uploadFileSecure(filePath, file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = async () => {
-        try {
-          const res = await fetch('/.netlify/functions/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              path: filePath,
-              fileBase64: reader.result,
-              bucket: 'atelier-files'
-            })
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Upload error');
-          resolve(data.url);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.onerror = () => reject(new Error('File reading error'));
-    });
-  }
-
   async function loadDB() {
     try {
-      const clients = await callApi('select', 'clients');
-      const classes = await callApi('select', 'classes');
-      const enrollments = await callApi('select', 'enrollments');
-      const rates = await callApi('select', 'class_rates');
-      const invoices = await callApi('select', 'invoices');
-      const ledger = await callApi('select', 'ledger');
-      const materials = await callApi('select', 'material_catalog');
-      const preRegs = await callApi('select', 'pre_registrations');
-      const holidays = await callApi('select', 'holidays');
-      const attendanceLogs = await callApi('select', 'attendance_logs');
+      const { data: clients } = await supabaseClient.from('clients').select('*');
+      const { data: classes } = await supabaseClient.from('classes').select('*');
+      const { data: enrollments } = await supabaseClient.from('enrollments').select('*');
+      const { data: rates } = await supabaseClient.from('class_rates').select('*');
+      const { data: invoices } = await supabaseClient.from('invoices').select('*');
+      const { data: ledger } = await supabaseClient.from('ledger').select('*');
+      const { data: materials } = await supabaseClient.from('material_catalog').select('*');
+      const { data: preRegs } = await supabaseClient.from('pre_registrations').select('*');
+      const { data: holidays } = await supabaseClient.from('holidays').select('*');
+      const { data: attendanceLogs } = await supabaseClient.from('attendance_logs').select('*');
 
       db.clients = (clients || []).map(c => ({
         id: c.id,
@@ -1164,13 +1131,13 @@
       }));
 
     } catch (err) {
-      console.error("Error al cargar desde la API segura:", err);
+      console.error("Error al cargar desde Supabase:", err);
     }
   }
 
   async function saveDB() {
     for (const c of db.clients) {
-      await callApi('upsert', 'clients', {
+      await supabaseClient.from('clients').upsert({
         id: c.id,
         name: c.name,
         email: c.email,
@@ -1186,7 +1153,7 @@
     }
 
     for (const inv of db.invoices) {
-      await callApi('upsert', 'invoices', {
+      await supabaseClient.from('invoices').upsert({
         id: inv.id,
         invoice_number: inv.invoiceNumber,
         client_id: inv.clientId,
@@ -1206,7 +1173,7 @@
     }
 
     for (const l of db.ledger) {
-      await callApi('upsert', 'ledger', {
+      await supabaseClient.from('ledger').upsert({
         id: l.id,
         type: l.type,
         category: l.category,
@@ -1222,7 +1189,7 @@
 
     if (db.holidays) {
       for (const h of db.holidays) {
-        await callApi('upsert', 'holidays', {
+        await supabaseClient.from('holidays').upsert({
           id: h.id || ('hol_' + Date.now()),
           start_date: h.startDate,
           end_date: h.endDate,
@@ -1538,7 +1505,7 @@
     if (!db.holidays) db.holidays = [];
     db.holidays.push(newHoliday);
 
-    await callApi('upsert', 'holidays', {
+    await supabaseClient.from('holidays').insert({
       id: newHoliday.id,
       start_date: newHoliday.startDate,
       end_date: newHoliday.endDate,
@@ -1560,7 +1527,7 @@
     if (confirm(`¿Eliminar las vacaciones "${h.reason}"?`)) {
       db.holidays.splice(index, 1);
       if (h.id) {
-        await callApi('delete', 'holidays', { id: h.id });
+        await supabaseClient.from('holidays').delete().eq('id', h.id);
       }
       renderAll();
     }
@@ -1857,7 +1824,7 @@
         sessionsLeft: isBonusRate(rateName) ? 10 : null
       });
 
-      await callApi('upsert', 'enrollments', {
+      await supabaseClient.from('enrollments').insert({
         client_id: newClient.id,
         class_id: classId,
         rate_name: rateName,
@@ -1866,7 +1833,7 @@
     }
 
     db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
-    await callApi('delete', 'pre_registrations', { id: id });
+    await supabaseClient.from('pre_registrations').delete().eq('id', id);
 
     saveDB();
     closeModals();
@@ -1898,7 +1865,7 @@
   async function deletePreReg(id) {
     if (confirm('¿Eliminar esta solicitud de pre-inscripción?')) {
       db.preRegistrations = db.preRegistrations.filter(p => p.id !== id);
-      await callApi('delete', 'pre_registrations', { id: id });
+      await supabaseClient.from('pre_registrations').delete().eq('id', id);
       saveDB();
       renderAll();
     }
@@ -2253,7 +2220,7 @@
     if (confirm('¿Eliminar alumno? Se desvinculará de las clases y sus registros financieros quedarán como histórico.')) {
       db.clients = db.clients.filter(c => c.id !== id);
       db.classes.forEach(cl => { cl.enrolled = cl.enrolled.filter(e => e.clientId !== id); });
-      await callApi('delete', 'clients', { id: id });
+      await supabaseClient.from('clients').delete().eq('id', id);
       saveDB(); renderAll();
     }
   }
@@ -2467,7 +2434,7 @@
         };
         db.attendanceLogs.push(logItem);
 
-        await callApi('upsert', 'attendance_logs', logItem);
+        await supabaseClient.from('attendance_logs').insert(logItem);
       }
     }
 
@@ -2479,7 +2446,7 @@
       for (const alertInfo of lowBonusAlerts) {
         const client = db.clients.find(c => c.email === alertInfo.email);
         const clientLang = client?.lang || 'fr';
-
+        
         const bonusData = EmailTemplates.bonusLowReminder({
           name: alertInfo.clientName,
           invoiceNumber: alertInfo.invoiceId,
@@ -2689,30 +2656,54 @@
       db.classes.push(data);
     }
 
-    const classIdToUpsert = id || data.id;
-    await callApi('upsert', 'classes', {
-      id: classIdToUpsert,
-      name: data.name,
-      class_type: data.classType,
-      schedule_mode: data.scheduleMode,
-      day_of_week: data.dayOfWeek,
-      schedule: data.schedule,
-      start_date: data.startDate || null,
-      end_date: data.endDate || null,
-      single_date: data.singleDate || null,
-      single_schedule: data.singleSchedule || null,
-      duration: data.duration,
-      capacity: data.capacity
-    });
+    if (id) {
+      await supabaseClient.from('classes').update({
+        name: data.name,
+        class_type: data.classType,
+        schedule_mode: data.scheduleMode,
+        day_of_week: data.dayOfWeek,
+        schedule: data.schedule,
+        start_date: data.startDate || null,
+        end_date: data.endDate || null,
+        single_date: data.singleDate || null,
+        single_schedule: data.singleSchedule || null,
+        duration: data.duration,
+        capacity: data.capacity
+      }).eq('id', id);
 
-    await callApi('delete', 'class_rates', null, { class_id: classIdToUpsert });
-    for (const r of rates) {
-      await callApi('upsert', 'class_rates', {
-        class_id: classIdToUpsert,
-        name: r.name,
-        rate_type: r.type,
-        price: r.price
+      await supabaseClient.from('class_rates').delete().eq('class_id', id);
+      for (const r of rates) {
+        await supabaseClient.from('class_rates').insert({
+          class_id: id,
+          name: r.name,
+          rate_type: r.type,
+          price: r.price
+        });
+      }
+    } else {
+      await supabaseClient.from('classes').insert({
+        id: data.id,
+        name: data.name,
+        class_type: data.classType,
+        schedule_mode: data.scheduleMode,
+        day_of_week: data.dayOfWeek,
+        schedule: data.schedule,
+        start_date: data.startDate || null,
+        end_date: data.endDate || null,
+        single_date: data.singleDate || null,
+        single_schedule: data.singleSchedule || null,
+        duration: data.duration,
+        capacity: data.capacity
       });
+
+      for (const r of rates) {
+        await supabaseClient.from('class_rates').insert({
+          class_id: data.id,
+          name: r.name,
+          rate_type: r.type,
+          price: r.price
+        });
+      }
     }
 
     closeModals();
@@ -2722,7 +2713,7 @@
   async function deleteClass(id) {
     if (confirm('¿Eliminar clase? Se eliminarán también las inscripciones asociadas.')) {
       db.classes = db.classes.filter(c => c.id !== id);
-      await callApi('delete', 'classes', { id: id });
+      await supabaseClient.from('classes').delete().eq('id', id);
       renderAll();
     }
   }
@@ -2752,7 +2743,7 @@
     };
     cl.enrolled.push(enrollmentObj);
 
-    await callApi('upsert', 'enrollments', {
+    await supabaseClient.from('enrollments').insert({
       client_id: clientId,
       class_id: classId,
       rate_name: rateName,
@@ -2766,20 +2757,20 @@
   async function unenrollClient(classId, clientId) {
     const cl = db.classes.find(c => c.id === classId);
     cl.enrolled = cl.enrolled.filter(e => e.clientId !== clientId);
-    await callApi('delete', 'enrollments', null, { class_id: classId, client_id: clientId });
+    await supabaseClient.from('enrollments').delete().eq('class_id', classId).eq('client_id', clientId);
     renderAll();
   }
 
   // --- SECCIÓN: CATÁLOGO DE MATERIAL ---
   function renderMaterialSection() {
     if (!db.materialTypes) db.materialTypes = [];
-
+    
     const container = document.getElementById('material-types-list');
     const countBadge = document.getElementById('material-count-badge');
     const searchInput = document.getElementById('material-search');
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-    const filteredMaterials = db.materialTypes.filter(m =>
+    const filteredMaterials = db.materialTypes.filter(m => 
       m.name.toLowerCase().includes(searchTerm)
     );
 
@@ -2821,7 +2812,7 @@
     };
     db.materialTypes.push(newMaterial);
 
-    await callApi('upsert', 'material_catalog', {
+    await supabaseClient.from('material_catalog').insert({
       id: newMaterial.id,
       name: newMaterial.name,
       price: newMaterial.price
@@ -2833,7 +2824,7 @@
 
   async function deleteMaterialType(id) {
     db.materialTypes = db.materialTypes.filter(m => m.id !== id);
-    await callApi('delete', 'material_catalog', { id: id });
+    await supabaseClient.from('material_catalog').delete().eq('id', id);
     renderAll();
   }
 
@@ -2854,7 +2845,7 @@
     document.getElementById('material-sale-modal').classList.remove('hidden');
     document.getElementById('mat-invoice-number').value = generateNextInvoiceNumber();
   }
-
+  
   function filterMaterialDropdown() {
     const searchInput = document.getElementById('mat-sale-search');
     const dropdown = document.getElementById('mat-sale-dropdown');
@@ -2881,7 +2872,7 @@
 
     dropdown.classList.remove('hidden');
   }
-
+  
   function selectMaterialFromDropdown(id, name, price) {
     document.getElementById('mat-sale-type-id').value = id;
     document.getElementById('mat-sale-search').value = `${name} (${price.toFixed(2)} CHF)`;
@@ -3248,9 +3239,9 @@
       db.invoices = db.invoices.filter(i => i.id !== id);
       if (db.ledger) {
         db.ledger = db.ledger.filter(l => l.originId !== id);
-        await callApi('delete', 'ledger', null, { origin_id: id });
+        await supabaseClient.from('ledger').delete().eq('origin_id', id);
       }
-      await callApi('delete', 'invoices', { id: id });
+      await supabaseClient.from('invoices').delete().eq('id', id);
       renderAll();
     }
   }
@@ -3260,29 +3251,35 @@
     if (!file) return;
 
     const filePath = `invoices/${id}_${file.name}`;
-    try {
-      // Usamos la nueva función segura para delegar la subida en el servidor Netlify
-      const publicUrl = await uploadFileSecure(filePath, file);
+    const { error } = await supabaseClient.storage
+      .from('atelier-files')
+      .upload(filePath, file, { upsert: true });
 
-      const inv = db.invoices.find(i => i.id === id);
-      if (inv) {
-        inv.fileName = file.name;
-        inv.filePath = publicUrl;
+    if (error) {
+      alert('Error al subir el fichero al bucket: ' + error.message);
+      return;
+    }
 
-        if (db.ledger) {
-          const ledgerItem = db.ledger.find(l => l.originId === inv.id);
-          if (ledgerItem) {
-            ledgerItem.fileName = file.name;
-            ledgerItem.filePath = publicUrl;
-          }
+    const { data: publicURLData } = supabaseClient.storage
+      .from('atelier-files')
+      .getPublicUrl(filePath);
+
+    const inv = db.invoices.find(i => i.id === id);
+    if (inv) {
+      inv.fileName = file.name;
+      inv.filePath = publicURLData.publicUrl;
+
+      if (db.ledger) {
+        const ledgerItem = db.ledger.find(l => l.originId === inv.id);
+        if (ledgerItem) {
+          ledgerItem.fileName = file.name;
+          ledgerItem.filePath = publicURLData.publicUrl;
         }
-
-        await saveDB();
-        renderAll();
-        alert('¡Fichero PDF subido correctamente a través de tu backend seguro!');
       }
-    } catch(error) {
-      alert('Error al subir el fichero de la factura: ' + error.message);
+
+      await saveDB();
+      renderAll();
+      alert('¡Fichero PDF subido correctamente a Supabase Storage!');
     }
   }
 
@@ -3663,7 +3660,8 @@
   async function toggleInvoiceStatus(id) {
     const inv = db.invoices.find(i => i.id === id);
     if (!inv) return;
-
+    
+    // Declaración y formateo de la fecha actual a DD/MM/YYYY
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -3698,7 +3696,7 @@
       inv.paidAt = null;
       if (db.ledger) {
         db.ledger = db.ledger.filter(l => l.originId !== inv.id);
-        await callApi('delete', 'ledger', null, { origin_id: inv.id });
+        await supabaseClient.from('ledger').delete().eq('origin_id', inv.id);
       }
     }
     await saveDB(); renderAll();
@@ -3706,7 +3704,7 @@
 
   function openLedgerModal(id = null) {
     document.getElementById('ledger-id').value = id || '';
-
+    
     if (id) {
       const item = db.ledger.find(l => l.id === id);
       if (item) {
@@ -3726,7 +3724,7 @@
       document.getElementById('ledger-concept').value = '';
       document.getElementById('ledger-amount').value = '';
     }
-
+    
     document.getElementById('ledger-file-input').value = '';
     document.getElementById('ledger-modal').classList.remove('hidden');
     initDatePickers();
@@ -3766,13 +3764,16 @@
     if (fileInput.files.length > 0) {
       const file = fileInput.files[0];
       const storagePath = `ledger/LED_${Date.now()}_${file.name}`;
+      const { error } = await supabaseClient.storage
+        .from('atelier-files')
+        .upload(storagePath, file, { upsert: true });
 
-      try {
-        const publicUrl = await uploadFileSecure(storagePath, file);
+      if (!error) {
+        const { data: publicURLData } = supabaseClient.storage
+          .from('atelier-files')
+          .getPublicUrl(storagePath);
         fileName = file.name;
-        filePath = publicUrl;
-      } catch (err) {
-        alert("Error subiendo archivo de movimiento: " + err.message);
+        filePath = publicURLData.publicUrl;
       }
     }
 
@@ -3804,7 +3805,7 @@
   async function deleteLedgerItem(id) {
     if (confirm('¿Eliminar este movimiento financiero?')) {
       db.ledger = db.ledger.filter(l => l.id !== id);
-      await callApi('delete', 'ledger', { id: id });
+      await supabaseClient.from('ledger').delete().eq('id', id);
       renderAll();
     }
   }
@@ -3814,19 +3815,22 @@
     if (!file) return;
 
     const storagePath = `ledger/${id}_${file.name}`;
+    const { error } = await supabaseClient.storage
+      .from('atelier-files')
+      .upload(storagePath, file, { upsert: true });
 
-    try {
-      const publicUrl = await uploadFileSecure(storagePath, file);
+    if (!error) {
+      const { data: publicURLData } = supabaseClient.storage
+        .from('atelier-files')
+        .getPublicUrl(storagePath);
+
       const item = db.ledger.find(l => l.id === id);
       if (item) {
         item.fileName = file.name;
-        item.filePath = publicUrl;
+        item.filePath = publicURLData.publicUrl;
         await saveDB();
         renderLedger();
-        alert('¡Comprobante subido y actualizado de forma segura!');
       }
-    } catch (err) {
-      alert("Error subiendo comprobante: " + err.message);
     }
   }
 
@@ -3856,7 +3860,7 @@
 
     select.innerHTML = sortedYears.map(y => `<option value="${y}" ${y === previousSelection ? 'selected' : ''}>Año ${y}</option>`).join('');
   }
-
+  
   function renderLedger() {
     if (!db.ledger) db.ledger = [];
     const selectedYear = document.getElementById('ledger-year-filter')?.value || new Date().getFullYear().toString();
@@ -3878,11 +3882,11 @@
       const concept = (item.concept || '').toLowerCase();
       const category = (item.category || '').toLowerCase();
 
-      return dateISO.includes(searchTerm) ||
-        dateFormatted.includes(searchTerm) ||
-        invRef.includes(searchTerm) ||
-        concept.includes(searchTerm) ||
-        category.includes(searchTerm);
+      return dateISO.includes(searchTerm) || 
+             dateFormatted.includes(searchTerm) || 
+             invRef.includes(searchTerm) || 
+             concept.includes(searchTerm) || 
+             category.includes(searchTerm);
     });
 
     filteredItems.sort((a, b) => {
@@ -3930,7 +3934,7 @@
           ? `<a href="${item.filePath || '#'}" target="_blank" class="text-indigo-600 font-medium text-xs hover:underline">📎 ${item.fileName}</a>`
           : `<span class="text-gray-400 italic text-xs">Sin fichero</span>`;
 
-        const invoiceDisplay = item.invoiceRef
+        const invoiceDisplay = item.invoiceRef 
           ? `<span class="font-mono text-xs font-bold text-indigo-900 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">${item.invoiceRef}</span>`
           : (item.originId ? `<span class="font-mono text-xs text-gray-500">${item.originId}</span>` : '<span class="text-gray-400 italic text-xs">—</span>');
 
